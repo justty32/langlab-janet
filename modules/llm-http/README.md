@@ -17,12 +17,23 @@ proxy 擋在前面，所以 Janet 這端**只講 OpenAI 相容一種格式**，�
 ⚠ **`fastapi<0.119` 這個 pin 是關鍵**：新版 fastapi 移除了 `get_flat_dependant`，
 litellm 的 proxy 會 ImportError。不釘就炸（背景見 FINDINGS.md 第三節）。
 
+**設定檔已經放在 repo 裡了**（[`lite.yaml`](lite.yaml)，四個 endpoint 都配好），不用自己建：
+
 ```sh
-uv run --with 'litellm[proxy]' --with 'fastapi<0.119' litellm --config lite.yaml --port 4000
-curl http://127.0.0.1:4000/health/liveliness      # 健康檢查
+cd <janet-lab 根目錄>
+uv run --with 'litellm[proxy]' --with 'fastapi<0.119' \
+       litellm --config modules/llm-http/lite.yaml --port 4000
+
+curl http://127.0.0.1:4000/health/liveliness      # 健康檢查，回 "I'm alive!" 就是好了
 ```
 
-`lite.yaml`（四個 endpoint 都是一等公民；`os.environ/<VAR>` 是 litellm 讀環境變數的語法）：
+⚠ **`--config` 的路徑是相對「你下指令的目錄」**，不是相對那支 yaml。在別的地方跑就給絕對路徑，
+否則會看到 `Exception: Config file not found: lite.yaml`。
+
+> **缺 key 不影響啟動**：`claude`／`openrouter` 那兩筆即使環境變數沒設，proxy 照樣起得來，
+> 只有真的呼叫到那個 model 時才會報錯。所以不必為了試 `local` 先去湊齊四把金鑰。
+
+`lite.yaml` 的內容（`os.environ/<VAR>` 是 litellm 讀環境變數的語法，金鑰不落版控）：
 
 ```yaml
 model_list:

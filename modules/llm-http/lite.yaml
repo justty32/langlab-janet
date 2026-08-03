@@ -1,0 +1,40 @@
+# litellm proxy 的設定檔 —— 四個 endpoint 都是一等公民。
+#
+# 起法（⚠ fastapi<0.119 這個 pin 不能省，見同目錄 README 與 ../../FINDINGS.md 第三節）：
+#
+#   cd <janet-lab 根目錄>
+#   uv run --with 'litellm[proxy]' --with 'fastapi<0.119' \
+#          litellm --config modules/llm-http/lite.yaml --port 4000
+#
+# --config 的路徑是**相對你下指令的目錄**，不是相對這支 yaml。在別的地方跑就給絕對路徑。
+#
+# 這裡的 model_name 要跟 modules/llm-http/endpoints.janet 的 :model 對得起來——
+# 那邊是 Janet 送過來的名字，這邊決定它實際打到哪一家。要換 provider 只改這一檔。
+#
+# os.environ/<VAR> 是 litellm 讀環境變數的語法：金鑰不寫死在檔案裡，才不會落版控。
+
+model_list:
+  # 本機 LM Studio。免金鑰。⚠ 一定要寫 127.0.0.1 不要寫 localhost（::1 陷阱）
+  - model_name: local
+    litellm_params:
+      model: openai/google/gemma-4-e4b
+      api_base: http://127.0.0.1:1234/v1
+      api_key: dummy
+
+  # DeepSeek。⚠ 現行 model id 是 deepseek-v4-flash／deepseek-v4-pro，不是 deepseek-chat
+  - model_name: deepseek
+    litellm_params:
+      model: deepseek/deepseek-v4-flash
+      api_key: os.environ/DEEPSEEK_API_KEY
+
+  # Anthropic 直連。需要 ANTHROPIC_API_KEY；沒有 key 的話 claude 也可以走 openrouter
+  - model_name: claude
+    litellm_params:
+      model: anthropic/claude-sonnet-5
+      api_key: os.environ/ANTHROPIC_API_KEY
+
+  # OpenRouter。⚠ 免費 slug 汰換很快，掛了先查 https://openrouter.ai/api/v1/models
+  - model_name: openrouter
+    litellm_params:
+      model: openrouter/google/gemma-4-31b-it:free
+      api_key: os.environ/OPENROUTER_API_KEY
