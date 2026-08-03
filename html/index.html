@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Janet 速查表 · janet-lab</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <h1>Janet 速查表 <span class="v">1.41.2</span></h1>
+  <p class="sub">語言核心・括號家族・資料結構・印與除錯・jpm/REPL・地雷合輯</p>
+  <nav class="pages"><div class="wrap">
+<a href="index.html" class="here">核心</a>
+<a href="data-io.html">資料 / IO</a>
+<a href="peg.html">PEG</a>
+<a href="concurrency.html">並行</a>
+<a href="ffi.html">C 互通</a>
+<a href="env.html">env / 符號</a>
+</div></nav>
+</header>
+
+<main>
+
+<section class="wide"><h2><span class="n">▤</span> 這裡有什麼</h2><div class="cards">
+<a class="card" href="data-io.html"><b>資料 / IO</b><span>JSON・argparse・檔案 IO・marshal</span></a>
+<a class="card" href="peg.html"><b>PEG</b><span>內建解析器</span></a>
+<a class="card" href="concurrency.html"><b>並行</b><span>fiber・ev・channel・執行緒・net・子行程</span></a>
+<a class="card" href="ffi.html"><b>C 互通</b><span>FFI・指標與記憶體・native・嵌入</span></a>
+<a class="card" href="env.html"><b>env / 符號</b><span>環境表・動態變數・symbol↔字串・自省</span></a>
+</div><p class="sub" style="font-size:.8rem">拆成多頁是為了每頁都還能一眼掃完。要全文搜尋就用 <code>grep -r html/</code> 或瀏覽器分頁各開一個。</p></section>
+
+<section id="basics">
+  <h2><span class="n">01</span> 語言核心</h2>
+  <h3>綁定</h3>
+  <pre><code><span class="kw">(def</span> x <span class="num">10</span>)          <span class="cmt"># 不可變</span>
+<span class="kw">(var</span> y <span class="num">20</span>) <span class="kw">(set</span> y <span class="num">30</span>)  <span class="cmt"># 可變</span>
+<span class="kw">(let</span> [a <span class="num">1</span> b <span class="num">2</span>] (+ a b)) <span class="cmt"># 區域 => 3</span></code></pre>
+  <h3>函式</h3>
+  <pre><code><span class="kw">(defn</span> add [a b] (+ a b))
+<span class="kw">(defn</span> greet [&opt who]        <span class="cmt"># 可選參數</span>
+  <span class="kw">(default</span> who <span class="str">"world"</span>)
+  <span class="kw">(string</span> <span class="str">"Hi, "</span> who))
+<span class="kw">(defn</span> sum [& xs] (reduce + <span class="num">0</span> xs)) <span class="cmt"># 變長</span>
+<span class="kw">(map</span> |(* $ <span class="num">2</span>) @[<span class="num">1</span> <span class="num">2</span> <span class="num">3</span>]) <span class="cmt"># |(..) $=首參</span></code></pre>
+  <h3>條件</h3>
+  <pre><code><span class="kw">(if</span> (> x <span class="num">5</span>) <span class="str">"big"</span> <span class="str">"small"</span>)
+<span class="kw">(when</span> (> x <span class="num">5</span>) (print <span class="str">"big"</span>)) <span class="cmt"># 只真、多句</span>
+<span class="kw">(cond</span> (< x <span class="num">0</span>) <span class="str">"neg"</span>  (= x <span class="num">0</span>) <span class="str">"zero"</span>  <span class="str">"pos"</span>)
+<span class="kw">(case</span> x <span class="num">10</span> <span class="str">"ten"</span> <span class="str">"other"</span>)</code></pre>
+  <p class="sub" style="font-size:.8rem">真假：只有 <code>nil</code> 與 <code>false</code> 是假，<code>0</code>／<code>""</code>／空集合都算真。</p>
+  <h3>迴圈 / 推導</h3>
+  <pre><code><span class="kw">(loop</span> [i :range [<span class="num">0</span> <span class="num">3</span>]] (prin i)) <span class="cmt"># 副作用 012</span>
+<span class="kw">(each</span> v @[:a :b] (prin v))       <span class="cmt"># 走訪值</span>
+<span class="kw">(seq</span> [i :range [<span class="num">0</span> <span class="num">5</span>] :when (odd? i)]
+  (* i <span class="num">10</span>))  <span class="cmt">;=> @[10 30]  推導回陣列</span></code></pre>
+</section>
+
+<section id="brackets">
+  <h2><span class="n">✦</span> 括號家族 <code>() [] {} @</code></h2>
+  <p class="sub" style="font-size:.83rem;margin-top:0"><b><code>()</code> 是「呼叫」，<code>[]</code>/<code>{}</code> 是「資料」。</b>這是 Janet 跟傳統 Lisp 最不同、也是它 JSON 很順的根本。</p>
+  <pre><code>(+ <span class="num">1</span> <span class="num">2</span>)           <span class="cmt">;() 當呼叫 => 3</span>
+[<span class="num">1</span> <span class="num">2</span> <span class="num">3</span>]          <span class="cmt">;[] => tuple（不可變），內容會求值</span>
+[(+ <span class="num">1</span> <span class="num">1</span>) <span class="num">2</span>]     <span class="cmt">;=> (2 2)</span>
+{:a (+ <span class="num">40</span> <span class="num">2</span>)}    <span class="cmt">;{} => struct => {:a 42}</span></code></pre>
+  <table>
+    <tr><th>寫法</th><th>型別</th><th>可變</th></tr>
+    <tr><td><code>[1 2]</code></td><td>tuple</td><td>✗</td></tr>
+    <tr><td><code>@[1 2]</code></td><td>array</td><td>✓</td></tr>
+    <tr><td><code>{:a 1}</code></td><td>struct</td><td>✗</td></tr>
+    <tr><td><code>@{:a 1}</code></td><td>table</td><td>✓</td></tr>
+  </table>
+  <p class="sub" style="font-size:.8rem"><code>{:a 1 :b [1 2 3]}</code> 這種「像 JSON 的東西」就是合法 Janet 字面資料，可內含計算值。</p>
+</section>
+
+<section id="data">
+  <h2><span class="n">02</span> 資料結構</h2>
+  <p class="sub" style="font-size:.82rem;margin-top:0"><b>可變加 <code>@</code></b>：<code>@[]</code> array · <code>@{}</code> table；沒 <code>@</code> 的 <code>[]</code> tuple · <code>{}</code> struct 不可變。</p>
+  <h3>陣列 <code>@[…]</code></h3>
+  <pre><code><span class="kw">(def</span> a @[<span class="num">1</span> <span class="num">2</span> <span class="num">3</span>])
+<span class="kw">(array/push</span> a <span class="num">4</span>)      <span class="cmt">;=> @[1 2 3 4] 原地</span>
+(a <span class="num">0</span>)                <span class="cmt">;=> 1  索引當函式</span>
+<span class="kw">(array/slice</span> a <span class="num">1</span> <span class="num">3</span>) <span class="cmt">;=> @[2 3]</span>
+<span class="kw">(map</span> |(* $ $) a)     <span class="cmt">;=> @[1 4 9 16]</span>
+<span class="kw">(filter</span> even? a)     <span class="cmt">;=> @[2 4]</span>
+<span class="kw">(reduce</span> + <span class="num">0</span> a)      <span class="cmt">;=> 10</span></code></pre>
+  <h3>雜湊表 <code>@{…}</code></h3>
+  <pre><code><span class="kw">(def</span> t @{:name <span class="str">"Alice"</span> :age <span class="num">30</span>})
+<span class="kw">(put</span> t :city <span class="str">"Taipei"</span>) <span class="cmt"># 原地寫</span>
+(t :name)              <span class="cmt">;=> "Alice"</span>
+<span class="kw">(get</span> t :age :none)    <span class="cmt"># 第三參 = 預設</span>
+<span class="kw">(has-key?</span> t :city)    <span class="cmt">;=> true</span>
+<span class="kw">(update</span> t :age inc)   <span class="cmt"># 用函式更新</span>
+<span class="kw">(keys</span> t) <span class="kw">(values</span> t) <span class="kw">(pairs</span> t)</code></pre>
+  <h3>巢狀 & 合併</h3>
+  <pre><code><span class="kw">(get-in</span> n [:user :names <span class="num">0</span>]) <span class="cmt"># 鑽多層</span>
+<span class="kw">(put-in</span> n [:user :age] <span class="num">5</span>)
+<span class="kw">(merge</span> {:a <span class="num">1</span>} {:b <span class="num">2</span>})     <span class="cmt">;=> @{:a 1 :b 2}</span></code></pre>
+</section>
+
+<section id="print">
+  <h2><span class="n">✦</span> 印 / 除錯</h2>
+  <div class="warn"><b>最常踩</b>：<code>print</code> 對 array/table 只印位址 <code>&lt;array 0x…&gt;</code>，<b>不是內容</b>。</div>
+  <pre><code>(pp @[<span class="num">1</span> <span class="num">2</span> <span class="num">3</span>])        <span class="cmt"># pretty-print 內容</span>
+(printf <span class="str">"%q"</span> x)      <span class="cmt"># 內嵌字串：可讀表示</span>
+(prin ...) (print ...) <span class="cmt"># 不換行 / 換行</span>
+(doc defn)          <span class="cmt"># REPL 查文件</span></code></pre>
+  <div class="warn"><code>%q</code>/<code>%p</code>/<code>%j</code>/<code>%n</code> 都印 <b>Janet 表示法</b>（<code>%j</code> 是單行，<b>不是 JSON</b>）。真 JSON 只有 <code>(print (json/encode x))</code>。</div>
+</section>
+
+<section id="jpm">
+  <h2><span class="n">05</span> jpm / REPL</h2>
+  <table>
+    <tr><th>指令</th><th>做什麼</th></tr>
+    <tr><td><code>janet f.janet</code></td><td>跑腳本（開發主循環，秒回）</td></tr>
+    <tr><td><code>janet -e '…'</code></td><td>一行求值</td></tr>
+    <tr><td><code>jpm test</code></td><td>跑 <code>test/</code></td></tr>
+    <tr><td><code>jpm build</code></td><td>編獨立執行檔 <code>build/</code></td></tr>
+    <tr><td><code>jpm deps</code></td><td>裝 project.janet 的依賴</td></tr>
+    <tr><td><code>jpm install &lt;名/git&gt;</code></td><td>裝套件到 <code>~/.local</code></td></tr>
+  </table>
+  <h3>nvim · Conjure REPL</h3>
+  <table>
+    <tr><th>鍵</th><th>動作</th></tr>
+    <tr><td><code>,ee</code></td><td>求值游標 form</td></tr>
+    <tr><td><code>,er</code></td><td>求值最外層 form</td></tr>
+    <tr><td><code>,eb</code></td><td>求值整個 buffer</td></tr>
+    <tr><td><code>,ls</code> / <code>,lv</code></td><td>開 REPL log</td></tr>
+  </table>
+  <p class="sub" style="font-size:.8rem">開 <code>.janet</code> 檔即自動起 <code>janet -n -s</code> REPL。parinfer + 彩虹括號已就緒。</p>
+</section>
+
+<section id="traps" class="wide">
+  <h2><span class="n">⚠</span> 地雷合輯</h2>
+  <table>
+    <tr><th>症狀</th><th>原因 / 正解</th></tr>
+    <tr><td><code>(print arr)</code> 印出 <code>&lt;array 0x…&gt;</code></td><td>用 <code>(pp arr)</code> 或 <code>(printf "%q" arr)</code>；<code>print</code> 不格式化容器。</td></tr>
+    <tr><td><code>(t :a :b)</code> 想取巢狀卻拿到怪值</td><td>第二參數是<b>預設值</b>不是下一層 key。巢狀用 <code>(get-in t [:a :b])</code>。</td></tr>
+    <tr><td>JSON 解回來 <code>(d :name)</code> 拿到 nil</td><td><code>decode</code> 沒傳 <code>true</code>，key 是字串。傳 <code>true</code> 轉 keyword。</td></tr>
+    <tr><td>argparse <code>--level 5</code> 拿到 <code>"5"</code> 不能算術</td><td>取回是字串。用 <code>scan-number</code> 或選項加 <code>:map scan-number</code>。</td></tr>
+    <tr><td>想改集合卻報錯</td><td>忘了 <code>@</code>：不可變 <code>[]</code>/<code>{}</code> 不能改，要 <code>@[]</code>/<code>@{}</code>。</td></tr>
+    <tr><td><code>(= "abc" :abc)</code> 是 false</td><td>跨型別永遠不等。先 <code>(string x)</code> 或 <code>(keyword x)</code> 統一再比。</td></tr>
+    <tr><td>fiber 裡 <code>(dyn :k)</code> 全是 nil</td><td><code>fiber/new</code> 的 env 預設 <b>nil</b>，不繼承。要 <code>(fiber/setenv f (curenv))</code>。</td></tr>
+    <tr><td><code>os/execute</code> 給了環境 table 卻沒作用</td><td>旗標要含 <code>e</code>（<code>:pe</code>），只寫 <code>:p</code> 會安靜忽略那張表。</td></tr>
+    <tr><td>FFI 拿 <code>char*</code> 轉字串炸掉</td><td><code>(ffi/read :string (ffi/write :ptr p))</code>，不是 <code>(ffi/read :string p)</code>。</td></tr>
+  </table>
+</section>
+
+</main>
+
+<footer>
+  janet-lab 速查表 · 分篇教學在 <code>docs/</code> · 可跑範例在 <code>examples/</code> 與 <code>snippets/</code>。
+  本頁所有程式碼都在 Janet 1.41.2 跑過。
+</footer>
+
+<button class="toggle" onclick="(function(){var r=document.documentElement;var d=(r.getAttribute('data-theme')||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light'));r.setAttribute('data-theme',d==='dark'?'light':'dark');})()">◑ 切換亮／暗</button>
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>資料 / IO · Janet 速查</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <h1>資料 / IO <span class="v">Janet 1.41.2</span></h1>
+  <p class="sub">spork/json・spork/argparse・檔案讀寫・marshal 序列化</p>
+  <nav class="pages"><div class="wrap">
+<a href="index.html">核心</a>
+<a href="data-io.html" class="here">資料 / IO</a>
+<a href="peg.html">PEG</a>
+<a href="concurrency.html">並行</a>
+<a href="ffi.html">C 互通</a>
+<a href="env.html">env / 符號</a>
+</div></nav>
+</header>
+
+<main>
+
+<section id="json">
+  <h2><span class="n">03</span> JSON · <code>spork/json</code></h2>
+  <pre><code><span class="kw">(import</span> spork/json)
+<span class="kw">(def</span> d @{:name <span class="str">"Bob"</span> :n <span class="num">3</span>})
+
+<span class="kw">(json/encode</span> d)          <span class="cmt">;=> {"name":"Bob","n":3}</span>
+<span class="kw">(json/encode</span> d <span class="str">"  "</span> <span class="str">"\n"</span>) <span class="cmt"># 縮排好讀版</span>
+
+<span class="kw">(json/decode</span> s)          <span class="cmt"># key 是「字串」</span>
+<span class="kw">(json/decode</span> s <span class="kw">true</span>)     <span class="cmt"># ★ key 轉 keyword（建議）</span></code></pre>
+  <p class="sub" style="font-size:.82rem"><b>永遠傳 <code>true</code></b>，解回來就能 <code>(d :name)</code> 用 keyword 取值，跟自己寫的 Janet 一致。</p>
+  <h3>檔案 round-trip</h3>
+  <pre><code><span class="kw">(spit</span> <span class="str">"c.json"</span> (json/encode d <span class="str">"  "</span> <span class="str">"\n"</span>))
+<span class="kw">(def</span> back (json/decode (slurp <span class="str">"c.json"</span>) <span class="kw">true</span>))</code></pre>
+  <table>
+    <tr><th>JSON</th><th>Janet</th></tr>
+    <tr><td>object / array</td><td><code>@{}</code> / <code>@[]</code></td></tr>
+    <tr><td>string / number / bool</td><td>同名</td></tr>
+    <tr><td>null</td><td>keyword <code>:null</code>（decode 傳 3ⁿᵈ true → <code>nil</code>）</td></tr>
+  </table>
+  <h3>巢狀取 / 改</h3>
+  <pre><code><span class="kw">(get-in</span> j [:a :b <span class="num">1</span>])          <span class="cmt"># 取（別用 (j :a :b)）</span>
+<span class="kw">(update-in</span> j [:a :b <span class="num">1</span>] |(* $ <span class="num">100</span>)) <span class="cmt"># 改</span>
+<span class="kw">(map</span> |($ :n) users)          <span class="cmt"># decode 出來就是普通 array/table</span></code></pre>
+  <div class="warn"><b>坑</b>：開 <code>nils=true</code> 時值為 <code>null</code> 的鍵會<b>整個消失</b>（table 存不了 nil）。</div>
+</section>
+
+<section id="cli">
+  <h2><span class="n">04</span> CLI · <code>spork/argparse</code></h2>
+  <pre><code><span class="kw">(import</span> spork/argparse :as ap)
+<span class="kw">(def</span> res
+  <span class="kw">(ap/argparse</span> <span class="str">"說明"</span>
+    <span class="str">"name"</span>  {:kind :accumulate :short <span class="str">"n"</span>}
+    <span class="str">"upper"</span> {:kind :flag       :short <span class="str">"u"</span>}
+    <span class="str">"level"</span> {:kind :option     :default <span class="str">"1"</span>}
+    :default {:kind :accumulate})) <span class="cmt"># 位置參數</span>
+<span class="kw">(unless</span> res (os/exit <span class="num">1</span>)) <span class="cmt"># nil = 失敗/印過help</span></code></pre>
+  <p class="sub" style="font-size:.8rem">給 <code>-n Alice --name Bob --upper p1 p2</code>：</p>
+  <pre><code>(res <span class="str">"name"</span>)   <span class="cmt">;=> @["Alice" "Bob"]</span>
+(res <span class="str">"upper"</span>)  <span class="cmt">;=> true</span>
+(res <span class="str">"level"</span>)  <span class="cmt">;=> "1"  (預設)</span>
+(res :default) <span class="cmt">;=> @["p1" "p2"]</span></code></pre>
+  <table>
+    <tr><th>:kind</th><th>意思</th><th>型別</th></tr>
+    <tr><td><code>:flag</code></td><td>開關</td><td>bool</td></tr>
+    <tr><td><code>:multi</code></td><td>可多次、數次數</td><td>int</td></tr>
+    <tr><td><code>:option</code></td><td>帶一值</td><td>string</td></tr>
+    <tr><td><code>:accumulate</code></td><td>帶值可多次</td><td>array</td></tr>
+  </table>
+  <p class="sub" style="font-size:.8rem"><code>:option</code>/<code>:accumulate</code> 取回都是<b>字串</b>，要數字用 <code>:map scan-number</code>。<code>--help</code> 自動生成。</p>
+</section>
+
+<section id="fileio">
+  <h2><span class="n">✦</span> 檔案 IO</h2>
+  <pre><code><span class="kw">(slurp</span> <span class="str">"f.txt"</span>)          <span class="cmt"># 整檔讀進來 ★ 回的是 buffer 不是 string</span>
+<span class="kw">(spit</span> <span class="str">"f.txt"</span> data)      <span class="cmt"># 整檔寫出（覆蓋）</span>
+<span class="kw">(spit</span> <span class="str">"f.txt"</span> data :a)   <span class="cmt"># 附加</span></code></pre>
+  <h3>要串流才用 file/open</h3>
+  <pre><code><span class="kw">(with</span> [f (file/open <span class="str">"f.txt"</span> :r)]   <span class="cmt"># with 會自動 close</span>
+  <span class="kw">(each</span> line (file/lines f) …)      <span class="cmt"># 逐行，記憶體只吃一行</span>
+  <span class="kw">(file/read</span> f :all)                <span class="cmt"># :all / :line / n bytes</span>
+  <span class="kw">(file/seek</span> f :set <span class="num">0</span>)              <span class="cmt"># :set :cur :end</span>
+  <span class="kw">(file/tell</span> f))
+<span class="kw">(file/open</span> p :w) <span class="cmt"># :r 讀 :w 覆寫 :a 附加 · 加 b=二進位 加 +=讀寫</span>
+<span class="kw">(file/temp)</span>       <span class="cmt"># 關掉就消失的暫存檔</span></code></pre>
+  <h3>路徑資訊 / 目錄</h3>
+  <pre><code><span class="kw">(os/stat</span> p)          <span class="cmt"># table；不存在回 nil（不報錯）</span>
+<span class="kw">(os/stat</span> p :mode)    <span class="cmt">;=> :file :directory :link :fifo …</span>
+<span class="kw">(os/lstat</span> p :mode)   <span class="cmt"># ★ 不跟隨 symlink（os/stat 會跟隨）</span>
+<span class="kw">(os/dir</span> d)           <span class="cmt"># 只回「名字」，不含路徑；不存在會 error</span>
+<span class="kw">(os/mkdir</span> d) <span class="kw">(os/rm</span> p) <span class="kw">(os/rename</span> a b) <span class="kw">(os/rmdir</span> d)</code></pre>
+  <div class="warn"><b>原子寫入</b>：先 <code>spit</code> 到 <code>x.tmp</code> 再 <code>(os/rename "x.tmp" "x")</code>——同檔案系統上 rename 是原子的，中斷不會留半殘檔。</div>
+  <p class="sub" style="font-size:.78rem">可跑：<code>snippets/file-io.janet</code>、<code>snippets/file-info.janet</code>、<code>snippets/list-dir.janet</code>。</p>
+</section>
+
+<section id="marshal">
+  <h2><span class="n">16</span> marshal 序列化</h2>
+  <p class="sub" style="font-size:.82rem;margin-top:0">Janet 原生二進位序列化：<b>連閉包和暫停中的 fiber 都存得下</b>。</p>
+  <pre><code><span class="kw">(marshal</span> x)            <span class="cmt">;=> buffer</span>
+<span class="kw">(unmarshal</span> bytes)      <span class="cmt"># 還原</span>
+<span class="kw">(spit</span> <span class="str">"c.jimage"</span> (marshal data))  <span class="cmt"># 存檔</span>
+<span class="kw">(unmarshal</span> (slurp <span class="str">"c.jimage"</span>))     <span class="cmt"># 讀回</span>
+
+<span class="cmt"># 存函式 / fiber 要給查找表，否則整個 core 會被塞進去</span>
+<span class="kw">(marshal</span> f (invert (env-lookup root-env)))
+<span class="kw">(unmarshal</span> b (env-lookup root-env))</code></pre>
+  <table>
+    <tr><th></th><th>JSON</th><th>marshal</th></tr>
+    <tr><td>人看得懂 / 可 diff</td><td>✓</td><td>✗</td></tr>
+    <tr><td>跨語言</td><td>✓</td><td>✗</td></tr>
+    <tr><td>keyword / tuple / struct</td><td>✗</td><td>✓</td></tr>
+    <tr><td>函式 / fiber</td><td>✗</td><td>✓</td></tr>
+    <tr><td>換版本還讀得回</td><td>✓</td><td>✗</td></tr>
+  </table>
+  <p class="sub" style="font-size:.8rem">設定檔／進 git → JSON。快取／中繼檔／要保留型別 → marshal。<b>別拿 marshal 當長期儲存格式。</b></p>
+</section>
+
+</main>
+
+<footer>
+  janet-lab 速查表 · 分篇教學在 <code>docs/</code> · 可跑範例在 <code>examples/</code> 與 <code>snippets/</code>。
+  本頁所有程式碼都在 Janet 1.41.2 跑過。
+</footer>
+
+<button class="toggle" onclick="(function(){var r=document.documentElement;var d=(r.getAttribute('data-theme')||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light'));r.setAttribute('data-theme',d==='dark'?'light':'dark');})()">◑ 切換亮／暗</button>
+</body>
+</html>

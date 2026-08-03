@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>C 互通 · Janet 速查</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <h1>C 互通 <span class="v">Janet 1.41.2</span></h1>
+  <p class="sub">FFI・指標與記憶體・native 模組・把 Janet 嵌進 C</p>
+  <nav class="pages"><div class="wrap">
+<a href="index.html">核心</a>
+<a href="data-io.html">資料 / IO</a>
+<a href="peg.html">PEG</a>
+<a href="concurrency.html">並行</a>
+<a href="ffi.html" class="here">C 互通</a>
+<a href="env.html">env / 符號</a>
+</div></nav>
+</header>
+
+<main>
+
+<section id="cffi">
+  <h2><span class="n">10</span> 與 C 互通</h2>
+  <table>
+    <tr><th>方式</th><th>編 C?</th><th>用途</th></tr>
+    <tr><td>FFI</td><td>不用</td><td>直呼現成 <code>.so</code></td></tr>
+    <tr><td>native 模組</td><td>jpm 編</td><td>用 C 寫 Janet 函式</td></tr>
+    <tr><td>嵌入</td><td>編 C</td><td>C 程式內跑 Janet</td></tr>
+  </table>
+  <h3>FFI（不編譯，直呼）</h3>
+  <pre><code><span class="kw">(def</span> m (ffi/native <span class="str">"libm.so.6"</span>))
+<span class="kw">(def</span> sig (ffi/signature :default :double :double))
+<span class="kw">(ffi/call</span> (ffi/lookup m <span class="str">"cos"</span>) sig <span class="num">0.0</span>) <span class="cmt">;=> 1.0</span>
+<span class="cmt"># 少寫樣板版：</span>
+<span class="kw">(ffi/context</span> <span class="str">"libm.so.6"</span>)
+<span class="kw">(ffi/defbind</span> pow :double [x :double y :double])
+(pow <span class="num">2</span> <span class="num">10</span>) <span class="cmt">;=> 1024</span></code></pre>
+  <h3>嵌入（C 裡跑 Janet）</h3>
+  <pre><code><span class="com">// C</span>
+janet_init();
+JanetTable *e = janet_core_env(NULL);
+janet_dostring(e, <span class="str">"(+ 2 3)"</span>, <span class="str">"m"</span>, &out);</code></pre>
+  <p class="sub" style="font-size:.78rem">連結：<code>-I~/.local/include/janet ~/.local/lib/libjanet.a -lm -ldl -lpthread -lrt -rdynamic</code>。細節見 <code>docs/10</code> 與 <code>examples/</code>。</p>
+</section>
+
+<section id="ptr" class="wide">
+  <h2><span class="n">10⁺</span> FFI 指標與記憶體</h2>
+  <h3>型別</h3>
+  <pre><code><span class="cmt"># :void :bool :char :short :int :long :size :float :double :ptr :string</span>
+<span class="cmt"># :s8/:u8 :s16/:u16 :s32/:u32 :s64/:u64 :uchar :ushort :uint :ulong</span>
+<span class="kw">(ffi/size</span> :long) <span class="kw">(ffi/align</span> :long) <span class="cmt"># 永遠用問的，別猜</span>
+<span class="kw">(ffi/struct</span> :long :long)   <span class="cmt"># struct，padding 自動算</span>
+@[:char <span class="num">4</span>]                  <span class="cmt"># 陣列型別 char[4]（★ 要 @[] 不是 []）</span></code></pre>
+  <h3>記憶體 ↔ Janet 值</h3>
+  <pre><code><span class="kw">(ffi/write</span> ts [<span class="num">7</span> <span class="num">8</span>])          <span class="cmt"># 值 → buffer（原始位元組）</span>
+<span class="kw">(ffi/read</span>  ts buf <span class="num">0</span>)         <span class="cmt"># buffer → 值，第三參 = byte offset</span>
+<span class="kw">(ffi/write</span> :int <span class="num">9</span> buf)       <span class="cmt"># 給 buffer 就附加在後面</span>
+<span class="kw">(ffi/malloc</span> <span class="num">32</span>) <span class="kw">(ffi/free</span> p) <span class="cmt"># GC 不管，自己 free</span>
+<span class="kw">(ffi/pointer-buffer</span> p <span class="num">32</span> <span class="num">32</span> <span class="num">0</span>) <span class="cmt"># 裸記憶體當 buffer 讀寫</span></code></pre>
+  <h3>out 參數 / struct 回傳</h3>
+  <pre><code><span class="kw">(def</span> out (buffer/new-filled (ffi/size ts))) <span class="cmt"># ★ 不是 buffer/new</span>
+<span class="kw">(ffi/call</span> f (ffi/signature :default :int :int :ptr) <span class="num">0</span> out)
+<span class="kw">(ffi/read</span> ts out)
+
+<span class="kw">(def</span> div-t (ffi/struct :int :int))    <span class="cmt"># 回傳 struct by value</span>
+<span class="kw">(ffi/call</span> d (ffi/signature :default div-t :int :int) <span class="num">17</span> <span class="num">5</span>) <span class="cmt">;=> (3 2)</span></code></pre>
+  <h3><code>char*</code> → 字串</h3>
+  <pre><code><span class="cmt"># 回傳型別寫 :string 就自動轉（但 C 回 NULL 會 segfault）</span>
+<span class="cmt"># 拿到 :ptr 時：</span>
+<span class="kw">(ffi/read</span> :string (ffi/write :ptr p))  <span class="cmt"># ✓</span>
+<span class="kw">(ffi/read</span> :string p)                   <span class="cmt"># ✗ 會炸</span></code></pre>
+  <table>
+    <tr><th>症狀</th><th>原因 / 正解</th></tr>
+    <tr><td>回傳 <code>:string</code> 卻 segfault</td><td>C 回了 NULL。改用 <code>:ptr</code>（NULL → <code>nil</code>）再自己轉。</td></tr>
+    <tr><td><code>ffi/call</code> 無訊息 segfault</td><td><code>ffi/lookup</code> 打錯名字會<b>安靜回 nil</b>，先檢查。</td></tr>
+    <tr><td><code>:size</code> 回來不能算術</td><td>是 <code>core/u64</code>，用 <code>(int/to-number n)</code>。</td></tr>
+    <tr><td>C 寫了但 Janet 讀不到</td><td><code>(buffer/new n)</code> 長度是 0，要 <code>(buffer/new-filled n)</code>。</td></tr>
+    <tr><td>傳出去的 buffer 之後變垃圾</td><td>Janet buffer 一長大就 realloc。C 端長期持有要 <code>ffi/malloc</code>。</td></tr>
+  </table>
+  <p class="sub" style="font-size:.78rem">回呼只有 <code>ffi/trampoline</code>（限 <code>void f(void*ctx, void*userdata)</code> 一種簽名），要正經做回呼寫 native 模組。細節與可跑範例：<code>docs/10</code>、<code>examples/ffi-pointers.janet</code>。</p>
+</section>
+
+</main>
+
+<footer>
+  janet-lab 速查表 · 分篇教學在 <code>docs/</code> · 可跑範例在 <code>examples/</code> 與 <code>snippets/</code>。
+  本頁所有程式碼都在 Janet 1.41.2 跑過。
+</footer>
+
+<button class="toggle" onclick="(function(){var r=document.documentElement;var d=(r.getAttribute('data-theme')||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light'));r.setAttribute('data-theme',d==='dark'?'light':'dark');})()">◑ 切換亮／暗</button>
+</body>
+</html>

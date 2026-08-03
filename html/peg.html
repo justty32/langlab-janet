@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PEG · Janet 速查</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <h1>PEG <span class="v">Janet 1.41.2</span></h1>
+  <p class="sub">Janet 內建的解析器：比 regex 強，能解巢狀</p>
+  <nav class="pages"><div class="wrap">
+<a href="index.html">核心</a>
+<a href="data-io.html">資料 / IO</a>
+<a href="peg.html" class="here">PEG</a>
+<a href="concurrency.html">並行</a>
+<a href="ffi.html">C 互通</a>
+<a href="env.html">env / 符號</a>
+</div></nav>
+</header>
+
+<main>
+
+<section id="peg" class="wide">
+  <h2><span class="n">14</span> PEG · 內建解析器</h2>
+  <p class="sub" style="font-size:.83rem;margin-top:0">不用 import。比 regex 強在<b>解得了巢狀</b>；要 quote（<code>~</code> 才能用 <code>,</code> 挖洞）。</p>
+  <pre><code><span class="kw">(peg/match</span> ~(* (&lt;- (some (range <span class="str">"az"</span>))) <span class="str">"="</span> (&lt;- (some (range <span class="str">"09"</span>)))) <span class="str">"key=42"</span>)
+<span class="cmt">;=> @["key" "42"]</span></code></pre>
+  <div class="warn"><b>★ 沒捕獲時成功回 <code>@[]</code></b>（空陣列是真值），失敗才回 <code>nil</code>。判斷成敗用 <code>(nil? r)</code>。</div>
+  <h3>組合子</h3>
+  <table>
+    <tr><td><code>"abc"</code></td><td>literal</td><td><code>(* a b)</code></td><td>依序</td></tr>
+    <tr><td><code>n</code></td><td>吃 n 個位元組</td><td><code>(+ a b)</code></td><td>擇一（有序！）</td></tr>
+    <tr><td><code>-1</code></td><td>到結尾</td><td><code>(any p)</code>／<code>(some p)</code></td><td>0+ ／ 1+</td></tr>
+    <tr><td><code>(range "az")</code></td><td>字元範圍</td><td><code>(between n m p)</code></td><td>次數範圍</td></tr>
+    <tr><td><code>(set "aeiou")</code></td><td>其中之一</td><td><code>(? p)</code>／<code>(if-not p q)</code></td><td>可有可無／負向</td></tr>
+  </table>
+  <h3>捕獲</h3>
+  <table>
+    <tr><td><code>(&lt;- p)</code></td><td>捕字串</td><td><code>(/ p f)</code></td><td>捕完丟給 f（轉型）</td></tr>
+    <tr><td><code>(group p)</code></td><td>包成 array</td><td><code>(% p)</code></td><td>串成一個字串</td></tr>
+    <tr><td><code>(constant v)</code></td><td>不吃字元、直接產值</td><td><code>($)</code></td><td>目前位置</td></tr>
+  </table>
+  <h3>具名文法（可遞迴）</h3>
+  <pre><code><span class="kw">(def</span> ip ~{:byte (/ (&lt;- (between <span class="num">1</span> <span class="num">3</span> (range <span class="str">"09"</span>))) ,scan-number)
+           :main (* :byte <span class="str">"."</span> :byte <span class="str">"."</span> :byte <span class="str">"."</span> :byte -<span class="num">1</span>)})
+<span class="kw">(peg/match</span> ip <span class="str">"192.168.1.7"</span>) <span class="cmt">;=> @[192 168 1 7]</span>
+
+<span class="cmt"># 遞迴：括號配對（regex 做不到）</span>
+~{:main (* :expr -<span class="num">1</span>)
+  :expr (any (+ (* <span class="str">"("</span> :expr <span class="str">")"</span>) (if-not (set <span class="str">"()"</span>) <span class="num">1</span>)))}</code></pre>
+  <h3>另外三個 API</h3>
+  <pre><code><span class="kw">(peg/find</span> p s) <span class="kw">(peg/find-all</span> p s)   <span class="cmt">;=> 索引 / @[索引…]</span>
+<span class="kw">(peg/replace-all</span> p <span class="str">"#"</span> s)          <span class="cmt">;=> ★ 回 buffer</span>
+<span class="kw">(peg/compile</span> p)                     <span class="cmt"># 重複用先編譯</span></code></pre>
+  <table>
+    <tr><th>症狀</th><th>正解</th></tr>
+    <tr><td><code>,scan-number</code> unknown symbol</td><td>用了 <code>'(…)</code>；挖洞要 <code>~(…)</code></td></tr>
+    <tr><td>只比對前半段就算成功</td><td>PEG 不強制吃完，結尾加 <code>-1</code></td></tr>
+    <tr><td><code>(+ "cat" "cattle")</code> 只比到 cat</td><td>有序選擇、不回溯。長的具體的放前面</td></tr>
+  </table>
+  <p class="sub" style="font-size:.78rem">細節 <code>docs/14</code>，可跑 <code>examples/peg-demo.janet</code>。</p>
+</section>
+
+</main>
+
+<footer>
+  janet-lab 速查表 · 分篇教學在 <code>docs/</code> · 可跑範例在 <code>examples/</code> 與 <code>snippets/</code>。
+  本頁所有程式碼都在 Janet 1.41.2 跑過。
+</footer>
+
+<button class="toggle" onclick="(function(){var r=document.documentElement;var d=(r.getAttribute('data-theme')||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light'));r.setAttribute('data-theme',d==='dark'?'light':'dark');})()">◑ 切換亮／暗</button>
+</body>
+</html>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>並行 · Janet 速查</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <h1>並行 <span class="v">Janet 1.41.2</span></h1>
+  <p class="sub">fiber・ev・channel・真執行緒・net・子行程與信號</p>
+  <nav class="pages"><div class="wrap">
+<a href="index.html">核心</a>
+<a href="data-io.html">資料 / IO</a>
+<a href="peg.html">PEG</a>
+<a href="concurrency.html" class="here">並行</a>
+<a href="ffi.html">C 互通</a>
+<a href="env.html">env / 符號</a>
+</div></nav>
+</header>
+
+<main>
+
+<section id="fiber">
+  <h2><span class="n">09</span> Fiber 協程</h2>
+  <p class="sub" style="font-size:.82rem;margin-top:0">一段可暫停/恢復的執行流。generator、例外、非同步都是它。</p>
+  <h3>generator</h3>
+  <pre><code><span class="kw">(def</span> f (fiber/new (fn [] (yield <span class="num">1</span>) (yield <span class="num">2</span>))))
+(resume f) (resume f)   <span class="cmt">;=> 1 然後 2</span>
+<span class="cmt"># 直接走訪：</span>
+<span class="kw">(each</span> x (fiber/new (fn [] (for i <span class="num">0</span> <span class="num">4</span> (yield (* i i)))))
+  (prin x <span class="str">" "</span>))       <span class="cmt">;=> 0 1 4 9</span></code></pre>
+  <h3>錯誤處理（其實也是 fiber）</h3>
+  <pre><code><span class="kw">(try</span> (error <span class="str">"boom"</span>) ([e] (string <span class="str">"抓到:"</span> e)))
+<span class="kw">(protect</span> (error <span class="str">"bad"</span>)) <span class="cmt">;=> (false "bad")</span>
+<span class="kw">(protect</span> (+ <span class="num">1</span> <span class="num">2</span>))     <span class="cmt">;=> (true 3)</span></code></pre>
+  <h3>ev：非同步（單執行緒協作）</h3>
+  <pre><code><span class="kw">(ev/spawn</span> (print <span class="str">"背景"</span>))  <span class="cmt"># 丟去背景跑</span>
+<span class="kw">(ev/sleep</span> <span class="num">0</span>)              <span class="cmt"># 讓排程器運轉</span>
+<span class="cmt"># 寫起來像同步、沒有 async 染色</span></code></pre>
+</section>
+
+<section id="ev">
+  <h2><span class="n">15</span> ev：channel / 執行緒</h2>
+  <table>
+    <tr><th>要什麼</th><th>用哪個</th></tr>
+    <tr><td>IO 等待、並行請求（九成場合）</td><td><code>ev/spawn</code> / <code>ev/go</code>（單執行緒協作）</td></tr>
+    <tr><td>吃滿多核的 CPU 工作</td><td><code>ev/thread</code> / <code>ev/do-thread</code></td></tr>
+    <tr><td>跑別的程式</td><td><code>os/spawn</code></td></tr>
+  </table>
+  <h3>channel</h3>
+  <pre><code><span class="kw">(def</span> ch (ev/chan <span class="num">10</span>))   <span class="cmt"># 容量 10；(ev/chan) = 無緩衝</span>
+<span class="kw">(ev/give</span> ch v) <span class="kw">(ev/take</span> ch)
+<span class="kw">(ev/select</span> a b)         <span class="cmt">;=> (:take &lt;chan&gt; v) 誰先來聽誰的</span>
+<span class="kw">(ev/gather</span> e1 e2)       <span class="cmt">;=> @[r1 r2] 等一批全做完</span></code></pre>
+  <div class="warn"><b>★ 大坑</b>：<code>(ev/chan-close ch)</code> 之後<b>緩衝區裡的東西一個都拿不到</b>（<code>ev/count</code> 還是 2，但 <code>ev/take</code> 回 nil）。Go 那套「producer close、consumer 讀到 nil」在這裡會安靜掉資料——改用結束哨兵值。</div>
+  <h3>真 OS 執行緒</h3>
+  <pre><code><span class="kw">(ev/do-thread</span> …)              <span class="cmt"># 擋著等它做完</span>
+<span class="kw">(def</span> tc (ev/thread-chan <span class="num">10</span>))   <span class="cmt"># ★ 跨執行緒要 thread-chan</span>
+<span class="kw">(ev/thread</span> f tc :n)           <span class="cmt"># ★ 沒 :n 會死鎖</span>
+<span class="kw">(ev/take</span> tc)</code></pre>
+  <p class="sub" style="font-size:.8rem">執行緒之間的值是 <b>marshal 複製</b>，不共享 table——所以沒有 data race，也不能靠共用狀態溝通。</p>
+  <h3>逾時 / 取消</h3>
+  <pre><code><span class="kw">(protect</span> (ev/with-deadline <span class="num">0.05</span> (ev/sleep <span class="num">10</span>)))
+<span class="cmt">;=> (false "deadline expired")</span>
+<span class="kw">(def</span> t (ev/go f)) <span class="kw">(ev/cancel</span> t :理由)</code></pre>
+  <div class="warn"><b>取消是合作式的</b>：只在對方進入 ev 操作（sleep／channel／網路）時生效，純 CPU 迴圈砍不掉。另外<b>還在睡的計時 fiber 會讓程式不肯結束</b>——用完記得 <code>ev/cancel</code>（＝ Go 的 <code>defer cancel()</code>）。</div>
+  <p class="sub" style="font-size:.78rem">Go context 風格的完整封裝：<code>snippets/fiber-context/</code>。</p>
+</section>
+
+<section id="net">
+  <h2><span class="n">✦</span> 內建 net</h2>
+  <p class="sub" style="font-size:.82rem;margin-top:0">不用任何外部庫，配 ev 天生併發、寫起來像同步。</p>
+  <pre><code><span class="kw">(def</span> s (net/listen <span class="str">"127.0.0.1"</span> <span class="num">8931</span>))
+<span class="kw">(ev/spawn</span>
+  (net/accept-loop s
+    (fn [conn]
+      <span class="kw">(defer</span> (:close conn)
+        <span class="kw">(def</span> req (:read conn <span class="num">1024</span>))
+        (:write conn (string <span class="str">"收到 "</span> (length req) <span class="str">" bytes\n"</span>))))))</code></pre>
+  <pre><code><span class="cmt"># client</span>
+<span class="kw">(with</span> [c (net/connect <span class="str">"127.0.0.1"</span> <span class="num">8931</span>)]
+  (:write c <span class="str">"hello"</span>)
+  (string (:read c <span class="num">100</span>)))</code></pre>
+  <p class="sub" style="font-size:.78rem">另有 <code>net/server</code>（listen+accept-loop 合一）、<code>net/accept</code>、UDP 用 <code>:datagram</code>。</p>
+</section>
+
+<section id="proc">
+  <h2><span class="n">11</span> 行程 / 管線 / 信號</h2>
+  <pre><code><span class="kw">(os/execute</span> [<span class="str">"echo"</span> <span class="str">"hi"</span>] :p) <span class="cmt"># exit code；:p=用PATH :x=非零報錯</span>
+<span class="kw">(import</span> spork/sh)
+<span class="kw">(sh/exec-slurp</span> <span class="str">"git"</span> <span class="str">"rev-parse"</span> <span class="str">"HEAD"</span>) <span class="cmt"># 抓輸出</span></code></pre>
+  <h3>管線</h3>
+  <pre><code><span class="cmt"># 法一：Janet 中轉（好控制）</span>
+<span class="kw">(def</span> p (os/spawn [<span class="str">"sort"</span>] :p {:in :pipe :out :pipe}))
+(:write (p :in) <span class="str">"b\na\n"</span>) (:close (p :in))
+(:read (p :out) :all) <span class="cmt">;=> "a\nb"</span>
+<span class="cmt"># 法二：多段交給 shell</span>
+<span class="kw">(os/execute</span> [<span class="str">"sh"</span> <span class="str">"-c"</span> <span class="str">"a | b | c"</span>] :p)</code></pre>
+  <div class="warn"><b>坑</b>：別把 proc1 的 <code>:out</code> 直接接 proc2 的 <code>:in</code>——<code>:pipe</code> 是非阻塞 fd，對方讀會 <code>EAGAIN</code>。用上面兩法之一。</div>
+  <h3>信號</h3>
+  <pre><code><span class="kw">(os/proc-kill</span> child false :term) <span class="cmt"># signal 是 keyword</span>
+<span class="kw">(os/sigaction</span> :int (fn [] (print <span class="str">"bye"</span>)))
+<span class="cmt"># ★ handler 要有 ev loop 在跑才會觸發</span></code></pre>
+  <p class="sub" style="font-size:.78rem">signal：<code>:term :int :hup :kill :usr1 :usr2 :quit</code>。</p>
+</section>
+
+</main>
+
+<footer>
+  janet-lab 速查表 · 分篇教學在 <code>docs/</code> · 可跑範例在 <code>examples/</code> 與 <code>snippets/</code>。
+  本頁所有程式碼都在 Janet 1.41.2 跑過。
+</footer>
+
+<button class="toggle" onclick="(function(){var r=document.documentElement;var d=(r.getAttribute('data-theme')||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light'));r.setAttribute('data-theme',d==='dark'?'light':'dark');})()">◑ 切換亮／暗</button>
+</body>
+</html>

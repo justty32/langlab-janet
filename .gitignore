@@ -1,0 +1,6 @@
+# jpm build 產物
+/build/
+*.jimage
+
+# snippets 的 C 示範程式編譯產物（原始碼與 build.sh 才進 git）
+/snippets/pipe-to-child/child
