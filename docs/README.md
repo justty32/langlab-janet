@@ -26,7 +26,8 @@
 | 11 | [子行程 / 管線 / 信號](11-pipeline-signal.md) | `os/execute`、`sh/exec-slurp`、管線兩法、`proc-kill`、`sigaction` |
 | 12 | [env：環境表](12-env-環境與動態變數.md) | `curenv`、一個綁定裡有什麼、列出所有綁定、查 symbol 型別 |
 | 12b | [切換 env](12b-切換-env.md) | `make-env`、`fiber/setenv`、`dofile`／`run-context`、`import` 的 env 選項 |
-| 12c | [dyn 與 OS 環境變數](12c-dyn-與-os-環境變數.md) | **`dyn` 到底是什麼**（動態作用域）、`with-dyns`、`os/getenv`、速查 |
+| 12c | [動態變數 dyn](12c-dyn.md) | **`dyn` 到底是什麼**（動態作用域 vs 全域變數）、`with-dyns`、per-fiber |
+| 12d | [OS 環境變數](12d-os-環境變數.md) | `os/getenv`、給子行程指定環境（`:pe` 的坑）、`JANET_PATH`、速查 |
 | 13 | [symbol / keyword / 字串](13-symbol-keyword-字串.md) | 四種「名字」型別、`"abc"` ↔ `:abc` 互轉、跨型別 `=` 的坑 |
 | 14 | [PEG 解析器](14-peg.md) | 內建 PEG：組合子、捕獲、具名文法、遞迴、解 log／CSV |
 | 15 | [ev：channel / 執行緒](15-ev-channel-net.md) | channel、真 OS 執行緒、select/gather、逾時取消 |

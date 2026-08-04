@@ -115,6 +115,7 @@
 |----|------|
 | **本篇** | 環境表就是一張 table、一個綁定裡有什麼、列出所有綁定、查 symbol 型別 |
 | [12b · 切換 env](12b-切換-env.md) | `make-env`、`fiber/setenv`、`dofile`／`run-context`、`merge-module`、`import` 的 env 選項 |
-| [12c · dyn 與 OS 環境變數](12c-dyn-與-os-環境變數.md) | `dyn`／`setdyn`／`with-dyns`、`os/getenv`、影響 Janet 自己的環境變數、速查 |
+| [12c · 動態變數 dyn](12c-dyn.md) | **`dyn` 到底是什麼**、`with-dyns`、per-fiber、跟「全域變數」的差別 |
+| [12d · OS 環境變數](12d-os-環境變數.md) | `os/getenv`、給子行程指定環境、`JANET_PATH`、速查 |
 
 可跑的範例在 [`../examples/env-introspect.janet`](../examples/env-introspect.janet)。

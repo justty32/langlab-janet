@@ -23,7 +23,7 @@
 | 一份 chat completion 回應該檢查什麼（`finish_reason`／空字串 content） | [docs/17](docs/17-用-spork-http-打-api.md) ＋ [FINDINGS-踩坑.md](FINDINGS-踩坑.md) 第十節 |
 | `spork/json` 的 unicode 逃逸、`keywords` 參數忘了給會靜默全 nil | [docs/03](docs/03-json.md) |
 | `+` 只吃數字、字串串接要用 `string` | [docs/02](docs/02-資料結構.md) ＋ [docs/01](docs/01-語言速成.md) 指路 |
-| `dyn` 到底是什麼（原本只列了 API，沒解釋概念） | [docs/12c](docs/12c-dyn-與-os-環境變數.md) |
+| `dyn` 到底是什麼（原本只列了 API，沒解釋概念） | [docs/12c](docs/12c-dyn.md)——含跟 Lua 全域變數／CL special variable 的對照 |
 
 ---
 
