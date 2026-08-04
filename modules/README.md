@@ -32,12 +32,16 @@
 放在 `test/x.janet` 裡是對的，複製到 `bin/x.janet` 裡也是對的（兩者都在根目錄下一層），
 但複製到根目錄的檔案裡就錯了——跟你 `cd` 到哪毫無關係。
 
-**② 相對路徑一定要有 `./` 或 `../` 開頭。**
-沒有前綴的裸名字（`(import spork/json)`）走的是**系統模組路徑**，Janet 會去
-`(dyn :syspath)` 與 `module/paths` 找，不會當成你旁邊的檔案。
+**② 相對路徑一定要有 `./` 或 `../` 開頭。** 沒前綴的裸名字（`(import spork/json)`）走
+**系統模組路徑**（`(dyn :syspath)` 與 `module/paths`），不會當成你旁邊的檔案。
 
-**③ 絕對路徑不能用。** `(import /home/你/…)` 開頭的 `/` 會被吃掉，變成找不到的相對路徑。
-真的需要絕對路徑時用 `(dofile "/絕對/路徑.janet")`（但那會繞過模組快取，每次重跑）。
+**③ 絕對路徑不能用。** `(import /home/你/…)` 開頭的 `/` 會被吃掉。真的需要絕對路徑時用
+`(dofile "/絕對/路徑.janet")`（但那會繞過模組快取，每次重跑）。
+
+**④ `~` 不是家目錄，是 quasiquote。** `~/repo/x` 被讀成 `(quasiquote /repo/x)` 一個
+**tuple**，錯誤訊息長成 `could not find module <tuple 0x...>`——看到 `<tuple>` 就是它。
+
+**⑤ 不要帶 `.janet` 副檔名。** 那是模組名不是檔名，Janet 自己會接 `.janet`／`.so` 去找。
 
 > 更完整的 import 語意（快取、`:prefix`、`merge-module` 挑名字、`dofile` 的差別）
 > 見 [`../snippets/import-files/main.janet`](../snippets/import-files/main.janet)，那支跑起來就是一份教材。

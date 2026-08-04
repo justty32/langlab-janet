@@ -1,19 +1,30 @@
 # 缺口記錄
 
 使用者練習 Janet 時，若詢問的東西在這個資料夾（janet-lab）目前沒有涵蓋，記在這裡。
-之後交給另一個 agent 依此補完。**只記缺口，不記已解決的問答。**
+之後交給另一個 agent 依此補完。**只記缺口，不記已解決的問答；補完就從這裡移除。**
 
 格式：`- [日期] 使用者問了什麼 / 目前資料夾沒有涵蓋的地方 → 建議補在哪`
 
 ---
 
-- [2026-08-03] 使用者問「用 jpm new 建新專案」→ docs/05-jpm-與專案.md 只講既有專案的 jpm deps/test/build/clean 日常指令，完全沒提 `jpm new-project` / `new-c-project` / `new-exe-project` 這三個 scaffold 指令（含互動問答 author/description、產生的目錄結構）→ 建議在 05 補一節「建立新專案」講這三個指令的差異與互動流程。
-- [2026-08-03] 使用者用 `jpm new-project` 生的專案沒有 bin/、沒有 declare-executable，靠的是 Janet CLI 的隱含規則「`janet 檔案.janet` 直接執行時，載入完若環境有 `main` 會自動呼叫」（`use` 進來的 `main` 也算，所以 `jpm test` 會連帶把 main 印出來）→ janet-lab 目前沒有任何一篇文件明講這條「top-level main 自動被呼叫」的規則，01-語言速成.md 或 05-jpm-與專案.md 都只在 argparse 範例裡帶過 `defn main`，沒解釋這是 runtime 通用機制 → 建議補在 01 或 05，講清楚這條規則跟它對「不用 declare-executable 也能跑」「test 檔 use 進 main 會被連帶呼叫」的影響。
-- [2026-08-03] 使用者問「想要一個可以被 import 的專案」→ 05-jpm-與專案.md 只講「裝別人的套件」（官方清單／git URL），完全沒講跨專案 import 自己本地寫的東西：(1) monorepo 式相對路徑 import（`(import ../其他專案/其他專案/init)`，靠的是 import-files 那篇講的相對路徑規則，但沒人把它跟「另一個 jpm 專案」接起來講）；(2) 把本地 repo 裝成套件要先 `git init`＋至少一個 commit，且 `jpm install` 的 bundle 字串一定要含冒號才會被當成遠端位址而非官方清單短名，本地路徑要寫成 `git::file:///絕對路徑` 才吃得下（`./相對路徑`或純目錄路徑都會報 "bundle ... not found"）；`--local`/`-l` 裝到專案自己的 jpm_tree vs 不加裝到全域 `~/.local/lib/janet/` 這個差異目前文件裡也沒交代 → 建議在 05 補一節「引用自己另一個本地專案」，把這兩條路都寫清楚。
-- [2026-08-03] 使用者問「沒有 jpm run 嗎？」（以為是 `cargo run`／`npm run` 那種「編完直接執行」）→ 實際上 `jpm run` 是 **make 式的 rule runner**，跑的是 `jpm rules` 列出來的 rule（build／clean／install／test／`build/<exe>`…），**編完不會幫你執行**；要「一鍵編完就跑」得自己在 project.janet 加 `(phony "run" ["build"] (os/execute ...))`。docs/05-jpm-與專案.md 的「日常指令」表完全沒有 `jpm run`／`jpm rules`／`jpm rule-tree`，也沒提 `phony`／`rule` 自訂規則這整套 → 建議在 05 補一節「jpm 的 rule 系統」，順帶點明它跟 cargo/npm 的 run 語意不同（這是轉語言過來的人一定會踩的預期落差）。
-- [2026-08-03] 做 modules/llm-http 時要用 spork/http **發 POST**（帶 body 與 header）→ snippets/http-local/ 只示範 `http/request "GET"`，docs/15-ev-channel-net.md 也只講 net 層，沒有任何一處講 client 端 POST：`(http/request "POST" url :body … :headers …)`、**回應的 `:body` 是 buffer 要 `(string …)` 包一層才能餵 json/decode**、`:status` 要自己判 2xx。順帶：**spork/http 的 client 沒有 TLS**（底層是 `net/connect`），https 打不了；而且它是「讀完整份 response 才回」，**SSE／`stream: true` 這種逐行串流做不出來** → 建議在 03-json 或 15 補一節「用 spork/http 當 client 打 API」，把 POST 寫法、buffer/status 兩個雷、以及 TLS 與串流兩個先天限制講清楚。
-- [2026-08-03] 同上，`spork/json` 的 `json/encode` **會把非 ASCII 逃逸成 `\uXXXX`**（`{:cond "晴"}` encode 出來是 `{"cond":"\u6674"}`）→ docs/03-json.md 只講 encode/decode round-trip，沒提這件事；雖然是合法 JSON、對端解得開，但自己 print 出來 debug 時會以為壞掉。另外 `json/decode` 第二個參數給 `true` 才會把 key 變成 keyword（不給就是字串，`get-in [:choices 0]` 會全部落空）——這條 03 有帶到但沒強調它有多容易踩 → 建議在 03 補一小段「encode 的 unicode 逃逸」與把 keyword 那個參數講成醒目提醒。
-- [2026-08-03] 使用者自己把 `hello` 改成 `(+ "Hello!" word)` 想接字串，結果炸掉（`+` 是純數字加法，不是字串串接）→ 01-語言速成.md／02-資料結構.md 裡雖然範例都用 `(string ...)` 接字串，但沒有任何一段**明講「`+` 只能加數字，字串串接要用 `string`」**這個常見雷（尤其對從 Python/JS 轉來的人）→ 建議在 01 或 02 補一小段對照表：`+`/`-`/`*` 只吃數字，字串連接是 `string`，並提一下錯誤訊息長怎樣（`could not find method :+ for "..."`）方便以後認得。
-- [2026-08-04] 使用者要在別的專案（`~/code/janet-try/exe`）import janet-lab 的 modules，寫成 `(import ~/repo/langs/janet-lab/modules/llm-http/init.janet)`，一行踩三個雷 →（1）**`~` 在 Janet 是 quasiquote，不是家目錄**：`~/repo/foo` 被 reader 讀成 `(quasiquote /repo/foo)` 一個 **tuple**，所以錯誤訊息是看不懂的 `could not find module <tuple 0x...>`——docs/08-巨集-macro.md 講了 `~` 是 quasiquote，modules/README.md 講了絕對路徑不能用，但**沒有任何一處把「shell 的 `~` 在 Janet 完全不是那個意思」講出來**，而這是每個從 shell 過來的人第一次寫跨專案 import 就會踩的；（2）**import 路徑不能帶 `.janet` 副檔名**（模組名不是檔名，Janet 會自己接 `.janet`／`.jimage`／`.so` 去找）——這條哪裡都沒寫；（3）沒給 `:as` 卻直接用 `llm/ask`，前綴其實會變成路徑最後一段。→ 建議在 snippets/import-files/main.janet 或 modules/README.md 的「三條規則」補上「`~` 不是家目錄」與「不要帶副檔名」兩條，並把 `<tuple 0x...>` 這個錯誤訊息長相寫進去方便日後認得。
-- [2026-08-04] 改了 `modules/llm-http/chat.janet`（非入口檔）之後跑 `jpm build`，它**什麼都沒做**、執行檔時間戳原封不動，跑起來還是舊行為——原因是 jpm 的 executable 規則只把 `:entry` 那一支當相依，**不追它 import 進來的檔案**。這在多檔模組上是每天都會踩的（很容易誤判成「我的修改沒生效」而去亂改程式）；解法是 `jpm clean && jpm build` 或 `touch` entry。docs/05-jpm-與專案.md 的日常指令表完全沒提這件事，也沒講 jpm 的相依判斷是看時間戳 → 建議在 05 補一段「jpm build 什麼時候會／不會重編」，順帶點出 `declare-source` 逐檔列跟這件事的關係。
-- [2026-08-04] 呼叫 LLM 時 `max_tokens` 開太小，推理模型（實測 LM Studio + gemma-4-e4b）會把預算全花在 `reasoning_tokens` 上，回一個 **`content: ""`、`finish_reason: "length"`、HTTP 200** 的回應——狀態碼完全看不出問題，空字串又是合法字串，一路過關到呼叫端。更廣的教訓是「**要看 `finish_reason`**」：截斷、內容過濾、模型要叫工具，全都是 HTTP 200。janet-lab 這邊 03-json 與 llm-http 的文件都只講怎麼把 JSON 解出來，沒有任何一處講「OpenAI 相容回應裡哪些欄位一定要看」→ 建議在 03-json 或 modules/llm-http 的文件補一小節「一份 chat completion 回應該檢查什麼」（`finish_reason`／`usage`／`content` 可能是空字串）。
+## 目前沒有 open 的缺口
+
+2026-08-04 把先前累積的十筆全部補完了，對應產出如下（留著當索引，不是待辦）：
+
+| 原缺口 | 補在哪 |
+|--------|--------|
+| `jpm new-project` 等三個 scaffold 指令 | [docs/05b](docs/05b-建立新專案.md) |
+| top-level `main` 會被自動呼叫的規則 | [docs/05b](docs/05b-建立新專案.md)（含 `use` 污染、頂層程式碼比 main 早跑兩個後果） |
+| `jpm run` 是 make 式 rule runner、`phony` 自訂 rule | [docs/05c](docs/05c-jpm-的-rule-系統.md) |
+| `jpm build` 不會因為改了非入口檔就重編 | [docs/05c](docs/05c-jpm-的-rule-系統.md) |
+| 引用自己另一個本地專案（相對路徑／`jpm install` 本地 repo 的兩個前提） | [docs/05d](docs/05d-引用自己的專案.md) |
+| `~` 是 quasiquote 不是家目錄、import 不帶副檔名 | [snippets/import-files/main.janet](snippets/import-files/main.janet)（跑起來會印出 `(quasiquote /repo/x)`）＋ [modules/README.md](modules/README.md) 規則 ④⑤ |
+| spork/http 當 client 打 API：POST、buffer／status、無 TLS、無串流 | [docs/17](docs/17-用-spork-http-打-api.md) |
+| 一份 chat completion 回應該檢查什麼（`finish_reason`／空字串 content） | [docs/17](docs/17-用-spork-http-打-api.md) ＋ [FINDINGS-踩坑.md](FINDINGS-踩坑.md) 第十節 |
+| `spork/json` 的 unicode 逃逸、`keywords` 參數忘了給會靜默全 nil | [docs/03](docs/03-json.md) |
+| `+` 只吃數字、字串串接要用 `string` | [docs/02](docs/02-資料結構.md) ＋ [docs/01](docs/01-語言速成.md) 指路 |
+| `dyn` 到底是什麼（原本只列了 API，沒解釋概念） | [docs/12c](docs/12c-dyn-與-os-環境變數.md) |
+
+---
+
+## 新的缺口記在下面

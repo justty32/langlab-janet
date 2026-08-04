@@ -42,6 +42,21 @@
 
 **注意**：要用第 4 個參數 buf，前面 tab / newline 不能省成 `nil`（會報型別錯），傳空字串 `"" ""`。
 
+### ⚠ 非 ASCII 會被逃逸成 `\uXXXX`
+
+```janet
+(json/encode {:cond "晴"})        # => {"cond":"\u6674"}   ← 不是 {"cond":"晴"}
+```
+
+**這是合法 JSON、對端解得開、round-trip 回來也是「晴」**，所以不是 bug。
+但你自己 `print` 出來 debug 時會以為壞掉——實測在 tool loop 的工具回傳值上撞過。
+
+要在終端確認內容對不對，就**解回來再看**，不要看 encode 的結果：
+
+```janet
+(json/decode (json/encode {:cond "晴"}) true)   # => @{:cond "晴"}   ✓
+```
+
 ## decode（JSON → Janet）
 
 簽名：`(json/decode json-source &opt keywords nils)`
@@ -54,6 +69,9 @@
 兩個開關：
 - **`keywords` (第 2 參)** 傳 `true`：物件的 key 從字串轉成 keyword，取值就能 `(d :name)`，
   跟你自己寫的 Janet 一致。**建議一律傳 `true`。**
+  ⚠ 這個 `true` 忘了給是**最常見的靜默失敗**：key 還是字串，於是
+  `(get-in res [:choices 0 :message])` 這種寫法**每一層都 miss、整條回 `nil`**，
+  不會有任何錯誤訊息，看起來就像對方沒回東西。取值全空先回來檢查這個參數。
 - **`nils` (第 3 參)** 傳 `true`：JSON 的 `null` 解成 Janet 的 `nil`；否則預設解成 keyword `:null`。
 
 ```janet
@@ -121,5 +139,9 @@
 | 印真 JSON | `(print (json/encode x))` |
 | 改巢狀 | `(update-in j path f)` / `(put-in j path v)` |
 | 取巢狀 | `(get-in j path)` |
+| 用 JSON 打 API | 見 [17 用 spork/http 打 API](17-用-spork-http-打-api.md) |
+
+拿 JSON 去打 HTTP API（POST、buffer/status 兩個雷、回應該檢查什麼）→
+[17 · 用 spork/http 打 API](17-用-spork-http-打-api.md)。
 
 下一步：[04-cli-argparse.md](04-cli-argparse.md)。

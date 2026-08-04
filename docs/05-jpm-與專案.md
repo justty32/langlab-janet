@@ -74,4 +74,12 @@ jpm install https://github.com/user/repo.git   # 直接從 git URL 裝
 2. `jpm deps` 裝下來。
 3. 程式裡 `(import 套件名)`。
 
+## 還有三篇
+
+| 檔 | 內容 |
+|----|------|
+| [05b · 建立新專案](05b-建立新專案.md) | `jpm new-project`／`new-exe-project`／`new-c-project` 的差別；★ **`main` 會被自動呼叫**這條隱藏規則 |
+| [05c · jpm 的 rule 系統](05c-jpm-的-rule-系統.md) | `jpm run` **不是** `cargo run`；`rules`／`phony`／自訂 rule；★ **`jpm build` 什麼時候不重編** |
+| [05d · 引用自己的另一個專案](05d-引用自己的專案.md) | 跨專案相對路徑 import 的坑；從本地 repo `jpm install` 的兩個前提 |
+
 下一步：[06-編輯器與-REPL.md](06-編輯器與-REPL.md)。
