@@ -1,8 +1,7 @@
-# modules/pi-shell 的離線測試。
+# pi-shell：**子行程管線本身** —— stdin 餵得進去、stdout 讀得回來、退出碼正確。
 #
 # 不真的請 pi／claude 做事（要花錢、而且它們預設帶 bash/edit/write 會動檔案）。
-# 拿 cat／sh 當替身驗管線本身：寫得進去、讀得回來、退出碼正確。
-# ⚠ 真的要打，請自己加 --no-tools（pi）或 --disallowedTools（claude）。
+# 拿 cat／sh 當替身驗這一層就夠了——proc.janet 本來就不認識任何 agent。
 
 (import ../modules/pi-shell/init :as agent)
 
@@ -31,13 +30,4 @@
 (def r4 (agent/run ["cat"] big))
 (assert (= (length big) (length (r4 :out))) "大量資料不會卡死或截斷")
 
-# ── 指令組法（不真的執行）──────────────────────────────────────────
-(assert (= "pi" agent/pi-cmd))
-(assert (= "claude" agent/claude-cmd))
-(assert (= "claude-haiku-4-5-20251001" agent/default-claude-model))
-(assert (find |(= "claude-sonnet-5" $) agent/claude-models))
-
-# ── 探測（只問版本，不請它做事）────────────────────────────────────
-(printf "pi 可用？%q   claude 可用？%q" (agent/pi-available?) (agent/claude-available?))
-
-(print "modules/pi-shell 離線測試通過 ✓")
+(print "pi-shell 子行程管線測試通過 ✓")

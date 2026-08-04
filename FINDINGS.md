@@ -85,3 +85,41 @@ system prompt（7,320 cache creation ＋ 11,609 cache read tokens）。當一般
 2. **參數會被靜默無視**：不同模型的 `supported_parameters` 不同，送了不支援的參數
    （`response_format`／`top_p`／`seed`…）**不報錯、就是無視**——exit 0 加一份看起來像
    答案的東西。只能看回應實際符不符合預期，不能看有沒有報錯。
+
+## 七、⚠ HTTP header 的值只能是 ASCII
+
+`llm-http` 的 endpoint 可以帶自訂 `:headers`，但**值放中文會被伺服器擋成 400**
+（實測 spork/http 的 server 就是這樣回）。HTTP header 本來就只吃 ASCII／ISO-8859-1，
+要帶非 ASCII 的東西請放進 body。
+
+症狀很不直覺：payload 一切正常、URL 也對，就是回一個沒有 body 的 `HTTP 400`。
+先檢查有沒有在 header 裡塞中文。
+
+## 八、使用者設定檔：只 parse 不 eval
+
+兩個模組（`llm-http` 的 endpoint、`pi-shell` 的 agent）都讓使用者用一份設定檔
+擴充內建清單，設計上共用同一套決定：
+
+- **只 `parse-all` 不 `eval`**。檔案是**資料字面值**不是程式，所以裡面寫
+  `(os/shell "…")` 也只是一個沒人執行的 tuple。代價是設定檔裡不能算東西
+  （例如讀環境變數），所以另外開了 `:api-key-env` 這種欄位讓它宣告式地表達。
+  `parse-all` 在 Janet 1.41.2 是內建的，回一個 array，多個 top-level 值會依序排好。
+- **「沒有設定檔」是正常狀態**，自動探測找不到就靜靜跳過，不輸出也不報錯；
+  找到了但壞掉只在 stderr 印一行中文警告然後當作沒載入——一份壞掉的設定檔
+  不該讓「只想用內建那筆」的人整個跑不起來。明確呼叫 `load-endpoints!`／`load-agents!`
+  時才會丟例外（那是使用者主動要求的，靜默失敗反而糟）。
+- ⚠ **自動載入是 `import` 的副作用**，所以**測試一開頭要先 `reset-endpoints!`／`reset-agents!`**，
+  否則開發機上有一份 `~/.config/llm-http/endpoints.janet` 就會讓測試結果跟別人不一樣。
+  想要「純函式、零 IO」的那一層請直接 import `registry.janet`／`agents.janet`，
+  它們不碰檔案系統。
+
+## 九、驗證現況（2026-08-04 這次改動）
+
+改完 registry／設定檔／參數合併之後**沒有**做真模型端到端驗證：這台機器上
+**LM Studio（`127.0.0.1:1234`）與 litellm proxy（`127.0.0.1:4000`）當時都沒在跑**
+（`ss -lnt` 兩個 port 都沒有 listener），而 `local` 這條線的後端就是 LM Studio，
+所以就算把 proxy 起起來也打不到模型。
+
+改用**同一個行程裡的假 OpenAI 相容後端**（spork/http 的 server）把整條路徑走完：
+CLI → registry → 參數合併 → `post-chat` → HTTP → 解回應 → tool loop。
+**傳輸與組裝這一段是驗過的；「真模型會不會照那些參數辦事」沒驗過。**

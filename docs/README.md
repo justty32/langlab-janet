@@ -16,12 +16,18 @@
 | 07 | [REPL 用法](07-repl.md) | 開關、`doc`、載入模組、`dyn`、跟 Conjure 的關係 |
 | 08 | [巨集 macro](08-巨集-macro.md) | `~ , ,;`、`defmacro`、`macex1` 除錯、`with-syms` 衛生 |
 | 09 | [Fiber 協程](09-fiber.md) | generator、例外即 fiber、信號遮罩、`ev` 非同步 |
-| 10 | [與 C 互通](10-c-互通.md) | FFI（不編譯）/ native 模組 / 把 Janet 嵌進 C |
+| 10 | [與 C 互通](10-c-互通.md) | 三種接法的差別、FFI 最小範例、`ffi/defbind` |
+| 10b | [FFI：型別、指標與記憶體](10b-ffi-型別與指標.md) | 型別關鍵字全表、`ffi/write`／`read`、out 參數、struct、`malloc` |
+| 10c | [FFI：字串回傳與地雷合輯](10c-ffi-字串與地雷.md) | `char*` 怎麼變 Janet 字串、指標地雷、回呼 |
+| 10d | [native 模組與嵌入](10d-native-與嵌入.md) | 用 C 寫 Janet 函式、把 Janet 塞進 C 程式 |
 | 11 | [子行程 / 管線 / 信號](11-pipeline-signal.md) | `os/execute`、`sh/exec-slurp`、管線兩法、`proc-kill`、`sigaction` |
-| 12 | [env：環境表 / 動態變數](12-env-環境與動態變數.md) | `curenv`、列出所有綁定、查 symbol 型別、切換 env、`dyn`、OS 環境變數 |
+| 12 | [env：環境表](12-env-環境與動態變數.md) | `curenv`、一個綁定裡有什麼、列出所有綁定、查 symbol 型別 |
+| 12b | [切換 env](12b-切換-env.md) | `make-env`、`fiber/setenv`、`dofile`／`run-context`、`import` 的 env 選項 |
+| 12c | [dyn 與 OS 環境變數](12c-dyn-與-os-環境變數.md) | `dyn`／`setdyn`／`with-dyns`、`os/getenv`、影響 Janet 自己的變數、速查 |
 | 13 | [symbol / keyword / 字串](13-symbol-keyword-字串.md) | 四種「名字」型別、`"abc"` ↔ `:abc` 互轉、跨型別 `=` 的坑 |
 | 14 | [PEG 解析器](14-peg.md) | 內建 PEG：組合子、捕獲、具名文法、遞迴、解 log／CSV |
-| 15 | [ev：channel / 執行緒 / net](15-ev-channel-net.md) | channel、真 OS 執行緒、select/gather、逾時取消、五行 TCP server |
+| 15 | [ev：channel / 執行緒](15-ev-channel-net.md) | channel、真 OS 執行緒、select/gather、逾時取消 |
+| 15b | [net 與速查](15b-net-與速查.md) | 五行 TCP server、常用 API 一覽、地雷清單 |
 | 16 | [marshal 與自省](16-marshal-與自省.md) | 序列化閉包與 fiber、image、`disasm`／`trace`／`comptime`、spork 全櫃 |
 
 > 想快速查：**[`html/index.html`](../html/index.html)** 是分頁速查表（核心／資料IO／PEG／並行／C互通／env），開瀏覽器即看。

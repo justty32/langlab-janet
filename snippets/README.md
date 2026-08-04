@@ -12,8 +12,8 @@
 | [`apply-splice.janet`](apply-splice.janet) | `[1 2 3]` → `(add 1 2 3)`、`{:a 1}` → `(f :a 1)` | `apply` 只能攤最後一個；`;` 攤哪都行但 `{}` 字面不吃 |
 | [`utf8-strings.janet`](utf8-strings.janet) | UTF-8：字元數、切片、切割、反轉、對齊 | `length` 是**位元組**數；ASCII 分隔符切割是安全的 |
 | [`stdin-async.janet`](stdin-async.janet) | 非同步（handler 風格）處理 stdin | 內建 `stdin` 會擋住整個 ev 迴圈，要 `(os/open "/dev/stdin" :r)` |
-| [`binary-png.janet`](binary-png.janet) | 純二進位：讀 PNG、走訪 chunk、驗 CRC32 | 檔案格式多是**大端序**，`ffi/read` 照機器序會讀錯 |
-| [`http-local.janet`](http-local.janet) | 開 local HTTP server，再用 API 去問它 | handler 要自己 `http/read-body`；連不上是丟例外 |
+| [`binary-png/`](binary-png/main.janet) | 純二進位：讀 PNG、走訪 chunk、驗 CRC32 | 檔案格式多是**大端序**，`ffi/read` 照機器序會讀錯 |
+| [`http-local/`](http-local/main.janet) | 開 local HTTP server，再用 API 去問它 | handler 要自己 `http/read-body`；連不上是丟例外 |
 | [`repl-mode.janet`](repl-mode.janet) | 程式跑完掉進 REPL（可用自己的 env / 沙箱 env） | ★ `(repl)` 預設用**全新 env**，要傳 `(curenv)` 才看得到自己的東西 |
 | [`file-io.janet`](file-io.janet) | 開檔寫檔、讀進字串、逐行、二進位、原子寫入 | `slurp` 回的是 **buffer**、`with` 自動關檔、`file/lines` 串流 |
 | [`json-and-marshal.janet`](json-and-marshal.janet) | `.json` → hash-map；hash-map → 檔案（JSON / marshal 兩條路） | `decode` 要傳 `true`、marshal 存得下 tuple/struct/**閉包** |
@@ -47,9 +47,9 @@ janet snippets/pipe-to-child/main.janet - 3 0.2   # 換次數與間隔（- = 用
 janet snippets/argv-parse.janet --name A -v --level=3 f1 f2 -- --raw
 janet snippets/utf8-strings.janet "自己的字串"
 printf 'a\nb\n' | janet snippets/stdin-async.janet     # 管線餵它
-janet snippets/binary-png.janet /path/to/some.png
-janet snippets/http-local.janet serve 8080        # 只當 server
-janet snippets/http-local.janet get http://example.com/   # 只當 client
+janet snippets/binary-png/main.janet /path/to/some.png
+janet snippets/http-local/main.janet serve 8080        # 只當 server
+janet snippets/http-local/main.janet get http://example.com/   # 只當 client
 janet snippets/repl-mode.janet --sandbox          # 進沙箱 REPL
 ```
 

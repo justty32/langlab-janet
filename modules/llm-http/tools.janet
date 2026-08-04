@@ -13,7 +13,7 @@
 # 並且有 max-rounds 上限防呆（模型鬼打牆一直叫工具時不會無限打下去）。
 
 (import spork/json)
-(import ./client)
+(import ./chat :as conv)          # 對話層（chat／reply-message）；傳輸細節在 transport.janet
 
 (defn tool-spec
   ``組一個 OpenAI 格式的 tool 宣告。
@@ -65,19 +65,22 @@
               回傳字串（或任何東西，非字串會被 encode 成 JSON）
 
   具名參數：
-    :system     可省略的 system 訊息，會被插到歷史**最前面**（跟 client/ask 的
+    :system     可省略的 system 訊息，會被插到歷史**最前面**（跟 chat/ask 的
                 第三個參數對齊，省得自己組 @{:role "system" …}）。
                 ⚠ 若 messages 第一則本來就是 system，這個參數會被忽略——避免
                 一次送出兩則 system 讓模型無所適從。要換掉原本那則就自己改 messages。
     :max-rounds 最多打幾次模型，預設 8（防無限迴圈）
     :trace      可省略的回呼 (fn [name args result])，每執行一個工具就叫一次，
                 方便 CLI 印出「模型要求 X → 本地執行 → 結果」
+    :temperature :max-tokens :params :extra
+                原樣轉給每一輪的 chat（合併優先序見 chat.janet 開頭）
 
   回傳 @{:text 最終答案字串（撞上限時是 nil）
          :messages 完整的訊息歷史（含 assistant 的 tool_calls 與 role:"tool" 的結果）
          :rounds 實際打了幾輪
          :exhausted 是不是撞到 max-rounds 才停的}``
-  [cfg messages tools handlers &named system max-rounds trace]
+  [cfg messages tools handlers &named system max-rounds trace
+                                  temperature max-tokens params extra]
   (default max-rounds 8)
   (def history (array ;messages))       # 複製一份，不動呼叫端的陣列
 
@@ -95,8 +98,10 @@
       (break))
     (++ rounds)
 
-    (def res (client/chat cfg history :tools tools))
-    (def msg (client/reply-message res))
+    (def res (conv/chat cfg history :tools tools
+                        :temperature temperature :max-tokens max-tokens
+                        :params params :extra extra))
+    (def msg (conv/reply-message res))
     (unless msg
       (error (string "回應裡沒有 message：" (string/format "%q" res))))
 

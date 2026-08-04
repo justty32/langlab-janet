@@ -4,8 +4,16 @@
 
 | 模組 | 是什麼 | 執行檔 |
 |------|--------|--------|
-| [`llm-http/`](llm-http/README.md) | 純 Janet 打本機 litellm proxy 的 OpenAI 相容端點；**多輪 tool loop**＋**圖像輸入**，四個 endpoint：`local`／`deepseek`／`claude`／`openrouter` | `build/llm-http` |
-| [`pi-shell/`](pi-shell/README.md) | 把非互動 agent CLI（`pi -p`／`claude -p`）包成子行程的**薄透傳殼** | `build/pi-shell` |
+| [`llm-http/`](llm-http/README.md) | 純 Janet 打 OpenAI 相容端點（本機 litellm proxy 或直接打 LM Studio）；**多輪 tool loop**＋**圖像輸入**＋**自訂 endpoint／參數**。內建四筆：`local`／`deepseek`／`claude`／`openrouter` | `build/llm-http` |
+| [`pi-shell/`](pi-shell/README.md) | 把非互動 agent CLI（`pi -p`／`claude -p`／**你自己註冊的**）包成子行程的**薄透傳殼** | `build/pi-shell` |
+
+兩個模組共用同一套設計思想：**內建的只是預設值，使用者可以用 registry ＋設定檔加自己的**
+（llm-http 加 endpoint、pi-shell 加 agent），設定檔一律**只 parse 不 eval**，
+放在 `~/.config/<模組名>/` 底下自動載入，**沒有設定檔是正常狀態、不會報錯**。
+範本分別是 [`llm-http/endpoints.example.janet`](llm-http/endpoints.example.janet) 與
+[`pi-shell/agents.example.janet`](pi-shell/agents.example.janet)。
+
+能跑的範例在 [`../examples/llm-http/`](../examples/llm-http/)（八支，中文註解）。
 
 兩者都在 [`../project.janet`](../project.janet) 宣告；`jpm build` 一次編出來，`jpm test` 跑
 [`../test/`](../test/) 底下對應的離線測試（不打網路、不呼叫真的模型）。
@@ -62,10 +70,16 @@
 門面 `init.janet` 只是把底下幾個檔 re-export 出來，你也可以直接 import 個別檔案：
 
 ```janet
-(import ../modules/llm-http/tools     :as t)   # 只要 tool loop
-(import ../modules/llm-http/endpoints :as ep)  # 只要 endpoint 設定表
+(import ../modules/llm-http/tools     :as t)    # 只要 tool loop
+(import ../modules/llm-http/endpoints :as ep)   # 只要 endpoint（registry ＋設定檔載入）
+(import ../modules/llm-http/registry  :as reg)  # 再往下一層：只要 registry 行為，不碰檔案系統
+(import ../modules/llm-http/chat      :as conv) # 只要對話語意，不管 endpoint 是誰給的
 (import ../modules/pi-shell/proc      :as proc) # 只要子行程管線，不帶 agent 知識
 ```
+
+⚠ **`init.janet` 與 `endpoints.janet`／`pi-shell/init.janet` 有一個副作用**：
+會自動探測一次使用者的設定檔。想要「純函式、零 IO」的那一層，就直接 import
+`registry.janet`／`agents.janet`——它們不會去碰檔案系統。
 
 ## ⚠ import 一定要放在**頂層**
 
@@ -113,6 +127,19 @@ cd ~/code/我的專案 && jpm -l install git::file:///home/lorkhan/repo/langs/ja
 # pi-shell：跑一支 agent CLI（⚠ 它們預設能動你的檔案，自己決定要不要限制）
 (def r (agent/run-pi ["--no-tools" "只回一個字 ok"]))
 (print (r :out) (r :code))
+```
+
+自訂自己的 endpoint／agent：
+
+```janet
+# llm-http：三種寫法，都不必改 repo 原始碼
+(llm/endpoint {:model "qwen3" :url "http://127.0.0.1:1234/v1/chat/completions"})  # inline
+(llm/define-endpoint "qwen" {:model "qwen3" :params {:temperature 0.2}})          # 註冊
+(llm/load-endpoints! "~/.config/llm-http/endpoints.janet")                        # 設定檔
+
+# pi-shell：同一套形狀
+(agent/define-agent "qwen-cli" {:cmd "qwen" :model-flag "-m"})
+(agent/run-agent "qwen-cli" ["回 ok"])
 ```
 
 各自完整的 API 與旗標見兩個模組自己的 README。
