@@ -49,8 +49,16 @@
   "一般問答那條：打一次，把答案文字挖出來。"
   [cfg messages params]
   (def r (conv/chat cfg messages :params params))
-  (or (conv/reply-text r)
-      (error (string "回應裡取不出答案文字：" (string/format "%q" r)))))
+  (def text (conv/reply-text r))
+  (unless text
+    (error (string "回應裡取不出答案文字：" (string/format "%q" r))))
+  # ★ 被 max_tokens 截斷時 HTTP 仍然是 200，不講的話使用者會以為模型就回這麼多。
+  #   推理模型更慘：預算全花在 reasoning tokens 上，content 直接是空字串。
+  (when (conv/truncated? r)
+    (eprintf "⚠ 答案被 max_tokens 截斷（finish_reason=length）%s；用量：%q"
+             (if (empty? text) "，而且 content 是空的——推理模型會先花掉 reasoning tokens，把 max_tokens 調大" "")
+             (get r :usage)))
+  text)
 
 (defn- ask-with-tools
   "tool loop 那條：trace 走 stderr，才不會弄髒 stdout 的答案。"

@@ -18,7 +18,8 @@
 兩者都在 [`../project.janet`](../project.janet) 宣告；`jpm build` 一次編出來，`jpm test` 跑
 [`../test/`](../test/) 底下對應的離線測試（不打網路、不呼叫真的模型）。
 
-環境與架構的實測背景（為什麼走 litellm proxy、有哪些雷）→ [`../FINDINGS.md`](../FINDINGS.md)。
+環境與架構的實測背景（為什麼走 litellm proxy）→ [`../FINDINGS.md`](../FINDINGS.md)；
+實作時踩到的環境／API 地雷 → [`../FINDINGS-踩坑.md`](../FINDINGS-踩坑.md)。
 
 ---
 

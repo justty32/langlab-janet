@@ -31,6 +31,14 @@
    :headers {"content-type" "application/json"}
    :body (json/encode
            (cond
+             # max_tokens 小到不合理 → 模擬「推理模型把預算花光」：HTTP 200、
+             # finish_reason=length、content 是空字串（真的在 LM Studio 上遇過）
+             (and (body :max_tokens) (<= (body :max_tokens) 8))
+             {:choices [{:finish_reason "length"
+                         :message {:role "assistant" :content ""}}]
+              :usage {:completion_tokens 8
+                      :completion_tokens_details {:reasoning_tokens 5}}}
+
              tool-msg
              {:choices [{:message {:role "assistant"
                                    :content (string "台北 " (get tool-msg :content))}}]}
@@ -96,6 +104,21 @@
 # 呼叫端的具名參數蓋得掉 endpoint 的 :params（真的送到 wire 上）
 (llm/ask direct-cfg "嗨" nil nil :temperature 1)
 (assert (= 1 (seen-payload :temperature)) "具名參數 > endpoint 的 :params")
+
+# ── 被 max_tokens 截斷：HTTP 200 但 content 是空的 ──────────────────
+# ⚠ 實測（LM Studio + gemma-4-e4b）：推理模型會先花掉 reasoning tokens，
+#   預算太小就 content=""、finish_reason="length"、HTTP 仍然 200。
+(def trunc-res (llm/chat direct-cfg @[@{:role "user" :content "很長的問題"}] :max-tokens 8))
+(assert (= "length" (llm/reply-finish-reason trunc-res)))
+(assert (llm/truncated? trunc-res))
+(assert (= "" (llm/reply-text trunc-res)) "content 真的是空字串，不是 nil")
+# ask 承諾回答案，所以這種情況要講清楚而不是回 ""
+(def e-trunc (u/err-of |(llm/ask direct-cfg "很長的問題" nil nil :max-tokens 8)))
+(assert (string/find "finish_reason=length" e-trunc) (string "截斷訊息不對：" e-trunc))
+(assert (string/find "reasoning tokens" e-trunc) "要點出推理模型吃掉預算這件事")
+(assert (string/find "reasoning_tokens" e-trunc) "要把 usage 印出來")
+# 沒截斷時 finish_reason 不是 length
+(assert (not (llm/truncated? (llm/chat direct-cfg @[@{:role "user" :content "嗨"}]))))
 
 # 連不上時的錯誤訊息要是中文、而且點得出 proxy 沒起來
 (def e-conn (u/err-of |(llm/ask (llm/endpoint {:model "m" :base "http://127.0.0.1:45799"}) "嗨")))

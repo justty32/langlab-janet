@@ -79,6 +79,19 @@
   [res]
   (get-in res [:choices 0 :message :content]))
 
+(defn reply-finish-reason
+  ``模型為什麼停下來："stop"（講完了）／"length"（撞到 max_tokens）／
+  "tool_calls"（要叫工具）…取不到回 nil。
+
+  ⚠ 值得養成看它的習慣：**答案被截斷時 HTTP 仍然是 200**，只有這個欄位講得出來。``
+  [res]
+  (get-in res [:choices 0 :finish_reason]))
+
+(defn truncated?
+  "這次回應是不是因為撞到 max_tokens 被截斷的。"
+  [res]
+  (= "length" (reply-finish-reason res)))
+
 (defn ask
   ``最常用的一行式問答：給 prompt，拿字串答案回來。
 
@@ -99,4 +112,15 @@
   (def text (reply-text res))
   (unless (string? text)
     (error (string "回應裡取不出答案文字：" (string/format "%q" res))))
+
+  # ★ 實測踩到的坑：max_tokens 太小時，**推理模型會把預算全花在 reasoning_tokens 上**，
+  #   content 回一個空字串、HTTP 仍然是 200。ask 承諾回答案，這種情況直接講清楚，
+  #   不要讓呼叫端拿到 "" 還以為模型真的沒話說。
+  (when (and (empty? text) (truncated? res))
+    # ⚠ string/format 只吃**一個** format 字串，多段要先用 string 接起來
+    (error (string/format
+             (string "答案被 max_tokens 截斷了（finish_reason=length），content 是空字串。\n"
+                     "推理模型會先花掉 reasoning tokens，預算太小就什麼都印不出來——把 max_tokens 調大。\n"
+                     "這次用量：%q")
+             (get res :usage))))
   text)
