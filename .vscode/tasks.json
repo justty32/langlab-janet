@@ -1,0 +1,43 @@
+{
+  "version": "2.0.0",
+  "presentation": { "clear": true },
+  // Windows：走 PowerShell 並先把主控台輸出設 UTF-8（Win PowerShell 5.1 預設 cp950 會讓中文亂碼）。
+  // Linux（Manjaro）：走預設 shell，locale 本來就 UTF-8，不用特別處理。
+  "windows": {
+    "options": {
+      "shell": { "executable": "powershell.exe", "args": ["-NoProfile", "-Command"] }
+    }
+  },
+  "tasks": [
+    {
+      "label": "janet: run current file",
+      "type": "shell",
+      "command": "janet '${file}'",
+      "windows": { "command": "[Console]::OutputEncoding=[Text.Encoding]::UTF8; janet '${file}'" },
+      "problemMatcher": [],
+      "group": { "kind": "test", "isDefault": true }
+    },
+    {
+      "label": "jpm: test",
+      "type": "shell",
+      "command": "janet test/basic.janet",
+      "windows": { "command": "[Console]::OutputEncoding=[Text.Encoding]::UTF8; janet test/basic.janet" },
+      "problemMatcher": []
+    },
+    {
+      "label": "jpm: build (standalone exe)",
+      "type": "shell",
+      "command": "jpm build",
+      "windows": { "command": "[Console]::OutputEncoding=[Text.Encoding]::UTF8; jpm build" },
+      "problemMatcher": []
+    },
+    {
+      "label": "janet: REPL",
+      "type": "shell",
+      "command": "janet",
+      "windows": { "command": "[Console]::OutputEncoding=[Text.Encoding]::UTF8; janet" },
+      "problemMatcher": [],
+      "presentation": { "clear": false, "panel": "dedicated" }
+    }
+  ]
+}

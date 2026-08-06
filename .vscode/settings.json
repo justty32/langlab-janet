@@ -1,0 +1,15 @@
+{
+  // 檔案一律 UTF-8：docs 與原始碼都含中文，避免亂碼
+  "files.encoding": "utf8",
+  "files.autoGuessEncoding": false,
+  "files.associations": { "*.janet": "janet" },
+
+  // jpm 需要 PowerShell（git-bash 下 jpm 的 git submodule 會壞，見 docs/00b）
+  "terminal.integrated.defaultProfile.windows": "PowerShell",
+
+  // Janet++：存檔自動排版、括號結構編輯
+  "[janet]": {
+    "editor.formatOnSave": false,
+    "editor.formatOnType": true
+  }
+}

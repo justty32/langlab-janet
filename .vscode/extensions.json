@@ -1,0 +1,10 @@
+{
+  // clone 這個 repo 時 VS Code 會提示安裝這些
+  "recommendations": [
+    "CalebFiggers.vscode-janet-plus-plus"
+  ],
+  // 官方 janet-lang.vscode-janet 只有語法高亮，Janet++ 是其超集，避免文法衝突
+  "unwantedRecommendations": [
+    "janet-lang.vscode-janet"
+  ]
+}
