@@ -12,4 +12,6 @@
     "editor.formatOnSave": false,
     "editor.formatOnType": true
   }
+  // 註：VSCodeVim 的 leader／求值鍵放在「使用者設定」（VSCodeVim 不吃 workspace 的），
+  //     見 %APPDATA%\Code\User\settings.json 的 vim.normalModeKeyBindingsNonRecursive。
 }
