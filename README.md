@@ -22,7 +22,8 @@ jpm build && ./build/janet-lab --json -n world  # 編成單一執行檔再跑
 
 | 你的狀況 | 去哪 |
 |----------|------|
-| **想學** —— 從頭把 Janet 搞懂 | [`docs/`](docs/README.md)：00 環境 → 06 編輯器逐篇遞進，07～16 是需要時再翻的主題篇 |
+| **想學** —— 從頭把 Janet 搞懂 | [`docs/`](docs/README.md)：00 環境 → 06 編輯器逐篇遞進，18～22 是日常會用到的，07～17 是需要時再翻的主題篇 |
+| **從 C++ 過來** —— 想快速對上概念 | [`docs/01b`](docs/01b-給-C++-開發者.md)：一張概念對照表 + 五個一定會誤會的地方 |
 | **想查** —— 忘了某個寫法 | [`html/index.html`](html/index.html)：分頁速查表，開瀏覽器即看 |
 | **想抄** —— 現在要做某件事 | [`snippets/`](snippets/README.md)：可貼可改的片段（定時器、管線、檔案 IO、閉包、context…） |
 
@@ -35,7 +36,7 @@ project.janet        專案宣告（依賴、要編的執行檔）
 janet-lab/init.janet 核心模組（純函式）
 bin/main.janet       CLI 進入點（argparse 實例）
 test/basic.janet     測試
-docs/                分篇教學（00～16）
+docs/                分篇教學（00～22）
 html/                分頁速查表（index / data-io / peg / concurrency / ffi / env）
 examples/            教學附件，配合 docs 某一篇
 snippets/            做事的起點，「我要做 X，抄哪段」
@@ -46,6 +47,10 @@ FINDINGS-踩坑.md     實作時被環境／API 咬到的地方
 
 ## 涵蓋範圍
 
-語言核心與資料結構、JSON、CLI argparse、jpm 專案、REPL 與編輯器、巨集、fiber、
-**PEG 解析器**、**ev channel / 真執行緒 / 內建 net**、**C 互通（含指標與記憶體）**、
-子行程與信號、**env 環境表與動態變數**、symbol↔字串、**marshal 序列化與自省**。
+語言核心與資料結構、**給 C++ 開發者的概念對照**、JSON、CLI argparse、jpm 專案、
+REPL 與編輯器、巨集、fiber、**PEG 解析器**、**ev channel / 真執行緒 / 內建 net**、
+**C 互通（含指標與記憶體）**、子行程與信號、**env 環境表與動態變數**、
+symbol↔字串、**字串與 buffer**、**檔案與檔案系統**、**錯誤處理與資源管理（defer／with）**、
+**數字與位元運算**、**原型與方法（Janet 版的類別）**、**marshal 序列化與自省**。
+
+每篇教學裡的 ⚠ 都是實際被咬過的坑，不是理論上的注意事項。

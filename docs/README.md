@@ -4,11 +4,19 @@
 
 00 → 06 依序讀完就能上手；07 之後每篇獨立，需要時再翻。
 
+> **從 C++ 過來的話**：先看 [01 語言速成](01-語言速成.md)，再看
+> [**01b 給 C++ 開發者的對照**](01b-給-C++-開發者.md)——一張概念對照表加五個一定會誤會的地方，
+> 讀完之後 02 以後的內容會快非常多。接著 [21 數字與位元](21-數字與位元.md) 也建議早點看，
+> 因為 Janet 的數字模型跟 C++ 差最多。
+
+## 基礎篇（依序讀）
+
 | # | 篇 | 重點 |
 |---|----|------|
 | 00 | [環境與工具鏈](00-環境與工具鏈.md) | 裝在哪、三個常用指令、原始碼編譯的理由（Manjaro） |
 | 00b | [Windows + VS Code](00b-windows-vscode.md) | ★ 搬到 Windows 實測：jpm 改 mingw、自備 `libjanet.a`、Janet++、中文 argv 坑 |
 | 01 | [語言速成](01-語言速成.md) | 括號家族 `() [] {} @`、def/let、函式、條件、迴圈、`print` vs `pp` |
+| 01b | [給 C++ 開發者的對照](01b-給-C++-開發者.md) | ★ 概念對照表、`=` 的兩套語意、沒有值拷貝、沒有重載、GC 與 RAII |
 | 02 | [資料結構](02-資料結構.md) | array / tuple / table / struct，`@` 的意義，`get-in` |
 | 03 | [JSON](03-json.md) | `spork/json`：字面≈JSON、encode/decode、null 陷阱、巢狀改值 |
 | 04 | [CLI 參數](04-cli-argparse.md) | `spork/argparse` 四種 kind、自動 help、**子命令**（git 風格） |
@@ -17,6 +25,21 @@
 | 05c | [jpm 的 rule 系統](05c-jpm-的-rule-系統.md) | `jpm run` **不是** `cargo run`、`rules`／`phony`；★ **build 什麼時候不重編** |
 | 05d | [引用自己的另一個專案](05d-引用自己的專案.md) | 跨專案相對路徑 import 的坑、從本地 repo `jpm install` 的兩個前提 |
 | 06 | [編輯器與 REPL](06-編輯器與-REPL.md) | Conjure `,ee` 工作流、parinfer、（可選）janet-lsp |
+
+## 日常會用到的（建議接著看）
+
+| # | 篇 | 重點 |
+|---|----|------|
+| 18 | [字串與 buffer](18-字串與-buffer.md) | string／buffer 之分、`string/*` 參數順序坑、格式動詞、byte 不是字元 |
+| 19 | [檔案與檔案系統](19-檔案與檔案系統.md) | `slurp`／`spit`、`with` + file handle、`os/stat`、`spork/path`、★ Windows 換行陷阱 |
+| 20 | [錯誤處理與資源管理](20-錯誤處理與資源管理.md) | `error`／`try`／`protect`／`assert`、`defer`／`with`＝RAII、何時回 nil 何時拋錯 |
+| 21 | [數字與位元](21-數字與位元.md) | ★ 全部是 double、`/` vs `div` vs `mod` vs `%`、位元運算是 32-bit、`int/u64` |
+| 22 | [原型與方法](22-原型與方法.md) | Janet 版的「類別」：`(:method obj)`、原型鏈＝vtable、三個陷阱、配合 `with` |
+
+## 主題篇（需要時再翻）
+
+| # | 篇 | 重點 |
+|---|----|------|
 | 07 | [REPL 用法](07-repl.md) | 開關、`doc`、載入模組、`dyn`、跟 Conjure 的關係 |
 | 08 | [巨集 macro](08-巨集-macro.md) | `~ , ,;`、`defmacro`、`macex1` 除錯、`with-syms` 衛生 |
 | 09 | [Fiber 協程](09-fiber.md) | generator、例外即 fiber、信號遮罩、`ev` 非同步 |
@@ -46,3 +69,18 @@
 3. 你最常用的兩個庫直接看 [03 JSON](03-json.md) 和 [04 argparse](04-cli-argparse.md)（含子命令）。
 4. 進階招牌：[14 PEG](14-peg.md)、[09 fiber](09-fiber.md) + [15 ev/net](15-ev-channel-net.md)、[08 macro](08-巨集-macro.md)、[10 C 互通](10-c-互通.md)。
 5. 看根目錄 `bin/main.janet` 與 [`examples/`](../examples/README.md)——都是可跑的實例。
+
+### 從 C++ 過來的路線
+
+1. [01 語言速成](01-語言速成.md) → [01b C++ 對照](01b-給-C++-開發者.md) → [02 資料結構](02-資料結構.md)
+2. [21 數字與位元](21-數字與位元.md)（差異最大，早點看少踩坑）
+3. [20 錯誤處理與資源管理](20-錯誤處理與資源管理.md)（`with` 就是 RAII）
+4. [18 字串](18-字串與-buffer.md) + [19 檔案](19-檔案與檔案系統.md)（開始真的寫東西）
+5. [08 巨集](08-巨集-macro.md)（template 的替代品）、[10 C 互通](10-c-互通.md)（把重活丟回 C）
+
+## 每篇都有的東西
+
+- **⚠ 標記**＝實測踩過的坑，不是理論上的注意事項。
+- **★ 標記**（目錄裡）＝這篇最值得記住的一件事。
+- 每篇結尾都有「下一步」連結，可以一路讀下去。
+- 更完整的環境／API 踩坑記錄在 [`FINDINGS-踩坑.md`](../FINDINGS-踩坑.md)。
