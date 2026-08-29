@@ -37,6 +37,11 @@
 | 20 | [錯誤處理與資源管理](20-錯誤處理與資源管理.md) | `error`／`try`／`protect`／`assert`、`defer`／`with`＝RAII、何時回 nil 何時拋錯 |
 | 21 | [數字與位元](21-數字與位元.md) | ★ 全部是 double、`/` vs `div` vs `mod` vs `%`、位元運算是 32-bit、`int/u64` |
 | 22 | [原型與方法](22-原型與方法.md) | Janet 版的「類別」：`(:method obj)`、原型鏈＝vtable、三個陷阱、配合 `with` |
+| 23 | [測試怎麼寫](23-測試怎麼寫.md) | 沒有測試框架、`assert`／`protect`／`deep=`、★ 一支失敗不擋其他支 |
+| 24 | [時間與日期](24-時間與日期.md) | `os/time`／`strftime`／`mktime`、計時用 monotonic、★ **月與日是 0-based** |
+| 25 | [序列工具](25-序列工具.md) | `map`／`filter`／`reduce` 家族的四條規則、★ 輸出幾乎都是 array |
+| 26 | [隨機數](26-隨機數.md) | PRNG／`math/rng`／`os/cryptorand` 三選一、★ **預設每次跑都一樣** |
+| 26b | [隨機數配方](26b-隨機數配方.md) | 擲骰、抽一個、洗牌（Fisher-Yates）、隨機 ID |
 
 ## 主題篇（需要時再翻）
 
@@ -64,26 +69,9 @@
 > 想快速查：**[`html/index.html`](../html/index.html)** 是分頁速查表（核心／資料IO／PEG／並行／C互通／env），開瀏覽器即看。
 > 可跑範例在 [`examples/`](../examples/README.md)（教學附件）與 [`snippets/`](../snippets/README.md)（做事的起點）。
 
-## 最快上手路線
+## 怎麼讀這份教學
 
-1. `janet` 開 REPL（[07](07-repl.md)），把 [01](01-語言速成.md) 的片段貼進去玩。
-2. 看 [02](02-資料結構.md) 建立 array / table 的手感。
-3. 你最常用的兩個庫直接看 [03 JSON](03-json.md) 和 [04 argparse](04-cli-argparse.md)（含子命令）。
-4. 進階招牌：[14 PEG](14-peg.md)、[09 fiber](09-fiber.md) + [15 ev/net](15-ev-channel-net.md)、[08 macro](08-巨集-macro.md)、[10 C 互通](10-c-互通.md)。
-5. 看根目錄 `bin/main.janet` 與 [`examples/`](../examples/README.md)——都是可跑的實例。
+**閱讀順序**（最快上手路線、從 C++ 過來的路線、每篇都有的 ⚠／★ 標記是什麼意思）
+另成一篇：[路線圖](路線圖.md)。
 
-### 從 C++ 過來的路線
-
-1. [01 語言速成](01-語言速成.md) → [01b C++ 對照](01b-給-C++-開發者.md) → [02 資料結構](02-資料結構.md)
-2. [21 數字與位元](21-數字與位元.md)（差異最大，早點看少踩坑）
-3. [20 錯誤處理與資源管理](20-錯誤處理與資源管理.md)（`with` 就是 RAII）
-4. [18 字串](18-字串與-buffer.md) + [19 檔案](19-檔案與檔案系統.md)（開始真的寫東西）
-5. [08 巨集](08-巨集-macro.md)（template 的替代品）、[10 C 互通](10-c-互通.md)（把重活丟回 C）
-
-## 每篇都有的東西
-
-- **⚠ 標記**＝實測踩過的坑，不是理論上的注意事項。
-- **★ 標記**（目錄裡）＝這篇最值得記住的一件事。
-- 每篇結尾都有「下一步」連結，可以一路讀下去。
-- 更完整的環境／API 踩坑記錄在 [`FINDINGS-踩坑.md`](../FINDINGS-踩坑.md)（LLM 與模組）
-  與 [`FINDINGS-踩坑b-工具鏈.md`](../FINDINGS-踩坑b-工具鏈.md)（jpm／import）。
+想查**某個領域完整有哪些函式可用**（而不是學概念）→ [`reference/`](../reference/README.md)。

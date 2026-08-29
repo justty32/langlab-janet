@@ -12,6 +12,10 @@
 | `subcommands.janet` | git 風格子命令 dispatcher | `janet examples/subcommands.janet add https://x.git -n libs` |
 | `fibers.janet` | fiber / generator / 錯誤處理 / ev | `janet examples/fibers.janet` |
 | `pipeline.janet` | 子行程 / 管線 / 信號 | `janet examples/pipeline.janet` |
+| `testing-demo.janet` | 測試怎麼寫：`assert` 的回傳值、失敗訊息、`deep=`、驗證錯誤路徑 | `janet examples/testing-demo.janet` |
+| `time-demo.janet` | 時間與日期：`strftime`、⚠ 0-based 的月與日、日期算術、三種 `os/clock` | `janet examples/time-demo.janet` |
+| `seq-tools.janet` | 序列工具：回傳型別實測、原地 vs 新的、`partition` 兩個陷阱、三個推導 | `janet examples/seq-tools.janet` |
+| `random-demo.janet` | 隨機數：同種子同結果、擲骰分布、洗牌均勻性驗證、`os/cryptorand` | `janet examples/random-demo.janet` |
 | `native-module/` | 用 C 寫 Janet 原生模組 | `cd examples/native-module && jpm build`（見下） |
 | `embed/` | 把 Janet 嵌進 C 程式 | `cd examples/embed`（見下） |
 | `llm-http/` | [`../modules/llm-http/`](../modules/llm-http/README.md) 這個模組的八支範例（見下） | `janet examples/llm-http/01-minimal.janet` |
@@ -66,7 +70,9 @@ cc embed.c -I$HOME/.local/include/janet $HOME/.local/lib/libjanet.a \
 ./embed
 ```
 
-對應教學：FFI / native / embed 都在 [docs/10-c-互通.md](../docs/10-c-互通.md)，
+對應教學：測試在 [docs/23](../docs/23-測試怎麼寫.md)，時間在 [docs/24](../docs/24-時間與日期.md)，
+序列工具在 [docs/25](../docs/25-序列工具.md)，隨機數在 [docs/26](../docs/26-隨機數.md)，
+FFI / native / embed 都在 [docs/10-c-互通.md](../docs/10-c-互通.md)，
 fiber 在 [docs/09-fiber.md](../docs/09-fiber.md)，子命令在 [docs/04-cli-argparse.md](../docs/04-cli-argparse.md)，
 env 在 [docs/12-env-環境與動態變數.md](../docs/12-env-環境與動態變數.md)，
 PEG 在 [docs/14-peg.md](../docs/14-peg.md)。
