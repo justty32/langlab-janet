@@ -19,7 +19,7 @@
 [`../test/`](../test/) 底下對應的離線測試（不打網路、不呼叫真的模型）。
 
 環境與架構的實測背景（為什麼走 litellm proxy）→ [`../FINDINGS.md`](../FINDINGS.md)；
-實作時踩到的環境／API 地雷 → [`../FINDINGS-踩坑.md`](../FINDINGS-踩坑.md)。
+實作時踩到的環境／API 地雷 → [`../FINDINGS-踩坑.md`](../FINDINGS-踩坑.md)、[工具鏈篇](../FINDINGS-踩坑b-工具鏈.md)。
 
 ---
 

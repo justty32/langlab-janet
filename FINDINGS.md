@@ -88,13 +88,19 @@ system prompt（7,320 cache creation ＋ 11,609 cache read tokens）。當一般
 
 ---
 
-## 還有一份：實作時踩到的坑
+## 還有兩份：實作時踩到的坑
 
-上面是**決定架構**時的判斷；動手寫的時候踩到的環境／API 地雷（七～十一）
-搬到 **[FINDINGS-踩坑.md](FINDINGS-踩坑.md)**：
+上面是**決定架構**時的判斷；動手寫的時候踩到的地雷（七～十三）按性質分兩份：
+
+**[FINDINGS-踩坑.md](FINDINGS-踩坑.md)**（一）·LLM 與模組
 
 - 七、HTTP header 的值只能是 ASCII
 - 八、使用者設定檔：只 parse 不 eval
 - 九、驗證現況
 - 十、推理模型會把 `max_tokens` 花在 reasoning 上，content 回空字串
+
+**[FINDINGS-踩坑b-工具鏈.md](FINDINGS-踩坑b-工具鏈.md)**（二）·工具鏈
+
 - 十一、`jpm build` 不會因為你改了「非入口」的檔案就重編
+- 十二、Windows：`jpm install` 裝不了原生模組會靜默成功，manifest 會說謊
+- 十三、`./` 相對 import 在「跑檔案」與「REPL 求值」下不一樣

@@ -42,8 +42,12 @@ examples/            教學附件，配合 docs 某一篇
 snippets/            做事的起點，「我要做 X，抄哪段」
 modules/             能用的小模組（llm-http 打 LLM、pi-shell 包 agent CLI）
 FINDINGS.md          環境與架構的實測筆記（LLM 供應商、為什麼走 litellm proxy）
-FINDINGS-踩坑.md     實作時被環境／API 咬到的地方
+FINDINGS-踩坑.md     實作時被 LLM API／模組設計咬到的地方（七～十）
+FINDINGS-踩坑b-工具鏈.md  jpm 與 import 的坑（十一～十三）
 ```
+
+> **檔案大小慣例**：`html/` 以外，每支檔案 ≤150 行且 ≤8192 bytes；超標就按內容語意拆，
+> 原檔名保留當入口（例如 `10` → `10b`／`10c`／`10d`）。
 
 ## 涵蓋範圍
 

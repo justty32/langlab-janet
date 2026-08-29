@@ -17,6 +17,7 @@
 | 00b | [Windows + VS Code](00b-windows-vscode.md) | ★ 搬到 Windows 實測：jpm 改 mingw、自備 `libjanet.a`、Janet++、中文 argv 坑 |
 | 01 | [語言速成](01-語言速成.md) | 括號家族 `() [] {} @`、def/let、函式、條件、迴圈、`print` vs `pp` |
 | 01b | [給 C++ 開發者的對照](01b-給-C++-開發者.md) | ★ 概念對照表、`=` 的兩套語意、沒有值拷貝、沒有重載、GC 與 RAII |
+| 01c | [解構與執行緒巨集](01c-解構與執行緒巨集.md) | 把樣板碼壓短的兩招：`def [a b & rest]`、`->`／`->>`／`-?>`／`as->` |
 | 02 | [資料結構](02-資料結構.md) | array / tuple / table / struct，`@` 的意義，`get-in` |
 | 03 | [JSON](03-json.md) | `spork/json`：字面≈JSON、encode/decode、null 陷阱、巢狀改值 |
 | 04 | [CLI 參數](04-cli-argparse.md) | `spork/argparse` 四種 kind、自動 help、**子命令**（git 風格） |
@@ -31,7 +32,8 @@
 | # | 篇 | 重點 |
 |---|----|------|
 | 18 | [字串與 buffer](18-字串與-buffer.md) | string／buffer 之分、`string/*` 參數順序坑、格式動詞、byte 不是字元 |
-| 19 | [檔案與檔案系統](19-檔案與檔案系統.md) | `slurp`／`spit`、`with` + file handle、`os/stat`、`spork/path`、★ Windows 換行陷阱 |
+| 19 | [檔案與檔案系統](19-檔案與檔案系統.md) | `slurp`／`spit`、`with` + file handle、開檔模式、★ Windows 換行陷阱 |
+| 19b | [檔案系統與路徑](19b-檔案系統與路徑.md) | `os/stat`、走目錄、`spork/path` 組路徑（別自己接字串） |
 | 20 | [錯誤處理與資源管理](20-錯誤處理與資源管理.md) | `error`／`try`／`protect`／`assert`、`defer`／`with`＝RAII、何時回 nil 何時拋錯 |
 | 21 | [數字與位元](21-數字與位元.md) | ★ 全部是 double、`/` vs `div` vs `mod` vs `%`、位元運算是 32-bit、`int/u64` |
 | 22 | [原型與方法](22-原型與方法.md) | Janet 版的「類別」：`(:method obj)`、原型鏈＝vtable、三個陷阱、配合 `with` |
@@ -83,4 +85,5 @@
 - **⚠ 標記**＝實測踩過的坑，不是理論上的注意事項。
 - **★ 標記**（目錄裡）＝這篇最值得記住的一件事。
 - 每篇結尾都有「下一步」連結，可以一路讀下去。
-- 更完整的環境／API 踩坑記錄在 [`FINDINGS-踩坑.md`](../FINDINGS-踩坑.md)。
+- 更完整的環境／API 踩坑記錄在 [`FINDINGS-踩坑.md`](../FINDINGS-踩坑.md)（LLM 與模組）
+  與 [`FINDINGS-踩坑b-工具鏈.md`](../FINDINGS-踩坑b-工具鏈.md)（jpm／import）。
