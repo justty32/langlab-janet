@@ -67,12 +67,16 @@ cc embed.c -I$HOME/.local/include/janet $HOME/.local/lib/libjanet.a \
 ./embed
 ```
 
-對應教學：spork 導覽在 [docs/27](../docs/27-spork-全覽.md)～[30](../docs/30-spork-並行與服務.md)，
-測試在 [docs/23](../docs/23-測試怎麼寫.md)，時間在 [docs/24](../docs/24-時間與日期.md)，
-序列工具在 [docs/25](../docs/25-序列工具.md)，隨機數在 [docs/26](../docs/26-隨機數.md)，
-FFI / native / embed 都在 [docs/10-c-互通.md](../docs/10-c-互通.md)，
-fiber 在 [docs/09-fiber.md](../docs/09-fiber.md)，子命令在 [docs/04-cli-argparse.md](../docs/04-cli-argparse.md)，
-env 在 [docs/12-env-環境與動態變數.md](../docs/12-env-環境與動態變數.md)，
-PEG 在 [docs/14-peg.md](../docs/14-peg.md)。
+## 哪一支配哪一篇
+
+**33 支範例的檔頭都寫了它對應哪一篇 docs**，所以要反查就跑這行（實測 33/33 全中）：
+
+```sh
+for f in examples/*.janet; do printf '%-24s %s\n' "$(basename $f)" "$(head -8 "$f" | grep -o 'docs/[0-9a-zA-Z-]*' | head -1)"; done
+```
+
+反過來，每篇教學結尾的「可跑範例」段也連著它的範例——兩邊都走得通，
+不再另外維護一張對照表（那種表一定會過時，原本那張就只涵蓋 9 支）。
+
 `llm-http/` 那組對應的是 [modules/llm-http/README.md](../modules/llm-http/README.md)
 與 [FINDINGS.md](../FINDINGS.md)（架構為什麼這樣選、環境有哪些雷）。
