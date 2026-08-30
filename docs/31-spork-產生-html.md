@@ -35,10 +35,13 @@ spork 給你**兩條**產 HTML 的路，取捨很清楚：
 (htmlgen/html [:a {:href "/x" :class "btn"} "點我"])
 # => <a class="btn" href="/x">點我</a>
 
-(htmlgen/html [:br])          # => <br/>        自閉合標籤自動處理
-(htmlgen/html [:p 42])        # => <p>42</p>    數字自動轉字串
-(htmlgen/html [:p nil "a"])   # => <p>a</p>     nil 子元素直接跳過
+(htmlgen/html [:br])          # => @"<br/>"      自閉合標籤自動處理
+(htmlgen/html [:p 42])        # => @"<p>42</p>"  數字自動轉字串
+(htmlgen/html [:p nil "a"])   # => @"<p>a</p>"   nil 子元素直接跳過
 ```
+
+⚠ **回傳的是 `buffer` 不是 `string`**（那些 `@"…"` 就是這個意思）。要比較、當字典的鍵、
+或塞進 JSON 之前記得 `(string …)`——buffer 跟 string 內容一樣也不相等（[13](13-symbol-keyword-字串.md)）。
 
 因為標籤就是普通的 Janet 資料，**你可以用 `map`／`seq` 生出來**——這才是它的價值：
 
@@ -140,11 +143,8 @@ spork 給你**兩條**產 HTML 的路，取捨很清楚：
 
 ## 可跑範例
 
-```sh
-janet examples/spork-tour.janet    # htmlgen 有一段
-```
-
-清單見 [`reference/spork/htmlgen-temple-產生-html.md`](../reference/spork/htmlgen-temple-產生-html.md)；
+`janet examples/spork-tour.janet`（htmlgen 有一段）。清單見
+[`reference/spork/htmlgen-temple-產生-html.md`](../reference/spork/htmlgen-temple-產生-html.md)，
 完整 API 查[官方 repo](https://github.com/janet-lang/spork)。
 
 下一步：回 [docs 目錄](README.md) 挑下一篇。
