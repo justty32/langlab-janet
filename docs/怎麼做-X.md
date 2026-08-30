@@ -84,5 +84,8 @@
 | 寫巨集 | [08](08-巨集-macro.md)＋[`macros`](../examples/macros.janet) |
 | 產生 HTML | [31](31-spork-產生-html.md) | 
 
+> **想確認自己真的懂了** → [`exercises/`](../exercises/README.md)：題目專挑 ⚠ 陷阱，
+> 跑起來會告訴你第幾題錯、預期什麼、你給了什麼。
+>
 > 找不到你要的？[README](README.md) 有完整目錄，
 > [`reference/`](../reference/README.md) 可以查「這個領域到底有哪些函式」。
