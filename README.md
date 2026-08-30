@@ -28,6 +28,7 @@ jpm build && ./build/janet-lab --json -n world  # 編成單一執行檔再跑
 | **撞到怪行為** —— 「這是已知的坑嗎」 | [`html/gotchas.html`](html/gotchas.html)：全部實測過的地雷集中一頁，每條標了出處 |
 | **想查全** —— 這個領域到底有哪些函式 | [`reference/`](reference/README.md)：內建的從 root-env 逐一列舉，spork 只收常用（最全的在[官方](https://github.com/janet-lang/spork)）|
 | **想抄** —— 現在要做某件事 | [`snippets/`](snippets/README.md)：可貼可改的片段（定時器、管線、檔案 IO、閉包、context…） |
+| **想看真東西怎麼蓋** —— 不是 API 是設計 | [`try/`](try/README.md)：從零寫一個 LLM 客戶端的過程，每個分層決定都寫了為什麼 |
 
 配合教學的可跑範例在 [`examples/`](examples/README.md)。
 
@@ -44,6 +45,7 @@ html/                分頁速查表（index / data-io / peg / concurrency / ffi
 examples/            教學附件，配合 docs 某一篇
 snippets/            做事的起點，「我要做 X，抄哪段」
 modules/             能用的小模組（llm-http 打 LLM、pi-shell 包 agent CLI）
+try/                 從零蓋一個 LLM 客戶端的**過程**——看「怎麼分層」，不是看 API
 FINDINGS.md          環境與架構的實測筆記（LLM 供應商、為什麼走 litellm proxy）
 FINDINGS-踩坑.md     實作時被 LLM API／模組設計咬到的地方（七～十）
 FINDINGS-踩坑b-工具鏈.md  jpm 與 import 的坑（十一～十三）
