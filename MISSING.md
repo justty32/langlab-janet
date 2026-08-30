@@ -27,4 +27,33 @@
 
 ---
 
+## 怎麼系統性找缺口（不用等使用者問）
+
+上面那十筆是**被動**記下來的（使用者問了才發現沒寫）。要**主動**找，就拿 `root-env`
+的全部綁定去對 `docs/` 掃一遍——沒被任何一篇提到的，就是候選缺口：
+
+```sh
+janet -e '(each s (sort (map string (filter symbol? (keys root-env)))) (print s))' > /tmp/all.txt
+cat docs/*.md > /tmp/alldocs.txt
+while read f; do grep -qF -- "$f" /tmp/alldocs.txt || echo "$f"; done < /tmp/all.txt
+```
+
+同一招換成 `(filter |(string/has-prefix? "os/" (string $)) …)` 就能只掃某一個家族。
+
+**2026-08-30 掃過一輪**：702 個綁定裡零覆蓋的從 34 個降到 **18 個**，補出了
+[32](docs/32-條件與模式比對.md)～[40](docs/40-內建動態變數.md) 九篇。
+
+剩下的 18 個**刻意不補**，因為它們不是寫 Janet 會用到的東西：
+
+| 剩下的 | 為什麼不補 |
+|--------|-----------|
+| `%=` `*=` | 複合指定運算子，`+=`／`-=` 已在 [01](docs/01-語言速成.md) 教過，同一個模式 |
+| `*lint-error*` `*lint-levels*` `*lint-warn*` `*flychecking*` | 給 linter／IDE 整合用，不是寫程式時碰的 |
+| `*macro-form*` `*macro-lints*` `*defdyn-prefix*` | 巨集展開器的內部狀態（[08](docs/08-巨集-macro.md) 教的是寫巨集，不是改展開器）|
+| `*module-loaders*` `*module-loading*` `*module-make-env*` | 自訂模組載入器；要動這層的人不需要入門教學 |
+| `*ffi-context*` `*peg-grammar*` `*profilepath*` `*err-color*` `*task-id*` | 各自模組的內部旗標，[10b](docs/10b-ffi-型別與指標.md)／[14](docs/14-peg.md)／[15](docs/15-ev-channel-net.md) 講的是用法不是內部 |
+
+> ⚠ 「零覆蓋」只代表**沒有任何一篇提到那個名字**，不代表該補。
+> 判斷要不要補的標準是「**寫 Janet 的人會不會撞到它**」，不是把數字歸零。
+
 ## 新的缺口記在下面
