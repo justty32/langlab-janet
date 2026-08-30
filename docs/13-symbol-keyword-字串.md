@@ -143,4 +143,8 @@ JSON 解回來 key 是**字串**，自己寫的 Janet 用 keyword，兩邊一比
 | 比較 | 先轉同型別再 `=` | 跨型別永遠 false |
 | 名字查值 | `(eval (symbol s))` 或 `((get (curenv) (symbol s)) :value)` | |
 
+**可跑範例**：`janet examples/names.janet`——四種名字並排印出來（長得一樣卻互不相等），
+以及 `(keyword "有 空格")` 存得進字典、`%s` 看得到、`%j` 直接報
+`could not print to jdn format`。
+
 回目錄：[docs/README.md](README.md)。
