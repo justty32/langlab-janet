@@ -51,3 +51,6 @@
 
 （另有 `ffi/jitfn`：把一段機器碼塞進可執行記憶體當函式指標用。除非你在寫 JIT，不會用到。）
 
+## 可跑範例
+
+`janet examples/ffi-pointers.janet`——最後一段就是 `char*` 怎麼變成 Janet 字串。

@@ -95,3 +95,9 @@
 下一篇：**[12d · OS 環境變數](12d-os-環境變數.md)**（`os/getenv`、給子行程指定環境、
 `JANET_PATH` 的坑，以及這一系列的速查表）。⚠ 那是**作業系統**那個 `PATH`／`HOME`，
 跟本篇的 `dyn` 完全無關，只是名字容易混。
+
+## 可跑範例
+
+`janet examples/dyn-vars.janet 引數A 引數B`——內建有哪些動態變數、`*out*` 其實就是
+keyword `:out`、把 `print` 導進 buffer，以及**用 fiber 實證 dyn 是 per-fiber 的**。
+完整清單見 [40 內建動態變數](40-內建動態變數.md)。

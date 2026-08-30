@@ -104,3 +104,8 @@ C 慣用「你給我一塊記憶體、我填給你」。Janet 這邊開一個夠
 `(ffi/pointer-buffer pointer capacity &opt count offset)` 做出一個**不由 GC 配置/釋放**的
 buffer view：`capacity` 是那塊記憶體有多大、`count` 是要當成幾個位元組長。超過 capacity
 的擴充會報錯（不會 realloc 到別處，因為那塊不是 Janet 的）。
+
+## 可跑範例
+
+`janet examples/ffi-pointers.janet`——型別大小、struct、out 參數、手動記憶體、
+`char*` 轉字串，本篇每一節都跑得到。

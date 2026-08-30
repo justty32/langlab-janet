@@ -62,4 +62,9 @@ REPL 求值、結果顯示在 log。等於「REPL 一直開、但你人在編輯
 兩者關係：Conjure 背後就是起一個 `janet -n -s` 的 stdio REPL，把你的 form 丟進去。所以你在
 REPL 學到的一切（`doc`、`import`、`pp`）在 Conjure 裡照用。
 
+## 可跑範例
+
+`janet snippets/repl-mode.janet`——程式跑完之後**掉進一個 REPL**，而且你自己定義的
+東西在裡面直接可用。載完資料、建好連線再手動探索時很順手。
+
 下一步：[08-巨集-macro.md](08-巨集-macro.md)。

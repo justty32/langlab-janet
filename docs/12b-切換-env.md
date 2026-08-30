@@ -88,3 +88,7 @@ module/paths      # 找模組的搜尋規則
 
 `(require "x")` = 載入並回傳 env、不做綁定；`import` = `require` + `merge-module`。
 
+## 可跑範例
+
+`janet examples/env-introspect.janet`——列出環境裡有什麼、查某個 symbol 是什麼、
+切換到別的 env 求值。

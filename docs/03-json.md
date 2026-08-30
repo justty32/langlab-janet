@@ -144,4 +144,6 @@
 拿 JSON 去打 HTTP API（POST、buffer/status 兩個雷、回應該檢查什麼）→
 [17 · 用 spork/http 打 API](17-用-spork-http-打-api.md)。
 
+**可跑範例**：`janet snippets/json-and-marshal.janet`（讀成 table、存回去的兩條路）。
+
 下一步：[04-cli-argparse.md](04-cli-argparse.md)。
