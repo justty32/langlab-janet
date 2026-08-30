@@ -19,6 +19,7 @@
 | `match-demo.janet` | 模式比對：迷你運算式求值器、字典子集比對、⚠ tuple 前綴比對的坑、`when-let` 短路 | `janet examples/match-demo.janet` |
 | `loop-tour.janet` | `loop` 全部 verb 與條件詞各跑一遍、⚠ `:range` 負步長給空的、`:before`/`:after` 的真實順序 | `janet examples/loop-tour.janet` |
 | `fn-params.janet` | 五種參數形式、用 `compile` 示範編譯期 arity 錯、⚠ 迴圈裡建閉包 `@[3 3 3]` vs `@[0 1 2]` | `janet examples/fn-params.janet` |
+| `error-anatomy.janet` | 三類錯誤各造一個來看、⚠ 尾呼叫吃掉的那層、「呼叫 nil」的怪訊息、`trace` | `janet examples/error-anatomy.janet` |
 | `spork-tour.janet` | spork 導覽：十四個模組各跑一段（misc／path／base64／utf8／regex／schema／data／date／htmlgen／fmt／zip／randgen／generators／ev-utils） | `janet examples/spork-tour.janet` |
 | `native-module/` | 用 C 寫 Janet 原生模組 | `cd examples/native-module && jpm build`（見下） |
 | `embed/` | 把 Janet 嵌進 C 程式 | `cd examples/embed`（見下） |
