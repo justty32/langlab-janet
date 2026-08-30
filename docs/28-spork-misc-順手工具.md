@@ -22,9 +22,9 @@
 你想要的是「**改值但保持字典形狀**」。`misc` 補的正是這個洞：
 
 ```janet
-(misc/map-vals inc {:a 1 :b 2})            # => @{:a 2 :b 3}   ← key 留著
+(misc/map-vals inc {:a 1 :b 2})            # => @{:b 3 :a 2}   ← key 留著（hash 序）
 (misc/map-keys string {:a 1})              # => @{"a" 1}       ← 換 key
-(misc/select-keys {:a 1 :b 2 :c 3} [:a :c]) # => @{:a 1 :c 3}   ← 挑幾個欄位
+(misc/select-keys {:a 1 :b 2 :c 3} [:a :c]) # => @{:c 3 :a 1}   ← 挑幾個欄位（hash 序）
 (misc/table-filter (fn [k v] (> v 1)) @{:a 1 :b 2})  # => @{:b 2}
 ```
 

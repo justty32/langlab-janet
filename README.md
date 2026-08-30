@@ -38,7 +38,7 @@ jpm build && ./build/janet-lab --json -n world  # 編成單一執行檔再跑
 project.janet        專案宣告（依賴、要編的執行檔）
 janet-lab/init.janet 核心模組（純函式）
 bin/main.janet       CLI 進入點（argparse 實例）
-test/basic.janet     測試
+test/                 測試（12 支）——其中 doc-examples.janet 守的是**教學裡的輸出**不是程式碼
 docs/                分篇教學（00～42，69 篇）——掌握概念用；幾乎每篇都配一支可跑範例
 reference/           查「有哪些可用」——內建的求全，spork 只收常用
 html/                分頁速查表（index / data-io / peg / concurrency / ffi / env / ★ gotchas 地雷）

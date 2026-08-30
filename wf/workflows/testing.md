@@ -16,12 +16,18 @@
 
 | 驗證 | 指令 | 誰跑 |
 |------|------|------|
-| **程式碼**（改完必跑，也是 commit 前的完整驗證）| `jpm test` | agent |
+| **程式碼 ＋ 教學裡的輸出**（改完必跑，也是 commit 前的完整驗證）| `jpm test` | agent |
 | **文件連結與結構**（改 `.md` 後跑）| `bash wf/tools/wf-lint.sh --strict .` | agent |
 | **教學文裡的程式碼**（改到 `docs/`／`reference/`／`examples/` 時）| `janet examples/<對應範例>.janet`，或把那段直接 `janet -e '…'` 跑一次 | agent |
 | **Windows 11 上的行為** | PowerShell 裡 `jpm deps` → `jpm test`（見 [`docs/00b`](../../docs/00b-windows-vscode.md)）| 使用者 → [WAIT_USER](../WAIT_USER.md) |
 
-`jpm test` 沒有快速／完整之分——它把 `test/` 底下每支 `.janet` 各用一個獨立行程跑一遍（目前 11 支，全離線、不打網路、不呼叫真模型），三秒內跑完，所以**一律跑全部**。
+`jpm test` 沒有快速／完整之分——它把 `test/` 底下每支 `.janet` 各用一個獨立行程跑一遍（目前 12 支，全離線、不打網路、不呼叫真模型），幾秒內跑完，所以**一律跑全部**。
+
+★ 其中 [`test/doc-examples.janet`](../../test/doc-examples.janet) **守的是教學不是程式碼**：
+它把 `docs/*.md` 裡所有 `(運算式) # => 預期` 的單行案例重跑一遍比對（目前核到 162 條）。
+鐵律 5 只保證「寫的當下是對的」，Janet 升版或有人手改一個值都會讓文件默默說謊——
+這支把那件事變成會變紅的測試。驗不了的案例（中文被 `%j` 逃逸、時間戳、亂數、需要特定檔案）
+列在該檔的「不比對」名單裡，**每一條都寫明原因**。
 
 「誰跑」只有兩種值：**agent**（這台 Manjaro 跑得動）、**使用者 → WAIT_USER**（要實機、外部服務、帳號、付費、目視）。判不準就當後者。
 
