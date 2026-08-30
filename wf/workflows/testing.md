@@ -56,6 +56,11 @@ for f in snippets/*.janet; do
 與 **⑤ 從頂層 README 點得到每支 example／snippet**：兩者都是沿 md 連結做 BFS，
 寫成一小段 Python 跑（做法見本節下方的 ⚠）。
 
+**⑥ 純文字的 `docs/NN` 交叉引用指得到**。`wf-lint` 只檢查 markdown 連結，
+但註解與內文裡有大量「見 docs/33」這種**純文字**引用（目前 79 處），改了篇號或拆檔時
+它們不會被抓到。用 regex 掃 `docs/(\d+[a-z]?)` 對照 `docs/` 實際檔名即可。
+⚠ 指得到不代表**指對**——還要抽樣看引用前後那句話跟被引用篇的主題合不合。
+
 ⚠ **寫可達性檢查時的一個坑**（真的踩過）：過濾網址若寫成 `t.startswith("http")`，
 會連 `reference/spork/http-伺服端.md` 這種**檔名剛好以 http 開頭**的一起濾掉，
 於是回報兩個不存在的「孤兒檔」。要濾就濾 `http://`／`https://`。
