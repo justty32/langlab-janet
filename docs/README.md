@@ -22,6 +22,7 @@
 | 05b | [建立新專案](05b-建立新專案.md) | `jpm new-project`／`new-exe-project`／`new-c-project`；★ **`main` 會被自動呼叫** |
 | 05c | [jpm 的 rule 系統](05c-jpm-的-rule-系統.md) | `jpm run` **不是** `cargo run`、`rules`／`phony`；★ **build 什麼時候不重編** |
 | 05d | [引用自己的另一個專案](05d-引用自己的專案.md) | 跨專案相對路徑 import 的坑、從本地 repo `jpm install` 的兩個前提 |
+| 05e | [import 與模組路徑](05e-import-與模組路徑.md) | 相對路徑相對「寫這行的檔案」、⚠ `~` 是 quasiquote 不是家目錄、`:as`／`:prefix`、import 要放頂層 |
 | 06 | [編輯器與 REPL](06-編輯器與-REPL.md) | Conjure `,ee` 工作流、parinfer、（可選）janet-lsp |
 
 ## 日常會用到的（建議接著看）
@@ -41,41 +42,11 @@
 | 26 | [隨機數](26-隨機數.md) | PRNG／`math/rng`／`os/cryptorand` 三選一、★ **預設每次跑都一樣** |
 | 26b | [隨機數配方](26b-隨機數配方.md) | 擲骰、抽一個、洗牌（Fisher-Yates）、隨機 ID |
 
-## 主題篇（需要時再翻）
+## 需要時再翻的兩區
 
-| # | 篇 | 重點 |
-|---|----|------|
-| 07 | [REPL 用法](07-repl.md) | 開關、`doc`、載入模組、`dyn`、跟 Conjure 的關係 |
-| 08 | [巨集 macro](08-巨集-macro.md) | `~ , ,;`、`defmacro`、`macex1` 除錯、`with-syms` 衛生 |
-| 09 | [Fiber 協程](09-fiber.md) | generator、例外即 fiber、信號遮罩、`ev` 非同步 |
-| 10 | [與 C 互通](10-c-互通.md) | 三種接法的差別、FFI 最小範例、`ffi/defbind` |
-| 10b | [FFI：型別、指標與記憶體](10b-ffi-型別與指標.md) | 型別關鍵字全表、`ffi/write`／`read`、out 參數、struct、`malloc` |
-| 10c | [FFI：字串回傳與地雷合輯](10c-ffi-字串與地雷.md) | `char*` 怎麼變 Janet 字串、指標地雷、回呼 |
-| 10d | [native 模組與嵌入](10d-native-與嵌入.md) | 用 C 寫 Janet 函式、把 Janet 塞進 C 程式 |
-| 11 | [子行程 / 管線 / 信號](11-pipeline-signal.md) | `os/execute`、`sh/exec-slurp`、管線兩法、`proc-kill`、`sigaction` |
-| 12 | [env：環境表](12-env-環境與動態變數.md) | `curenv`、一個綁定裡有什麼、列出所有綁定、查 symbol 型別 |
-| 12b | [切換 env](12b-切換-env.md) | `make-env`、`fiber/setenv`、`dofile`／`run-context`、`import` 的 env 選項 |
-| 12c | [動態變數 dyn](12c-dyn.md) | **`dyn` 到底是什麼**（動態作用域 vs 全域變數）、`with-dyns`、per-fiber |
-| 12d | [OS 環境變數](12d-os-環境變數.md) | `os/getenv`、給子行程指定環境（`:pe` 的坑）、`JANET_PATH`、速查 |
-| 13 | [symbol / keyword / 字串](13-symbol-keyword-字串.md) | 四種「名字」型別、`"abc"` ↔ `:abc` 互轉、跨型別 `=` 的坑 |
-| 14 | [PEG 解析器](14-peg.md) | 內建 PEG：組合子、捕獲、具名文法、遞迴、解 log／CSV |
-| 15 | [ev：channel / 執行緒](15-ev-channel-net.md) | channel、真 OS 執行緒、select/gather、逾時取消 |
-| 15b | [net 與速查](15b-net-與速查.md) | 五行 TCP server、常用 API 一覽、地雷清單 |
-| 16 | [marshal 與自省](16-marshal-與自省.md) | 序列化閉包與 fiber、image、`disasm`／`trace`／`comptime`、spork 全櫃 |
-| 17 | [用 spork/http 打 API](17-用-spork-http-打-api.md) | POST 寫法、buffer／status 兩個雷、沒 TLS 沒串流、★ **HTTP 200 不代表拿到完整答案** |
-
-## spork 篇（準標準庫）
-
-`spork` 不是內建，但幾乎人人都裝——51 個模組。從 27 的地圖開始挑。
-
-| # | 篇 | 重點 |
-|---|----|------|
-| 27 | [spork 全覽](27-spork-全覽.md) | 地圖：七大類、⚠ **不要 `(import spork)`**、原生模組與 Windows 的坑 |
-| 28 | [spork/misc 順手工具](28-spork-misc-順手工具.md) | ★ `map-vals` 補了「字典不好處理」的洞、`randomize-array` 洗牌 |
-| 28b | [spork/misc 文字與流程](28b-spork-misc-文字與流程.md) | `dedent`、印表格（⚠ 中文對不齊）、`capout`、dyn 當開關的 logger |
-| 29 | [spork 資料與文字](29-spork-資料與文字.md) | `schema` 驗證的 quote 坑、`base64`／`crc`／`zip`、★ **regex 其實是 PEG**、`date` 格式碼 |
-| 30 | [spork 並行與服務](30-spork-並行與服務.md) | ★ `pmap` 並行但**保序**、`generators` 真惰性、⚠ `channel/from-each` 沒喝完會卡死 |
-| 31 | [spork 產生 HTML](31-spork-產生-html.md) | `htmlgen` 用資料結構、`temple` 用模板、★ **兩者都自動跳脫** |
+**主題篇（07–17）**——REPL／巨集／fiber／C 互通／子行程／env／PEG／ev／marshal／HTTP，
+以及 **spork 篇（27–31）**——準標準庫的地圖與五篇專題，
+兩區都是「用到才翻」，所以另成一份索引：[主題與 spork 索引](主題與-spork-索引.md)。
 
 > 想快速查：**[`html/index.html`](../html/index.html)** 是分頁速查表（核心／資料IO／PEG／並行／C互通／env），開瀏覽器即看。
 > 可跑範例在 [`examples/`](../examples/README.md)（教學附件）與 [`snippets/`](../snippets/README.md)（做事的起點）。
