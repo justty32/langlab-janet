@@ -4,10 +4,7 @@
 
 00 → 06 依序讀完就能上手；07 之後每篇獨立，需要時再翻。
 
-> **從 C++ 過來的話**：先看 [01 語言速成](01-語言速成.md)，再看
-> [**01b 給 C++ 開發者的對照**](01b-給-C++-開發者.md)——一張概念對照表加五個一定會誤會的地方，
-> 讀完之後 02 以後的內容會快非常多。接著 [21 數字與位元](21-數字與位元.md) 也建議早點看，
-> 因為 Janet 的數字模型跟 C++ 差最多。
+> **從 C++ 過來的？** 有專門的讀法，見 [路線圖](路線圖.md)。
 
 ## 基礎篇（依序讀）
 
@@ -38,7 +35,7 @@
 | 21 | [數字與位元](21-數字與位元.md) | ★ 全部是 double、`/` vs `div` vs `mod` vs `%`、位元運算是 32-bit、`int/u64` |
 | 22 | [原型與方法](22-原型與方法.md) | Janet 版的「類別」：`(:method obj)`、原型鏈＝vtable、三個陷阱、配合 `with` |
 | 23 | [測試怎麼寫](23-測試怎麼寫.md) | 沒有測試框架、`assert`／`protect`／`deep=`、★ 一支失敗不擋其他支 |
-| 23b | [用 spork/test 寫測試](23b-用-spork-test-寫測試.md) | 失敗不中止整支檔、`assert-error`、`capture-stdout`、⚠ `skip-asserts` 會讓 suite 變紅 |
+| 23b | [用 spork/test 寫測試](23b-用-spork-test-寫測試.md) | 失敗不中止整支檔、`assert-error`、⚠ `skip-asserts` 會讓 suite 變紅 |
 | 24 | [時間與日期](24-時間與日期.md) | `os/time`／`strftime`／`mktime`、計時用 monotonic、★ **月與日是 0-based** |
 | 25 | [序列工具](25-序列工具.md) | `map`／`filter`／`reduce` 家族的四條規則、★ 輸出幾乎都是 array |
 | 26 | [隨機數](26-隨機數.md) | PRNG／`math/rng`／`os/cryptorand` 三選一、★ **預設每次跑都一樣** |
@@ -75,9 +72,10 @@
 |---|----|------|
 | 27 | [spork 全覽](27-spork-全覽.md) | 地圖：七大類、⚠ **不要 `(import spork)`**、原生模組與 Windows 的坑 |
 | 28 | [spork/misc 順手工具](28-spork-misc-順手工具.md) | ★ `map-vals` 補了「字典不好處理」的洞、`randomize-array` 洗牌 |
-| 28b | [spork/misc 文字與流程](28b-spork-misc-文字與流程.md) | `dedent`、印表格（⚠ 中文對不齊）、`capout`、`cond->`、dyn 當開關的 logger |
-| 29 | [spork 資料與文字](29-spork-資料與文字.md) | `schema` 驗證（⚠ 巨集/函式版的 quote 坑）、`base64`／`crc`／`zip`、★ **regex 其實是 PEG**、`date` 格式碼 |
+| 28b | [spork/misc 文字與流程](28b-spork-misc-文字與流程.md) | `dedent`、印表格（⚠ 中文對不齊）、`capout`、dyn 當開關的 logger |
+| 29 | [spork 資料與文字](29-spork-資料與文字.md) | `schema` 驗證的 quote 坑、`base64`／`crc`／`zip`、★ **regex 其實是 PEG**、`date` 格式碼 |
 | 30 | [spork 並行與服務](30-spork-並行與服務.md) | ★ `pmap` 並行但**保序**、`generators` 真惰性、⚠ `channel/from-each` 沒喝完會卡死 |
+| 31 | [spork 產生 HTML](31-spork-產生-html.md) | `htmlgen` 用資料結構、`temple` 用模板、★ **兩者都自動跳脫** |
 
 > 想快速查：**[`html/index.html`](../html/index.html)** 是分頁速查表（核心／資料IO／PEG／並行／C互通／env），開瀏覽器即看。
 > 可跑範例在 [`examples/`](../examples/README.md)（教學附件）與 [`snippets/`](../snippets/README.md)（做事的起點）。
