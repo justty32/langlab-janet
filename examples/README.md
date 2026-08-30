@@ -5,6 +5,7 @@
 
 | 檔 | 主題 | 跑法 |
 |----|------|------|
+| `quickstart.janet` | **第一支**：括號家族、綁定、函式、條件、迴圈，附兩個地雷的現場實況（`print` 印位址、`%j` 逃逸中文） | `janet examples/quickstart.janet` |
 | `peg-demo.janet` | PEG：組合子、捕獲、具名文法、遞迴、CSV 切割 | `janet examples/peg-demo.janet` |
 | `ffi-demo.janet` | C FFI（不編譯，直呼共享庫） | `janet examples/ffi-demo.janet` |
 | `ffi-pointers.janet` | FFI 進階：型別大小 / struct / out 參數 / malloc / `char*` | `janet examples/ffi-pointers.janet` |
