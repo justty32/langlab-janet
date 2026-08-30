@@ -79,7 +79,9 @@
 (json/decode "null" false true)           # => nil        （nils=true）
 ```
 
-⚠ **地雷**：table 不能存 `nil` 值——若某鍵的值是 `null` 且你開了 `nils=true`，那個**鍵會直接消失**：
+⚠ **地雷**：table **存不了 `nil` 值**，開了 `nils=true` 時值為 `null` 的鍵會**直接消失**。
+這不是 JSON 專屬，是 Janet 通則——`(put t :k nil)` 等於刪掉那個鍵（見
+[`reference/型別判斷與轉換.md`](../reference/型別判斷與轉換.md)）。預設解成 `:null` 就是為了繞開它：
 
 ```janet
 (json/decode "{\"a\":1,\"b\":null}" true true)   # => @{:a 1}   （:b 不見了！）
@@ -144,6 +146,4 @@
 拿 JSON 去打 HTTP API（POST、buffer/status 兩個雷、回應該檢查什麼）→
 [17 · 用 spork/http 打 API](17-用-spork-http-打-api.md)。
 
-**可跑範例**：`janet snippets/json-and-marshal.janet`（讀成 table、存回去的兩條路）。
-
-下一步：[04-cli-argparse.md](04-cli-argparse.md)。
+**可跑範例**：`janet snippets/json-and-marshal.janet`。下一步：[04-cli-argparse.md](04-cli-argparse.md)。
