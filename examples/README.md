@@ -16,6 +16,8 @@
 | `time-demo.janet` | 時間與日期：`strftime`、⚠ 0-based 的月與日、日期算術、三種 `os/clock` | `janet examples/time-demo.janet` |
 | `seq-tools.janet` | 序列工具：回傳型別實測、原地 vs 新的、`partition` 兩個陷阱、三個推導 | `janet examples/seq-tools.janet` |
 | `random-demo.janet` | 隨機數：同種子同結果、擲骰分布、洗牌均勻性驗證、`os/cryptorand` | `janet examples/random-demo.janet` |
+| `match-demo.janet` | 模式比對：迷你運算式求值器、字典子集比對、⚠ tuple 前綴比對的坑、`when-let` 短路 | `janet examples/match-demo.janet` |
+| `loop-tour.janet` | `loop` 全部 verb 與條件詞各跑一遍、⚠ `:range` 負步長給空的、`:before`/`:after` 的真實順序 | `janet examples/loop-tour.janet` |
 | `spork-tour.janet` | spork 導覽：十四個模組各跑一段（misc／path／base64／utf8／regex／schema／data／date／htmlgen／fmt／zip／randgen／generators／ev-utils） | `janet examples/spork-tour.janet` |
 | `native-module/` | 用 C 寫 Janet 原生模組 | `cd examples/native-module && jpm build`（見下） |
 | `embed/` | 把 Janet 嵌進 C 程式 | `cd examples/embed`（見下） |

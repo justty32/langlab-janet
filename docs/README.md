@@ -41,6 +41,8 @@
 | 25 | [序列工具](25-序列工具.md) | `map`／`filter`／`reduce` 家族的四條規則、★ 輸出幾乎都是 array |
 | 26 | [隨機數](26-隨機數.md) | PRNG／`math/rng`／`os/cryptorand` 三選一、★ **預設每次跑都一樣** |
 | 26b | [隨機數配方](26b-隨機數配方.md) | 擲骰、抽一個、洗牌（Fisher-Yates）、隨機 ID |
+| 32 | [條件與模式比對](32-條件與模式比對.md) | ★ **`match` 比形狀還綁內容**（C++ 沒有的東西）、⚠ tuple 模式是前綴比對、`case` 對 array 永遠不中、`when-let` 家族 |
+| 32b | [loop 全表](32b-loop-全表.md) | 八個 verb ＋ 八個條件詞、⚠ **`:range` 負步長靜默給空的**、`:before`/`:after` 是每圈都跑 |
 
 ## 需要時再翻的兩區
 
