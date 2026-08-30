@@ -25,6 +25,37 @@
 
 「誰跑」只有兩種值：**agent**（這台 Manjaro 跑得動）、**使用者 → WAIT_USER**（要實機、外部服務、帳號、付費、目視）。判不準就當後者。
 
+## 文件層的五道檢查（`wf-lint` 沒涵蓋的）
+
+`wf-lint` 只掃 bytes 與連結。下面這五道是這個 repo 特有的，**改完文件一次跑完**：
+
+```sh
+# ① 檔案大小慣例（wf-lint 只看 bytes，不看行數）
+find . -path ./html -prune -o -path ./.git -prune -o -path ./wf/tools -prune -o \
+     -type f \( -name '*.md' -o -name '*.janet' \) -print |
+  while read f; do l=$(wc -l < "$f"); b=$(wc -c < "$f");
+    [ "$l" -gt 150 ] || [ "$b" -gt 8192 ] && echo "超標 $f ${l}行 ${b}B"; done
+
+# ② 每支 example 都 exit 0（⚠ 三個例外要帶參數／關 stdin）
+for f in examples/*.janet; do
+  case "$f" in */subcommands.janet) timeout 60 janet "$f" list -v >/dev/null 2>&1 ;;
+                *) timeout 60 janet "$f" </dev/null >/dev/null 2>&1 ;; esac || echo "✘ $f"; done
+
+# ③ snippets 同上（⚠ every-5s-clock 是刻意的無限迴圈，要排除）
+for f in snippets/*.janet; do case "$f" in */every-5s-clock.janet) continue;; esac
+  timeout 40 janet "$f" </dev/null >/dev/null 2>&1 || echo "✘ $f"; done
+```
+
+**④ 每篇 docs 都被索引到**（四份索引之一：`README`／`語言細節索引`／`主題與-spork-索引`／`路線圖`）
+與 **⑤ 從頂層 README 點得到每支 example／snippet**：兩者都是沿 md 連結做 BFS，
+寫成一小段 Python 跑（做法見本節下方的 ⚠）。
+
+⚠ **寫可達性檢查時的一個坑**（真的踩過）：過濾網址若寫成 `t.startswith("http")`，
+會連 `reference/spork/http-伺服端.md` 這種**檔名剛好以 http 開頭**的一起濾掉，
+於是回報兩個不存在的「孤兒檔」。要濾就濾 `http://`／`https://`。
+[23 測試怎麼寫](../../docs/23-測試怎麼寫.md) 那條「綠燈不等於有檢查」的反面——
+**紅燈也不等於真的壞了**，先確認是不是檢查器自己的問題。
+
 ## 離線可跑的子集：全部
 
 本專案的測試原則是**一律離線**——要測 HTTP 就在同一個行程裡起假伺服器（`test/llm-http-server.janet`），不打真網路。所以在這台機器上**沒有跑不動的子集**，`jpm test` 就是全集。
