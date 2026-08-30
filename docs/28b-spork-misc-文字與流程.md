@@ -44,7 +44,18 @@
 
 ⚠ **中文會對不齊**。它算欄寬是按 byte／字元數，但中文字在終端機佔**兩格**寬，
 所以有中文的欄位框線會歪掉（上面那個表就是實際輸出，自己看框線）。
-純 ASCII 的表格才對得齊。要漂亮的中文表格得自己算寬度。
+純 ASCII 的表格才對得齊。
+
+**缺的那塊在 `spork/rawterm`**：`(rawterm/monowidth s)` 回的是**顯示寬度**
+（`"中文abc"` → 7，而 `length` 給的是 byte 數 9）。拿它自己補空白就對齊了：
+
+```janet
+(defn pad [s w]
+  (string s (string/repeat " " (max 0 (- w (rawterm/monowidth s))))))
+```
+
+前後對照與 `slice-monowidth`（按顯示寬度切、不會把中文切一半）見
+[41 spork 終端與 shell](41-spork-終端與-shell.md)。
 
 `format-table` 是同一件事但寫進 buffer 而不是印出來。
 

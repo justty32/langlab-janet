@@ -40,6 +40,7 @@
 | 29 | [spork 資料與文字](29-spork-資料與文字.md) | `schema` 驗證的 quote 坑、`base64`／`crc`／`zip`、★ **regex 其實是 PEG**、`date` 格式碼 |
 | 30 | [spork 並行與服務](30-spork-並行與服務.md) | ★ `pmap` 並行但**保序**、`generators` 真惰性、⚠ `channel/from-each` 沒喝完會卡死 |
 | 31 | [spork 產生 HTML](31-spork-產生-html.md) | `htmlgen` 用資料結構、`temple` 用模板、★ **兩者都自動跳脫** |
+| 41 | [spork 終端與 shell](41-spork-終端與-shell.md) | `sh-dsl` 的 `\|` 真的是管線、⚠ `$<` 回 buffer、★ **`rawterm/monowidth` 讓中文表格對得齊**、⚠ `rawterm/size` 非 tty 回垃圾 |
 
 > 想快速查：**[`html/index.html`](../html/index.html)** 是分頁速查表，開瀏覽器即看。
 > 完整函式清單看 [`reference/`](../reference/README.md)。
