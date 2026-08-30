@@ -1,4 +1,4 @@
-# reference · 標準庫窮盡清單
+# reference · 查「有哪些可用」
 
 **這裡是「文檔」，不是教學。**兩者分工：
 
@@ -22,6 +22,11 @@
 | [斷言與錯誤.md](斷言與錯誤.md) | `assert` `assertf` `error` `errorf` `protect` `try` `signal` `propagate` `defer` `edefer`… | [23 測試怎麼寫](../docs/23-測試怎麼寫.md)、[20 錯誤處理](../docs/20-錯誤處理與資源管理.md) |
 | [os-時間.md](os-時間.md) | `os/time` `os/date` `os/mktime` `os/clock` `os/strftime` `os/sleep`，含 `os/date` 欄位表與 `strftime` 格式碼表 | [24 時間與日期](../docs/24-時間與日期.md) |
 | [math-數學與隨機.md](math-數學與隨機.md) | **全部 53 個 `math/*`**：常數、取整、冪與對數、三角雙曲、特殊函式、整數工具、隨機數 | [26 隨機數](../docs/26-隨機數.md) |
+| [spork/](spork/README.md) | **spork 常用模組的實測筆記**（不求窮盡，最全的在[官方 repo](https://github.com/janet-lang/spork)） | [27 spork 全覽](../docs/27-spork-全覽.md) |
+
+⚠ **上面那五份跟 `spork/` 的標準不一樣**：前者是 Janet **內建**的東西，數量固定、
+可以窮盡（而且真的對著 `root-env` 逐一核過）；`spork/` 是**第三方庫**，
+會改版、會長新東西，這裡只挑常用的記錄實測結果，**完整清單一律以官方為準**。
 
 ## 這些清單怎麼來的
 

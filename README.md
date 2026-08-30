@@ -25,7 +25,7 @@ jpm build && ./build/janet-lab --json -n world  # 編成單一執行檔再跑
 | **想學** —— 從頭把 Janet 搞懂 | [`docs/`](docs/README.md)：00 環境 → 06 編輯器逐篇遞進，18～26 是日常會用到的，07～17 是需要時再翻的主題篇 |
 | **從 C++ 過來** —— 想快速對上概念 | [`docs/01b`](docs/01b-給-C++-開發者.md)：一張概念對照表 + 五個一定會誤會的地方 |
 | **想查** —— 忘了某個寫法 | [`html/index.html`](html/index.html)：分頁速查表，開瀏覽器即看 |
-| **想查全** —— 這個領域到底有哪些函式 | [`reference/`](reference/README.md)：從 root-env 實際列舉的窮盡清單，每個範例都跑過 |
+| **想查全** —— 這個領域到底有哪些函式 | [`reference/`](reference/README.md)：內建的從 root-env 逐一列舉，spork 只收常用（最全的在[官方](https://github.com/janet-lang/spork)）|
 | **想抄** —— 現在要做某件事 | [`snippets/`](snippets/README.md)：可貼可改的片段（定時器、管線、檔案 IO、閉包、context…） |
 
 配合教學的可跑範例在 [`examples/`](examples/README.md)。
@@ -37,8 +37,8 @@ project.janet        專案宣告（依賴、要編的執行檔）
 janet-lab/init.janet 核心模組（純函式）
 bin/main.janet       CLI 進入點（argparse 實例）
 test/basic.janet     測試
-docs/                分篇教學（00～26）——掌握概念用
-reference/           標準庫窮盡清單——查「有哪些可用」用
+docs/                分篇教學（00～30，含 spork 四篇）——掌握概念用
+reference/           查「有哪些可用」——內建的求全，spork 只收常用
 html/                分頁速查表（index / data-io / peg / concurrency / ffi / env）
 examples/            教學附件，配合 docs 某一篇
 snippets/            做事的起點，「我要做 X，抄哪段」
@@ -58,6 +58,7 @@ REPL 與編輯器、巨集、fiber、**PEG 解析器**、**ev channel / 真執�
 **C 互通（含指標與記憶體）**、子行程與信號、**env 環境表與動態變數**、
 symbol↔字串、**字串與 buffer**、**檔案與檔案系統**、**錯誤處理與資源管理（defer／with）**、
 **數字與位元運算**、**原型與方法（Janet 版的類別）**、**marshal 序列化與自省**、
-**測試怎麼寫**、**時間與日期**、**序列工具全家**、**隨機數（PRNG vs 密碼學亂數）**。
+**測試怎麼寫**、**時間與日期**、**序列工具全家**、**隨機數（PRNG vs 密碼學亂數）**、
+**spork 準標準庫**（51 個模組的地圖、misc／schema／regex／date／pmap／generators）。
 
 每篇教學裡的 ⚠ 都是實際被咬過的坑，不是理論上的注意事項。

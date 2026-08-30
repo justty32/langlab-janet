@@ -66,6 +66,18 @@
 | 16 | [marshal 與自省](16-marshal-與自省.md) | 序列化閉包與 fiber、image、`disasm`／`trace`／`comptime`、spork 全櫃 |
 | 17 | [用 spork/http 打 API](17-用-spork-http-打-api.md) | POST 寫法、buffer／status 兩個雷、沒 TLS 沒串流、★ **HTTP 200 不代表拿到完整答案** |
 
+## spork 篇（準標準庫）
+
+`spork` 不是內建，但幾乎人人都裝——51 個模組。從 27 的地圖開始挑。
+
+| # | 篇 | 重點 |
+|---|----|------|
+| 27 | [spork 全覽](27-spork-全覽.md) | 地圖：七大類、⚠ **不要 `(import spork)`**、原生模組與 Windows 的坑 |
+| 28 | [spork/misc 順手工具](28-spork-misc-順手工具.md) | ★ `map-vals` 補了「字典不好處理」的洞、`randomize-array` 洗牌 |
+| 28b | [spork/misc 文字與流程](28b-spork-misc-文字與流程.md) | `dedent`、印表格（⚠ 中文對不齊）、`capout`、`cond->`、dyn 當開關的 logger |
+| 29 | [spork 資料與文字](29-spork-資料與文字.md) | `schema` 驗證（⚠ 巨集/函式版的 quote 坑）、`base64`／`crc`／`zip`、★ **regex 其實是 PEG**、`date` 格式碼 |
+| 30 | [spork 並行與服務](30-spork-並行與服務.md) | ★ `pmap` 並行但**保序**、`generators` 真惰性、⚠ `channel/from-each` 沒喝完會卡死 |
+
 > 想快速查：**[`html/index.html`](../html/index.html)** 是分頁速查表（核心／資料IO／PEG／並行／C互通／env），開瀏覽器即看。
 > 可跑範例在 [`examples/`](../examples/README.md)（教學附件）與 [`snippets/`](../snippets/README.md)（做事的起點）。
 
