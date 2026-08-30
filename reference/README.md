@@ -19,6 +19,7 @@
 | [序列與集合.md](序列與集合.md) | 轉換／篩選與尋找／聚合：`map` `filter` `keep` `reduce` `accumulate` `seq` `count` `find` `sum` `mean` `extreme`… | [25 序列工具](../docs/25-序列工具.md) |
 | [序列與集合b-切割與重排.md](序列與集合b-切割與重排.md) | 切割／排序／去重分組分塊／型別判斷：`take` `drop` `slice` `sort` `distinct` `frequencies` `group-by` `partition` `flatten` `range`… | 同上 |
 | [序列與集合c-字典與組合.md](序列與集合c-字典與組合.md) | 字典操作／組合函式／走訪：`keys` `values` `kvs` `invert` `merge` `zipcoll` `get-in` `juxt` `comp` `partial` `walk`… | 同上 |
+| [字串與-buffer.md](字串與-buffer.md) | **全部 45 個**（`string/*` 20 ＋ `buffer/*` 25）：查找／切割／取代／格式動詞表／二進位 push／位元操作；⚠ 參數順序、`%s` 只吃字串類 | [18](../docs/18-字串與-buffer.md) |
 | [控制流.md](控制流.md) | 條件／`match` 模式表／`loop` 的八個 verb 與八個條件詞／非區域跳出；⚠ 標出哪些是**特殊形式**（`if` `while` `break` `do` 查不到 doc）| [32](../docs/32-條件與模式比對.md)、[32b](../docs/32b-loop-全表.md) |
 | [型別判斷與轉換.md](型別判斷與轉換.md) | **全部 37 個判斷函式** ＋ `(type x)` 的 19 種回傳值 ＋ 轉換表；⚠ **字典存不了 `nil` 值** | [38](../docs/38-型別全表.md)、[13](../docs/13-symbol-keyword-字串.md) |
 | [斷言與錯誤.md](斷言與錯誤.md) | `assert` `assertf` `error` `errorf` `protect` `try` `signal` `propagate` `defer` `edefer`… | [23 測試怎麼寫](../docs/23-測試怎麼寫.md)、[20 錯誤處理](../docs/20-錯誤處理與資源管理.md) |
