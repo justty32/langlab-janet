@@ -24,6 +24,7 @@
 | `sorting.janet` | 四個排序函式、⚠ `compare` 當比較器的真實錯誤、不穩定性實證、跨型別順序、中文按 byte 排 | `janet examples/sorting.janet` |
 | `bench.janet` | **在你自己的機器上重跑 docs/37 的每個數字**（約 1～2 秒）；附 `disasm` 證明不可變字面值是常數 | `janet examples/bench.janet` |
 | `types.janet` | 19 種型別各造一個問 `type`、傘狀判斷函式罩住誰的對照、⚠ `int?`/`nat?` 的 32-bit 真相、轉換表 | `janet examples/types.janet` |
+| `os-tour.janet` | 平台偵測、⚠ `os/shell` 的 wait status 對照表、`os/isatty`（**用 `\| cat` 再跑一次看差別**）、權限與檔案操作 | `janet examples/os-tour.janet` |
 | `spork-tour.janet` | spork 導覽：十四個模組各跑一段（misc／path／base64／utf8／regex／schema／data／date／htmlgen／fmt／zip／randgen／generators／ev-utils） | `janet examples/spork-tour.janet` |
 | `native-module/` | 用 C 寫 Janet 原生模組 | `cd examples/native-module && jpm build`（見下） |
 | `embed/` | 把 Janet 嵌進 C 程式 | `cd examples/embed`（見下） |
