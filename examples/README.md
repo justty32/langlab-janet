@@ -29,6 +29,8 @@
 | `prototypes.janet` | Janet 版的「類別」：原型鏈＝vtable、三個陷阱（⚠ 共用可變預設值那個做成看得見的實驗）、`with` ＋ `:close` | `janet examples/prototypes.janet` |
 | `errors-raii.janet` | `try`／`protect`／`errorf`、`defer` 的三種離開路徑、⚠ **`with` 在 body 拋錯時照樣收尾**、巢狀 `defer` 是 LIFO | `janet examples/errors-raii.janet` |
 | `macros.janet` | 每個巨集都印出 `macex1` 展開、⚠ **不用 `with-syms` 會展成 `(let [tmp tmp] …)` 然後爆**、`;` 是 splice 不是註解 | `janet examples/macros.janet` |
+| `data-structures.janet` | 四個容器與 `@` 的差別、⚠ 負索引不能直接用、`=` 對 array 比身分、忘了寫 `self` 的真實錯誤 | `janet examples/data-structures.janet` |
+| `numbers.janet` | 四種除法對正負數排成表、⚠ **`(blshift 1 32)` 繞回 `1`**、字面值就存不住 2^53+1、`-nan`、負零 | `janet examples/numbers.janet` |
 | `spork-tour.janet` | spork 導覽：十四個模組各跑一段（misc／path／base64／utf8／regex／schema／data／date／htmlgen／fmt／zip／randgen／generators／ev-utils） | `janet examples/spork-tour.janet` |
 | `native-module/` | 用 C 寫 Janet 原生模組 | `cd examples/native-module && jpm build`（見下） |
 | `embed/` | 把 Janet 嵌進 C 程式 | `cd examples/embed`（見下） |
