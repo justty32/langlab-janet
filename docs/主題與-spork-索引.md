@@ -41,6 +41,7 @@
 | 30 | [spork 並行與服務](30-spork-並行與服務.md) | ★ `pmap` 並行但**保序**、`generators` 真惰性、⚠ `channel/from-each` 沒喝完會卡死 |
 | 31 | [spork 產生 HTML](31-spork-產生-html.md) | `htmlgen` 用資料結構、`temple` 用模板、★ **兩者都自動跳脫** |
 | 41 | [spork 終端與 shell](41-spork-終端與-shell.md) | `sh-dsl` 的 `\|` 真的是管線、⚠ `$<` 回 buffer、★ **`rawterm/monowidth` 讓中文表格對得齊**、⚠ `rawterm/size` 非 tty 回垃圾 |
+| 42 | [spork/math](42-spork-math.md) | 統計／檢定／線性代數／數論、⚠ **沒有 `mean`**、⚠ **函式名拼錯（`binominal-coeficient`）**、⚠ `permutations` 只吃 `@[]`、`primes` 是無界 fiber |
 
 > 想快速查：**[`html/index.html`](../html/index.html)** 是分頁速查表，開瀏覽器即看。
 > 完整函式清單看 [`reference/`](../reference/README.md)。

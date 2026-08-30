@@ -36,6 +36,7 @@
 | `names.janet` | 四種名字型別印出來一樣卻互不相等（連 buffer vs string）、⚠ **造得出來但 `%j` 印不出來的 keyword**、執行期算名字 | `janet examples/names.janet` |
 | `threading.janet` | 解構的每種形狀、⚠ 值不夠時靜默補 nil、★ **`(-> 2 (- 10))` 是 `-8` 而 `(->> 2 (- 10))` 是 `8`** | `janet examples/threading.janet` |
 | `term-shell.janet` | `sh-dsl` 四形式與管線、★ **中文表格對齊的前後對照**、⚠ `rawterm/size` 在非 tty 回未初始化記憶體 | `janet examples/term-shell.janet` |
+| `spork-math.janet` | 統計／數論／線性代數各跑一輪、⚠ **搜正確拼法找不到函式**的實證、`primes` 是 fiber | `janet examples/spork-math.janet` |
 | `spork-tour.janet` | spork 導覽：十四個模組各跑一段（misc／path／base64／utf8／regex／schema／data／date／htmlgen／fmt／zip／randgen／generators／ev-utils） | `janet examples/spork-tour.janet` |
 | `native-module/` | 用 C 寫 Janet 原生模組 | `cd examples/native-module && jpm build`（見下） |
 | `embed/` | 把 Janet 嵌進 C 程式 | `cd examples/embed`（見下） |
