@@ -57,6 +57,29 @@
 
 `:option` / `:accumulate` 取回來**都是字串**，要數字自己轉（`scan-number` 或 `:map scan-number`）。
 
+### ⚠ 單獨的 `-` 會被**靜默吃掉**
+
+unix 慣例是「`-` 代表 stdin」（`cat -`、`grep pat -`）。argparse **不支援，而且不報錯**：
+
+```janet
+(ap/argparse "x" :default {:kind :accumulate})
+# 參數 "-"        → :default 是 nil      ⚠ 整個不見了
+# 參數 "a" "-"    → :default 是 @["a"]   ⚠ 只剩 a
+# 參數 "--" "-"   → :default 是 @["-"]   ✓ 但沒人會想打這個
+# 參數 "./-"      → :default 是 @["./-"] ✓
+```
+
+它把 `-` 當成旗標前綴、又沒有對應的旗標，於是默默丟掉。所以**你的工具接不進管線**，
+而且你不會看到任何錯誤訊息。要支援 `-` 就自己從原始 argv 撿回來：
+
+```janet
+(def 檔案 (array ;(or (opts :default) @[])))
+(when (and (empty? 檔案) (find |(= "-" $) (drop 1 (dyn :args))))
+  (array/push 檔案 "-"))
+```
+
+完整的接線見 [`snippets/cli-skeleton.janet`](../snippets/cli-skeleton.janet)。
+
 ## 這個專案的實例
 
 `bin/main.janet` 就是一支完整可跑的 argparse 程式，合併了 `--name` 與位置參數、支援 `--upper`

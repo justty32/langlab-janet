@@ -20,6 +20,7 @@
 | [`term-color.janet`](term-color.janet) | 終端上色與進度條，**接管線時自動退回純文字** | `(os/isatty stdout)` 一行決定；⚠ `printf` 自己會換行（不換行的是 `prinf`） |
 | [`retry-timeout.janet`](retry-timeout.janet) | 重試（指數退避＋抖動）與逾時，可指定哪些錯誤才重試 | `ev/with-deadline` 超時丟 `"deadline expired"`；⚠ jitter 別用裸的 `math/random` |
 | [`config-load.janet`](config-load.janet) | 設定：預設值 → 檔案 → 環境變數 → 呼叫端，一層層蓋上去再驗形狀 | ★ 設定檔**只 `parse` 不 `eval`**（不然等於讓它執行任意程式碼）；`schema` 要用 `(props …)` |
+| [`cli-skeleton.janet`](cli-skeleton.janet) | 一支真工具的**接線**：參數 → 設定 → 日誌 → 做事 → 錯誤 → exit code | ⚠ **argparse 會靜默吃掉單獨的 `-`**；日誌走 stderr、產物走 stdout；部分失敗也要回非 0 |
 | [`stdin-async.janet`](stdin-async.janet) | 非同步（handler 風格）處理 stdin | 內建 `stdin` 會擋住整個 ev 迴圈，要 `(os/open "/dev/stdin" :r)` |
 | [`binary-png/`](binary-png/main.janet) | 純二進位：讀 PNG、走訪 chunk、驗 CRC32 | 檔案格式多是**大端序**，`ffi/read` 照機器序會讀錯 |
 | [`http-local/`](http-local/main.janet) | 開 local HTTP server，再用 API 去問它 | handler 要自己 `http/read-body`；連不上是丟例外 |

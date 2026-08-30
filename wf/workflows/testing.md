@@ -41,9 +41,15 @@ for f in examples/*.janet; do
   case "$f" in */subcommands.janet) timeout 60 janet "$f" list -v >/dev/null 2>&1 ;;
                 *) timeout 60 janet "$f" </dev/null >/dev/null 2>&1 ;; esac || echo "✘ $f"; done
 
-# ③ snippets 同上（⚠ every-5s-clock 是刻意的無限迴圈，要排除）
-for f in snippets/*.janet; do case "$f" in */every-5s-clock.janet) continue;; esac
-  timeout 40 janet "$f" </dev/null >/dev/null 2>&1 || echo "✘ $f"; done
+# ③ snippets 同上（⚠ 兩個例外見下）
+for f in snippets/*.janet; do
+  case "$f" in
+    */every-5s-clock.janet) continue ;;                      # 刻意的無限迴圈
+    */cli-skeleton.janet)   timeout 40 janet "$f" README.md </dev/null >/dev/null 2>&1 ;;
+    *)                      timeout 60 janet "$f" </dev/null >/dev/null 2>&1 ;;
+  esac || echo "✘ $f"; done
+# ⚠ cli-skeleton 不帶檔案會 exit 2——那是正確的 CLI 行為（用法錯 ≠ 執行失敗），
+#   要驗它得餵一個檔案進去。
 ```
 
 **④ 每篇 docs 都被索引到**（四份索引之一：`README`／`語言細節索引`／`主題與-spork-索引`／`路線圖`）
