@@ -46,7 +46,11 @@ modules/             能用的小模組（llm-http 打 LLM、pi-shell 包 agent 
 FINDINGS.md          環境與架構的實測筆記（LLM 供應商、為什麼走 litellm proxy）
 FINDINGS-踩坑.md     實作時被 LLM API／模組設計咬到的地方（七～十）
 FINDINGS-踩坑b-工具鏈.md  jpm 與 import 的坑（十一～十三）
+AGENTS.md            AI agent 的入口（人可以不用看）；工作流本體收在 wf/
 ```
+
+> **給 AI agent 的**：[`AGENTS.md`](AGENTS.md) 是入口，工作流（怎麼開發、怎麼驗證、怎麼寫教學、
+> 踩坑與決策記錄）全收在 [`wf/`](wf/INDEX.md)，模板來自 `~/repo/workflows`。**人讀本檔就夠。**
 
 > **檔案大小慣例**：`html/` 以外，每支檔案 ≤150 行且 ≤8192 bytes；超標就按內容語意拆，
 > 原檔名保留當入口（例如 `10` → `10b`／`10c`／`10d`）。
