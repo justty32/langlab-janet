@@ -12,6 +12,21 @@
 | `,;` | unquote-splice | 挖洞並**攤平**一個序列進來 |
 | `'` | quote | 純引用，整段都不求值 |
 
+### ⚠ `;` 是 splice，**不是註解**
+
+從 Common Lisp 或 Scheme 過來的人會反射性地用 `;` 寫註解——**Janet 的註解是 `#`**。
+寫成 `;` 不會被忽略，它是 splice 運算子：
+
+```janet
+(print "a")  ; (print "b")
+# => compile error: splice can only be used in function parameters
+#                   and data constructors, it has no effect here
+```
+
+錯誤訊息完全不會提到「你以為這是註解」。單獨的 `;xs` 是「把 `xs` 攤平到這個位置」，
+所以 `(f ;args)` 就是「把 args 陣列攤成一個個參數傳給 f」——跟 `,;` 在 `~` 裡做的事一樣，
+只是不在 quasiquote 裡就不需要那個逗號。
+
 ## 定義巨集
 
 ```janet
@@ -64,5 +79,28 @@
 
 反過來，**能用普通函式就別用巨集**——函式好測、好組合、能當值傳。巨集只在「函式做不到」
 （要延遲求值、要看到未求值的程式結構）時才出手。
+
+### ⚠ 「巨集不能當值傳」講得不夠精確
+
+實測：巨集**本身就是一個 `:function`**（只是 meta 上多一個 `:macro true`），
+所以 `(def f my-when)` 綁得起來、`(map my-when …)` 也叫得動。但——
+
+```janet
+(def f my-when)
+(f true '(print 1))     # => (if true (do (print 1)))    ⚠ 拿到的是「程式碼」
+```
+
+**你拿到的是展開後的 AST，不是執行結果。**巨集只有寫在呼叫位置、由編譯器展開時
+才有巨集的效果；傳出去之後它就只是一個「回傳程式碼」的普通函式。
+所以結論不變（別把巨集當高階函式用），但理由是這個，不是「綁不起來」。
+
+## 可跑範例
+
+```sh
+janet examples/macros.janet
+```
+
+每個巨集都把 `macex1` 的展開結果印出來，包括**不用 `with-syms` 會怎麼壞**——
+展開成 `(let [tmp tmp] …)` 然後爆 `cannot set constant`，而錯誤訊息完全不會提到撞名。
 
 下一步：[09-fiber.md](09-fiber.md)。
