@@ -60,7 +60,7 @@ for f in snippets/*.janet; do
 
 **④ 每篇 docs 都被索引到**（四份索引之一：`README`／`語言細節索引`／`主題與-spork-索引`／`路線圖`）
 與 **⑤ 從頂層 README 點得到每支 example／snippet**：兩者都是沿 md 連結做 BFS，
-寫成一小段 Python 跑（做法見本節下方的 ⚠）。
+寫成一小段 Python 跑（做法見本節下方的 ⚠）。索引現在有五份，`怎麼做-X.md` 也算一份。
 
 **⑥ 純文字的 `docs/NN` 交叉引用指得到**。`wf-lint` 只檢查 markdown 連結，
 但註解與內文裡有大量「見 docs/33」這種**純文字**引用（目前 79 處），改了篇號或拆檔時
