@@ -51,10 +51,11 @@
 每篇的 ⚠ 都是實測出來、猜不到的行為 → [語言細節索引](語言細節索引.md)。
 
 **主題篇（07–17）**——REPL／巨集／fiber／C 互通／子行程／env／PEG／ev／marshal／HTTP，
-以及 **spork 篇（27–31）**——準標準庫的地圖與五篇專題
+以及 **spork 篇（27–31、41–42）**——準標準庫的地圖、五篇專題，加上終端／shell 與 spork/math
 → [主題與 spork 索引](主題與-spork-索引.md)。
 
 > 想快速查：**[`html/index.html`](../html/index.html)** 是分頁速查表（核心／資料IO／PEG／並行／C互通／env），開瀏覽器即看。
+> 撞到怪行為想確認「是不是已知的坑」→ **[`html/gotchas.html`](../html/gotchas.html)**：全部實測過的地雷集中一頁。
 > 可跑範例在 [`examples/`](../examples/README.md)（教學附件）與 [`snippets/`](../snippets/README.md)（做事的起點）。
 
 ## 怎麼讀這份教學

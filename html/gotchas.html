@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>地雷 · Janet 速查</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <h1>地雷速查 <span class="v">Janet 1.41.2</span></h1>
+  <p class="sub">「這行為怪怪的，是不是已知的坑？」——全部實測過，每條標了出處</p>
+  <nav class="pages"><div class="wrap">
+<a href="index.html">核心</a>
+<a href="data-io.html">資料 / IO</a>
+<a href="peg.html">PEG</a>
+<a href="concurrency.html">並行</a>
+<a href="ffi.html">C 互通</a>
+<a href="env.html">env / 符號</a>
+<a href="gotchas.html" class="here">地雷</a>
+</div></nav>
+</header>
+
+<main>
+
+<section class="wide">
+  <h2><span class="n">★</span> 最常咬人的五個</h2>
+  <div class="warn"><b><code>(:port cfg)</code> 不是取值，而且靜默回 <code>nil</code></b><br>
+  <code>(:k obj)</code> 是<b>方法呼叫</b>，展開成 <code>((get obj :k) obj)</code>。值不是函式時就變成
+  「拿那個值當函式去索引 obj」——整條鏈都不報錯。取值要寫 <code>(cfg :port)</code>。
+  <span class="cmt">docs/02b</span></div>
+
+  <div class="warn"><b>只有 <code>nil</code> 和 <code>false</code> 是假</b><br>
+  <code>0</code>、<code>""</code>、<code>@[]</code> 全都是<b>真</b>。跟 C／C++ 相反。
+  <span class="cmt">docs/32</span></div>
+
+  <div class="warn"><b>迴圈裡用 <code>string</code> 累積字串，慢 300 倍</b><br>
+  每次都造新字串再整個抄過去 → O(N²)。改用 <code>buffer/push-string</code>。
+  同理「每圈造一個新 array」比 <code>array/push</code> 慢<b>一千倍以上</b>。
+  <span class="cmt">docs/37</span></div>
+
+  <div class="warn"><b><code>=</code> 對可變容器比的是「同一個物件嗎」</b><br>
+  <code>(= @[1 2] @[1 2])</code> 是 <code>false</code>；tuple／struct 才比內容。
+  比內容用 <code>deep=</code>；<b>array／table 也因此當不了字典的鍵</b>。
+  <span class="cmt">docs/02、docs/23</span></div>
+
+  <div class="warn"><b>尾呼叫會把堆疊那一層吃掉</b><br>
+  「我的函式沒出現在 stacktrace 裡」不代表沒被呼叫。行尾的 <code>(tail call)</code> 就是線索。
+  <span class="cmt">docs/34</span></div>
+</section>
+
+<section class="wide">
+  <h2><span class="n">1</span> 不報錯、但算錯的</h2>
+  <p class="sub" style="font-size:.83rem;margin-top:0">這一組最危險：沒有任何錯誤訊息，只是答案不對。</p>
+  <table>
+    <tr><th>你寫的</th><th>實際發生什麼</th><th>出處</th></tr>
+    <tr><td><code>(match [1 2 3] [a b] …)</code></td><td><b>會中</b>——tuple 模式是<b>前綴</b>比對。模式要由長排到短</td><td>32</td></tr>
+    <tr><td><code>(loop [i :range [3 0 -1]] …)</code></td><td>靜默<b>一圈都不跑</b>。<code>:range</code> 步長必須是正的，倒著走用 <code>:down</code>（但函式 <code>(range 3 0 -1)</code> 正常）</td><td>32b</td></tr>
+    <tr><td><code>(sorted xs compare)</code></td><td><code>compare</code> 回 −1/0/1 而 <b>0 是真</b> → 排序邏輯亂掉，報的卻是陣列索引越界。要傳「小於」或 <code>compare&lt;</code></td><td>36</td></tr>
+    <tr><td><code>(-&gt;&gt; 2 (- 10))</code></td><td><code>8</code>；而 <code>(-&gt; 2 (- 10))</code> 是 <code>-8</code>。減、除、<code>get</code> 這類要想清楚塞哪，不確定就 <code>macex1</code></td><td>01c</td></tr>
+    <tr><td><code>(def [x y z] [1 2])</code></td><td><code>z</code> 是 <code>nil</code>，不報錯。<b>解構不能當形狀檢查</b></td><td>01c</td></tr>
+    <tr><td><code>(blshift 1 40)</code></td><td><code>256</code>——位元運算是 <b>32-bit</b>，位移量被 mod 32（C++ 給 1099511627776）</td><td>21</td></tr>
+    <tr><td><code>(os/chmod f 0644)</code></td><td><code>0644</code> 是<b>十進位 644</b>。Janet 沒有八進位字面值，要寫 <code>8r644</code>（<code>0o644</code> 連 parse 都過不了）</td><td>39</td></tr>
+    <tr><td><code>(= 1 (os/shell "exit 1"))</code></td><td>永遠 false——<code>os/shell</code> 回的是 <b>exit code × 256</b>。判斷成敗用 <code>os/execute</code></td><td>39</td></tr>
+    <tr><td><code>(dyn :ouy)</code></td><td>打錯名字靜默回 <code>nil</code>。用 <code>*星號*</code> 版（<code>(dyn *ouy*)</code>）編譯期就擋下</td><td>40</td></tr>
+    <tr><td><code>(rawterm/size)</code></td><td>非終端機時回<b>未初始化的記憶體</b>（每次跑都不同），不是 nil、不報錯。先問 <code>isatty</code>，再把 0 當未知</td><td>41</td></tr>
+    <tr><td><code>(loop [… :before x :after y] …)</code></td><td><code>:before</code>／<code>:after</code> 是<b>每圈</b>都跑，不是頭尾各一次</td><td>32b</td></tr>
+    <tr><td><code>(match v …)</code> 漏寫分支</td><td>沒中又沒 <code>_</code> 時回 <code>nil</code>，不報錯</td><td>32</td></tr>
+  </table>
+</section>
+
+<section class="wide">
+  <h2><span class="n">2</span> 卡死，不是報錯</h2>
+  <table>
+    <tr><th>操作</th><th>結果</th><th>出處</th></tr>
+    <tr><td><code>(freeze 有循環參照的東西)</code></td><td><b>無限遞迴卡死</b>（不報錯）。循環參照要用 <code>marshal</code>／<code>unmarshal</code></td><td>35</td></tr>
+    <tr><td><code>prewalk</code> 的函式換出可再比對的節點</td><td>它會走進自己換出來的東西 → <b>無限重入</b>。不確定用哪個就用 <code>postwalk</code></td><td>35b</td></tr>
+    <tr><td><code>(channel/from-each …)</code> 沒喝完</td><td>卡住。它<b>回傳</b>一個 channel，不是往既有的塞</td><td>30</td></tr>
+    <tr><td><code>(length (m/primes))</code></td><td><code>spork/math</code> 的 <code>primes</code> 是<b>無界 fiber</b>，用 <code>(take n …)</code></td><td>42</td></tr>
+  </table>
+</section>
+
+<section class="wide">
+  <h2><span class="n">3</span> 錯誤訊息看不出真正的原因</h2>
+  <table>
+    <tr><th>訊息</th><th>真正的意思</th><th>出處</th></tr>
+    <tr><td><code>expected string, symbol, keyword, array, tuple, table, struct or buffer, got 1</code></td><td><b>你呼叫的東西是 <code>nil</code></b>。<code>(f 1)</code> 被當成 <code>(get 1 nil)</code>，所以它抱怨的是參數</td><td>34</td></tr>
+    <tr><td><code>could not find method :+ for 1</code></td><td>型別錯（<code>(+ 1 "a")</code>）。運算子對非數字會去找 <code>:+</code> 方法</td><td>02</td></tr>
+    <tr><td><code>cannot set constant</code>（在巨集裡）</td><td>巨集的臨時變數<b>跟使用者的撞名</b>。用 <code>with-syms</code>；先 <code>macex1</code> 看展開</td><td>08</td></tr>
+    <tr><td><code>splice can only be used in function parameters…</code></td><td>你把 <code>;</code> 當註解了。<b>Janet 的註解是 <code>#</code></b>；<code>;</code> 是 splice</td><td>08</td></tr>
+    <tr><td><code>expected array, table or buffer, got &lt;tuple&gt;</code></td><td>該函式會原地改，只吃可變版——<b>加個 <code>@</code></b></td><td>42</td></tr>
+    <tr><td><code>expects at least N arguments</code></td><td>arity 錯是 <b>compile error</b>，<code>try</code> 攔不到；訊息裡的 <code>expected N</code> 報的是<b>最大</b> arity</td><td>33</td></tr>
+    <tr><td><code>could not print to jdn format</code></td><td>那個值沒有合法的字面寫法（例如 <code>(keyword "有 空格")</code>）。用 <code>%s</code> 印</td><td>13</td></tr>
+    <tr><td><code>unknown method :close invoked on</code></td><td><code>with</code> 的對象沒有 <code>:close</code>——給第三個參數指定收尾函式</td><td>20b</td></tr>
+  </table>
+</section>
+
+<section class="wide">
+  <h2><span class="n">4</span> 型別與拷貝</h2>
+  <table>
+    <tr><th>以為</th><th>其實</th><th>出處</th></tr>
+    <tr><td><code>(table/clone t)</code> 是拷貝</td><td>只有<b>一層</b>。深拷貝＝<code>(thaw (freeze x))</code>；<code>array/slice</code> 也是淺的</td><td>35</td></tr>
+    <tr><td><code>(def b a)</code> 複製一份</td><td>只是多一個名字。Janet <b>沒有值語意複製</b></td><td>01b</td></tr>
+    <tr><td><code>(= "abc" @"abc")</code></td><td><code>false</code>——buffer ≠ string。先 <code>(string buf)</code></td><td>13</td></tr>
+    <tr><td><code>(int? 1.0)</code> 是 false</td><td><code>true</code>。而 <code>(int? 3000000000)</code> 是 <b>false</b>——問的是「塞不塞得進 32-bit」</td><td>38</td></tr>
+    <tr><td><code>(bytes? :kw)</code> 是 false</td><td><code>true</code>。<code>bytes?</code> 含 string／buffer／symbol／<b>keyword</b></td><td>38</td></tr>
+    <tr><td><code>(length "中文")</code> 是 2</td><td><code>6</code>（byte 數）。顯示寬度是 <code>4</code>，要用 <code>rawterm/monowidth</code></td><td>18、41</td></tr>
+    <tr><td><code>merge</code> 給 struct 回 struct</td><td>一律回 <b>table</b>。要不可變自己 <code>freeze</code></td><td>35b</td></tr>
+    <tr><td><code>(arr -1)</code> 拿最後一個</td><td>報錯。負索引只有 <code>array/slice</code> 吃；要最後一個用 <code>(last arr)</code></td><td>02</td></tr>
+    <tr><td>整數是精確的</td><td>全部是 double，<b>精度只到 2^53</b>——連字面值 <code>9007199254740993</code> 都存不住</td><td>21</td></tr>
+    <tr><td><code>(/ 1 0)</code> 會報錯</td><td>回 <code>inf</code>；<code>(/ 0 0)</code> 回 <code>-nan</code> 且<b>連自己都不等於自己</b>。用 <code>(nan? x)</code></td><td>21</td></tr>
+  </table>
+</section>
+
+<section class="wide">
+  <h2><span class="n">5</span> 印出來不是你要的</h2>
+  <table>
+    <tr><th>寫法</th><th>結果</th><th>正解</th></tr>
+    <tr><td><code>(print @[1 2 3])</code></td><td><code>&lt;array 0x…&gt;</code> 位址</td><td><code>pp</code> 或 <code>%q</code>／<code>%p</code></td></tr>
+    <tr><td><code>(printf "%j" "你好")</code></td><td><code>"\xE4\xBD\xA0…"</code></td><td>給人看用 <code>%s</code>（<code>%j</code>／<code>%q</code> 要保證 parse 得回去）</td></tr>
+    <tr><td><code>%j</code> 是 JSON</td><td>不是——是<b>單行 Janet 表示法</b></td><td>真 JSON 用 <code>(json/encode x)</code></td></tr>
+    <tr><td><code>(printf "%-10j" x)</code></td><td>寬度旗標對 <code>%j</code> <b>無效</b>，靜默失敗</td><td>先 <code>string/format "%j"</code> 轉字串再排</td></tr>
+    <tr><td><code>(debug/stacktrace f e)</code></td><td>少了 <code>error:</code> 那一行</td><td>第三個參數傳 <code>""</code></td></tr>
+    <tr><td><code>$&lt;</code>（spork/sh-dsl）回字串</td><td>回的是 <b>buffer</b></td><td><code>(string (sh/$&lt;_ …))</code></td></tr>
+  </table>
+</section>
+
+<section class="wide">
+  <h2><span class="n">6</span> 名字找不到</h2>
+  <table>
+    <tr><th>你以為叫</th><th>實際叫</th><th>出處</th></tr>
+    <tr><td><code>spork/math</code> 的 <code>mean</code></td><td><b>不存在</b>。自己算 <code>(/ (sum xs) (length xs))</code>；<code>z-score</code> 也要你餵平均</td><td>42</td></tr>
+    <tr><td><code>binomial-coefficient</code></td><td><code>binominal-coeficient</code>（多一個 n、少一個 f）。搜正確拼法一個都找不到</td><td>42</td></tr>
+    <tr><td><code>callable?</code></td><td>沒有這個。要「真的是函式」用 <code>(or (function? f) (cfunction? f))</code></td><td>38</td></tr>
+    <tr><td>可以 <code>(import spork)</code> 一次拿全部</td><td>會把 700 個 binding 灌進 env。<b>一個一個 import</b></td><td>27</td></tr>
+  </table>
+  <p class="sub" style="font-size:.8rem">
+  查 spork 模組有什麼，先列一次再用：<br>
+  <code>(import spork/math :as m) (filter |(string/has-prefix? "m/" (string $)) (keys (curenv)))</code></p>
+</section>
+
+<section class="wide">
+  <h2>怎麼用這一頁</h2>
+  <p class="sub" style="font-size:.85rem">
+  每條後面的數字是 <code>docs/</code> 的篇號，去那篇看完整說明與成因。<br>
+  <b>幾乎每個坑都在對應的 <code>examples/</code> 裡跑得出來</b>——「不信就跑一次」比讀十遍有用。
+  對應關係見 <code>docs/路線圖.md</code> 與 <code>examples/README.md</code>。</p>
+</section>
+
+</main>
+</body>
+</html>
