@@ -72,6 +72,17 @@
         (try (:inc bad 5) ([e] (string "報錯：" e))))
 (print "    ↑ 實際傳進去的是 (handler bad 5) 兩個參數")
 
+(print "\n  ⚠ 更危險的一個：(:port cfg) 不是取值，而且靜默回 nil")
+(def cfg {:port 4000})
+(秀 "(cfg :port)      取值要這樣寫" (cfg :port))
+(秀 "(get cfg :port)  或這樣" (get cfg :port))
+(秀 "(:port cfg)      ← 不報錯，就是 nil" (:port cfg))
+(print "    從 Clojure 過來的人會寫成後者——在那邊真的是取值，在 Janet 不是")
+(print "    因果鏈（每一步都不報錯）：")
+(秀 "  (:port cfg) 展開成 ((get cfg :port) cfg)" (get cfg :port))
+(秀 "  也就是 (4000 cfg)，即 (get cfg 4000)" (get cfg 4000))
+(print "    記法：(集合 鍵) 取值，(:鍵 物件) 呼叫方法")
+
 (節 "巢狀存取")
 (def 設定 @{:server @{:port 4000}})
 (秀 "(get-in 設定 [:server :port])" (get-in 設定 [:server :port]))

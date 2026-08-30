@@ -15,7 +15,8 @@
 | 01 | [語言速成](01-語言速成.md) | 括號家族 `() [] {} @`、def/let、函式、條件、迴圈、`print` vs `pp` |
 | 01b | [給 C++ 開發者的對照](01b-給-C++-開發者.md) | ★ 概念對照表、`=` 的兩套語意、沒有值拷貝、沒有重載、GC 與 RAII |
 | 01c | [解構與執行緒巨集](01c-解構與執行緒巨集.md) | 把樣板碼壓短的兩招：`def [a b & rest]`、`->`／`->>`／`-?>`／`as->` |
-| 02 | [資料結構](02-資料結構.md) | array / tuple / table / struct，`@` 的意義，`get-in` |
+| 02 | [資料結構](02-資料結構.md) | array / tuple / table / struct，`@` 的意義，`get-in`、⚠ 運算子不幫你轉型 |
+| 02b | [方法呼叫語法與 prototype](02b-方法與-prototype.md) | `(:method obj)` 怎麼展開、⚠ **`(:port cfg)` 不是取值而且靜默回 nil**、prototype 就是全部的 OOP |
 | 03 | [JSON](03-json.md) | `spork/json`：字面≈JSON、encode/decode、null 陷阱、巢狀改值 |
 | 04 | [CLI 參數](04-cli-argparse.md) | `spork/argparse` 四種 kind、自動 help、**子命令**（git 風格） |
 | 05 | [jpm 與專案](05-jpm-與專案.md) | 專案結構、`project.janet` 三個宣告、test / build / deps、裝套件 |
