@@ -32,7 +32,8 @@
 | 18 | [字串與 buffer](18-字串與-buffer.md) | string／buffer 之分、`string/*` 參數順序坑、格式動詞、byte 不是字元 |
 | 19 | [檔案與檔案系統](19-檔案與檔案系統.md) | `slurp`／`spit`、`with` + file handle、開檔模式、★ Windows 換行陷阱 |
 | 19b | [檔案系統與路徑](19b-檔案系統與路徑.md) | `os/stat`、走目錄、`spork/path` 組路徑（別自己接字串） |
-| 20 | [錯誤處理與資源管理](20-錯誤處理與資源管理.md) | `error`／`try`／`protect`／`assert`、`defer`／`with`＝RAII、何時回 nil 何時拋錯 |
+| 20 | [錯誤處理](20-錯誤處理與資源管理.md) | `error`／`try`／`protect`／`assert`、丟 table 當結構化錯誤、何時回 nil 何時拋錯 |
+| 20b | [資源管理](20b-資源管理.md) | `defer`／`with`＝局部作用域版的 RAII、⚠ **body 拋錯時照樣收尾**、參數順序跟 Go 相反 |
 | 21 | [數字與位元](21-數字與位元.md) | ★ 全部是 double、`/` vs `div` vs `mod` vs `%`、位元運算是 32-bit、`int/u64` |
 | 22 | [原型與方法](22-原型與方法.md) | Janet 版的「類別」：`(:method obj)`、原型鏈＝vtable、三個陷阱、配合 `with` |
 | 23 | [測試怎麼寫](23-測試怎麼寫.md) | 沒有測試框架、`assert`／`protect`／`deep=`、★ 一支失敗不擋其他支 |

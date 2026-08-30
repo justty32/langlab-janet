@@ -29,13 +29,24 @@
   {"add"  cmd-add
    "list" cmd-list})
 
+(defn usage []
+  (eprint "用法：janet examples/subcommands.janet <子命令> [選項…]")
+  (eprintf "可用的子命令：%s" (string/join (sort (keys subcommands)) "、"))
+  (eprint "例：janet examples/subcommands.janet add https://x.git -n libs"))
+
 (defn main [& argv]
   # argv[0]=腳本名, argv[1]=子命令, 其餘給子命令
   (def sub (get argv 1))
+  # ⚠ 一定要先擋「沒給子命令」：argv 只有腳本名時，(array/slice argv 2) 會丟
+  #   「start index 2 out of range」——那種訊息對使用者毫無幫助。
+  (unless sub
+    (usage)
+    (os/exit 1))
   (def rest (array/slice argv 2))
   (if-let [handler (get subcommands sub)]
     (handler rest)
-    (do (eprintf "未知子命令 %q，可用：%q" sub (keys subcommands))
+    (do (eprintf "未知子命令 %q" sub)
+        (usage)
         (os/exit 1))))
 
 # 巢狀（git submodule add）就是遞迴：頂層 dispatch 到 "submodule"，
