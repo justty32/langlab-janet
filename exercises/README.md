@@ -32,6 +32,7 @@ janet exercises/01-資料與比較.janet
 | [`02-控制流與模式.janet`](02-控制流與模式.janet) | `match` 的前綴陷阱、真假值、`when-let` 短路 | [32](../docs/32-條件與模式比對.md) |
 | [`03-字串與型別.janet`](03-字串與型別.janet) | byte ≠ 字元 ≠ 顯示寬度、四種名字互不相等、型別判斷 | [13](../docs/13-symbol-keyword-字串.md)、[18](../docs/18-字串與-buffer.md)、[38](../docs/38-型別全表.md) |
 | [`04-函式與閉包.janet`](04-函式與閉包.janet) | 閉包捕獲的是**綁定**、`&opt`／`&named`、迴圈裡建閉包 | [33](../docs/33-函式參數與閉包.md) |
+| [`05-錯誤與資源.janet`](05-錯誤與資源.janet) | `protect`／`errorf`、`defer` 的參數順序、`with` ＋ `:close`、一個失敗不中斷其他 | [20](../docs/20-錯誤處理與資源管理.md)、[20b](../docs/20b-資源管理.md) |
 
 ## 為什麼題目長這樣
 
