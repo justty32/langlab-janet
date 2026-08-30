@@ -5,12 +5,19 @@
 
 每支都獨立、都實測過（Janet 1.41.2），跑法一律在檔頭的註解裡。
 
+> **要一次驗全部**：`for f in snippets/*.janet; do timeout 40 janet "$f" </dev/null >/dev/null 2>&1 || echo "✘ $f"; done`
+> ⚠ **`</dev/null` 不能省**——`repl-mode` 與 `stdin-async` 會等 stdin，
+> 繼承一個不會關閉的 stdin 就會卡到 timeout，看起來像壞掉其實沒有。
+> `every-5s-clock` 本來就是無限迴圈（`Ctrl-C` 結束或帶次數參數），要另外排除。
+
 | 片段 | 做什麼 | 順帶學到 |
 |------|--------|----------|
 | [`every-5s-clock.janet`](every-5s-clock.janet) | 每 N 秒印一次當前時間 | `os/date` 的 0-based 月/日、`ev/sleep` 不擋其他 fiber |
 | [`argv-parse.janet`](argv-parse.janet) | 命令列參數 → `@{}` / `@[]`，手寫版 + argparse 對照 | argparse 不吃 `--key=value`；短旗標要先宣告 |
 | [`apply-splice.janet`](apply-splice.janet) | `[1 2 3]` → `(add 1 2 3)`、`{:a 1}` → `(f :a 1)` | `apply` 只能攤最後一個；`;` 攤哪都行但 `{}` 字面不吃 |
 | [`utf8-strings.janet`](utf8-strings.janet) | UTF-8：字元數、切片、切割、反轉、對齊 | `length` 是**位元組**數；ASCII 分隔符切割是安全的 |
+| [`aligned-table.janet`](aligned-table.janet) | 印**中文也對得齊**的表格（含框線、靠右、截斷） | ★ byte 數 ≠ 字元數 ≠ **顯示寬度**；`rawterm/monowidth` 才是對齊要用的那個 |
+| [`term-color.janet`](term-color.janet) | 終端上色與進度條，**接管線時自動退回純文字** | `(os/isatty stdout)` 一行決定；⚠ `printf` 自己會換行（不換行的是 `prinf`） |
 | [`stdin-async.janet`](stdin-async.janet) | 非同步（handler 風格）處理 stdin | 內建 `stdin` 會擋住整個 ev 迴圈，要 `(os/open "/dev/stdin" :r)` |
 | [`binary-png/`](binary-png/main.janet) | 純二進位：讀 PNG、走訪 chunk、驗 CRC32 | 檔案格式多是**大端序**，`ffi/read` 照機器序會讀錯 |
 | [`http-local/`](http-local/main.janet) | 開 local HTTP server，再用 API 去問它 | handler 要自己 `http/read-body`；連不上是丟例外 |
