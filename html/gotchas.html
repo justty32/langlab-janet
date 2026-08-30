@@ -66,6 +66,8 @@
     <tr><td><code>(rawterm/size)</code></td><td>非終端機時回<b>未初始化的記憶體</b>（每次跑都不同），不是 nil、不報錯。先問 <code>isatty</code>，再把 0 當未知</td><td>41</td></tr>
     <tr><td><code>(loop [… :before x :after y] …)</code></td><td><code>:before</code>／<code>:after</code> 是<b>每圈</b>都跑，不是頭尾各一次</td><td>32b</td></tr>
     <tr><td><code>(match v …)</code> 漏寫分支</td><td>沒中又沒 <code>_</code> 時回 <code>nil</code>，不報錯</td><td>32</td></tr>
+    <tr><td>argparse 收單獨的 <code>-</code>（unix 的 stdin 慣例）</td><td><b>靜默吃掉</b>——進不了 <code>:default</code> 也不報錯，於是你的工具接不進管線。要自己從 <code>(dyn *args*)</code> 撿回來</td><td>04</td></tr>
+    <tr><td><code>(def [ok _] (protect …))</code> 之後靠「錯誤是不是 nil」判斷成敗</td><td>重試迴圈裡會出錯：第 3 次成功時上一次的錯誤還留著。用明確的成功旗標</td><td>snippets/retry-timeout</td></tr>
   </table>
 </section>
 
@@ -133,6 +135,7 @@
     <tr><td><code>binomial-coefficient</code></td><td><code>binominal-coeficient</code>（多一個 n、少一個 f）。搜正確拼法一個都找不到</td><td>42</td></tr>
     <tr><td><code>callable?</code></td><td>沒有這個。要「真的是函式」用 <code>(or (function? f) (cfunction? f))</code></td><td>38</td></tr>
     <tr><td>可以 <code>(import spork)</code> 一次拿全部</td><td>會把 700 個 binding 灌進 env。<b>一個一個 import</b></td><td>27</td></tr>
+    <tr><td>argparse 的 <code>:count</code></td><td>沒有這個 kind，會拿到 <code>unknown option kind</code>。四種是 <code>:flag</code> <code>:multi</code> <code>:option</code> <code>:accumulate</code></td><td>04</td></tr>
   </table>
   <p class="sub" style="font-size:.8rem">
   查 spork 模組有什麼，先列一次再用：<br>
