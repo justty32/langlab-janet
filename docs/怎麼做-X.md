@@ -30,6 +30,7 @@
 | 載入設定（檔案＋環境變數＋驗證）| [29](29-spork-資料與文字.md) | — | ★ [`config-load`](../snippets/config-load.janet) |
 | 終端上色、進度條（接管線自動關掉）| [39](39-跟作業系統打交道.md) | [`os-tour`](../examples/os-tour.janet) | [`term-color`](../snippets/term-color.janet) |
 | **印中文也對得齊的表格** | [41](41-spork-終端與-shell.md) | [`term-shell`](../examples/term-shell.janet) | ★ [`aligned-table`](../snippets/aligned-table.janet) |
+| **Ctrl-C／SIGTERM 時優雅收尾** | [11](11-pipeline-signal.md)、[20b](20b-資源管理.md) | — | ★ [`graceful-shutdown`](../snippets/graceful-shutdown.janet) |
 | 跑完掉進 REPL 讓人手動探索 | [07](07-repl.md) | — | [`repl-mode`](../snippets/repl-mode.janet) |
 | 編成單一執行檔 | [05c](05c-jpm-的-rule-系統.md) | — | — |
 
