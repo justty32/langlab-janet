@@ -25,6 +25,7 @@
 | `bench.janet` | **在你自己的機器上重跑 docs/37 的每個數字**（約 1～2 秒）；附 `disasm` 證明不可變字面值是常數 | `janet examples/bench.janet` |
 | `types.janet` | 19 種型別各造一個問 `type`、傘狀判斷函式罩住誰的對照、⚠ `int?`/`nat?` 的 32-bit 真相、轉換表 | `janet examples/types.janet` |
 | `os-tour.janet` | 平台偵測、⚠ `os/shell` 的 wait status 對照表、`os/isatty`（**用 `\| cat` 再跑一次看差別**）、權限與檔案操作 | `janet examples/os-tour.janet` |
+| `dyn-vars.janet` | `*out*` 其實就是 `:out`、打錯名字被編譯器擋下、把 `print` 導進 buffer、`module/paths` 長什麼樣、`defdyn` | `janet examples/dyn-vars.janet 引數A 引數B` |
 | `spork-tour.janet` | spork 導覽：十四個模組各跑一段（misc／path／base64／utf8／regex／schema／data／date／htmlgen／fmt／zip／randgen／generators／ev-utils） | `janet examples/spork-tour.janet` |
 | `native-module/` | 用 C 寫 Janet 原生模組 | `cd examples/native-module && jpm build`（見下） |
 | `embed/` | 把 Janet 嵌進 C 程式 | `cd examples/embed`（見下） |
