@@ -22,6 +22,7 @@
 | `error-anatomy.janet` | 三類錯誤各造一個來看、⚠ 尾呼叫吃掉的那層、「呼叫 nil」的怪訊息、`trace` | `janet examples/error-anatomy.janet` |
 | `copy-freeze.janet` | 淺拷貝實測、`freeze`/`thaw` 的型別轉換、⚠ 用計數器證明 `prewalk` 會重入自己的產物、字典日常 | `janet examples/copy-freeze.janet` |
 | `sorting.janet` | 四個排序函式、⚠ `compare` 當比較器的真實錯誤、不穩定性實證、跨型別順序、中文按 byte 排 | `janet examples/sorting.janet` |
+| `bench.janet` | **在你自己的機器上重跑 docs/37 的每個數字**（約 1～2 秒）；附 `disasm` 證明不可變字面值是常數 | `janet examples/bench.janet` |
 | `spork-tour.janet` | spork 導覽：十四個模組各跑一段（misc／path／base64／utf8／regex／schema／data／date／htmlgen／fmt／zip／randgen／generators／ev-utils） | `janet examples/spork-tour.janet` |
 | `native-module/` | 用 C 寫 Janet 原生模組 | `cd examples/native-module && jpm build`（見下） |
 | `embed/` | 把 Janet 嵌進 C 程式 | `cd examples/embed`（見下） |
