@@ -6,16 +6,17 @@
 |------|--------|--------|
 | [`llm-http/`](llm-http/README.md) | 純 Janet 打 OpenAI 相容端點（本機 litellm proxy 或直接打 LM Studio）；**多輪 tool loop**＋**圖像輸入**＋**自訂 endpoint／參數**。內建四筆：`local`／`deepseek`／`claude`／`openrouter` | `build/llm-http` |
 | [`pi-shell/`](pi-shell/README.md) | 把非互動 agent CLI（`pi -p`／`claude -p`／**你自己註冊的**）包成子行程的**薄透傳殼** | `build/pi-shell` |
+| [`aos/`](aos/README.md) | aos 的 Janet 綁定：資料夾當函式、檔案當指令；檔案協定用 Janet，推進仍叫 Python 原型 | —（函式庫） |
 
-兩個模組共用同一套設計思想：**內建的只是預設值，使用者可以用 registry ＋設定檔加自己的**
+llm-http 與 pi-shell 共用同一套設計思想：**內建的只是預設值，使用者可以用 registry ＋設定檔加自己的**
 （llm-http 加 endpoint、pi-shell 加 agent），設定檔一律**只 parse 不 eval**，
 放在 `~/.config/<模組名>/` 底下自動載入，**沒有設定檔是正常狀態、不會報錯**。
 範本分別是 [`llm-http/endpoints.example.janet`](llm-http/endpoints.example.janet) 與
 [`pi-shell/agents.example.janet`](pi-shell/agents.example.janet)。
 
-能跑的範例在 [`../examples/llm-http/`](../examples/llm-http/)（八支，中文註解）。
+能跑的範例在 [`../examples/llm-http/`](../examples/llm-http/)（八支）與 [`../examples/aos-call.janet`](../examples/aos-call.janet)。
 
-兩者都在 [`../project.janet`](../project.janet) 宣告；`jpm build` 一次編出來，`jpm test` 跑
+三者都在 [`../project.janet`](../project.janet) 宣告；`jpm build` 編前兩支執行檔，`jpm test` 跑
 [`../test/`](../test/) 底下對應的離線測試（不打網路、不呼叫真的模型）。
 
 環境與架構的實測背景（為什麼走 litellm proxy）→ [`../FINDINGS.md`](../FINDINGS.md)；
@@ -31,7 +32,7 @@
 
 ## 你的檔案在哪 → 路徑怎麼寫
 
-以 `llm-http` 為例（`pi-shell` 同理，換掉模組名即可）：
+以 `llm-http` 為例（`pi-shell`、`aos` 同理，換掉模組名即可）：
 
 | 你的 `.janet` 檔放在 | import 要寫成 |
 |---------------------|--------------|
@@ -60,7 +61,7 @@
 
 ## 不想數 `../`：裝起來用裸名字
 
-`project.janet` 裡兩個模組都有 `declare-source`（prefix 分別是 `llm-http`、`pi-shell`），
+`project.janet` 裡三個模組都有 `declare-source`（prefix 是 `llm-http`、`pi-shell`、`aos`），
 所以**裝進模組樹之後**就能用不帶路徑的裸名字 import，跟 `spork/json` 一樣：
 
 ```sh
@@ -73,6 +74,7 @@ cd ~/code/我的專案 && jpm -l install git::file:///home/lorkhan/repo/langs/ja
 ```janet
 (import llm-http/init :as llm)      # 裝好之後，放在哪一層都這樣寫
 (import pi-shell/init :as agent)
+(import aos/init :as aos)
 ```
 
 > ⚠ `jpm install` 從本地 repo 裝有兩個前提：**要先 `git init` ＋至少一個 commit**，而且

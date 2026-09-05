@@ -60,3 +60,16 @@
   :name "pi-shell"
   :entry "modules/pi-shell/main.janet"
   :install false)
+
+# aos —— 把 aos 那套「資料夾當程式、檔案當指令」的機制綁進 Janet。
+# 檔案協定自己用 Janet 寫，只有 exec／run／daemon 才子行程呼叫 `proto/aos.py`。
+(declare-source
+  :prefix "aos"
+  :source ["modules/aos/init.janet"      # 門面（＋兩個別名 aos/fn、aos/await）
+           "modules/aos/fsx.janet"       # 檔案協定底層：id／時間戳／原子寫／json／鎖
+           "modules/aos/land.janet"      # 認一塊地、建地、lib 自己的暫存區
+           "modules/aos/proc.janet"      # 子行程呼叫 proto/aos.py（exec／run／daemon）
+           "modules/aos/deliver.janet"   # 投遞協定
+           "modules/aos/call.janet"      # 同步呼叫、呼叫記錄、三態、(aos/fn)
+           "modules/aos/inst.janet"      # 檔案當指令
+           "modules/aos/async.janet"])   # 脫節呼叫、handle、await
