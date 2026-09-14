@@ -89,6 +89,8 @@
   (defn spit-atomic [path data]
     (def tmp-path (string path ".tmp"))
     (spit tmp-path data)
+    # ⚠ Windows 的 os/rename 遇到目標已存在會丟 "File exists"，POSIX 會直接覆寫；先 os/rm 兩邊才都能跑
+    (when (os/stat path) (os/rm path))
     (os/rename tmp-path path))               # rename 在同一個檔案系統上是原子的
   (spit-atomic p "整份換掉\n")
   (printf "  => %s" (string/trimr (string (slurp p))))

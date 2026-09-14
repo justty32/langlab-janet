@@ -40,7 +40,7 @@
 | `os/mkdir` | `(os/mkdir path)` | 只建一層；已存在回 `false` 不報錯 |
 | `os/rmdir` | `(os/rmdir path)` | 只刪**空**目錄；非空報 `Directory not empty` |
 | `os/rm` | `(os/rm path)` | 刪檔 |
-| `os/rename` | `(os/rename oldname newname)` | 改名／搬移；同檔案系統內才是原子操作 |
+| `os/rename` | `(os/rename oldname newname)` | 改名／搬移；同檔案系統內才是原子操作。⚠ Windows 上 newname 已存在會丟 `File exists`（POSIX 直接覆寫），先 `os/rm` |
 | `os/touch` | `(os/touch path &opt actime modtime)` | 更新時間戳；⚠ **檔案不存在不會幫你建**，直接報錯 |
 | `os/realpath` | `(os/realpath path)` | 解 `..` 與 symlink 給絕對路徑；⚠ 檔案**必須存在** |
 | `os/readlink` | `(os/readlink path)` | 讀 symlink 指向哪（只讀一層，不解析）|
