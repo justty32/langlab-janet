@@ -37,6 +37,7 @@
 | [`pipe-to-child/`](pipe-to-child/) | 模仿 shell 管道：餵子程式 stdin、收 stdout、送 EOF | 讀寫要分不同 fiber，否則互相卡死 |
 | [`fiber-context/`](fiber-context/) | 模仿 Go 的 `context`：取消 / 逾時 / 傳值 / 階層傳播 | 取消是**合作式**的；計時器會吊住 ev 迴圈 |
 | [`import-files/`](import-files/) | 像 C++ `#include` 那樣引用其他 `.janet` | 路徑相對「檔案自己」；`import` 吃快取、`dofile` 不吃 |
+| [`checkpoint/`](checkpoint/) | 長工作做到一半存 checkpoint，下次啟動從斷點續跑 | 存的是**暫停中的 fiber**不是進度數字；⚠ 新 fiber 是 `:new` 不是 `:pending`；⚠ Windows 的 `os/rename` 不覆寫既有檔 |
 
 ## 需要編 C 的
 

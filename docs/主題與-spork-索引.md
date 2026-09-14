@@ -26,6 +26,9 @@
 | 15 | [ev：channel / 執行緒](15-ev-channel-net.md) | channel、真 OS 執行緒、select/gather、逾時取消 |
 | 15b | [net 與速查](15b-net-與速查.md) | 五行 TCP server、常用 API 一覽、地雷清單 |
 | 16 | [marshal 與自省](16-marshal-與自省.md) | 序列化閉包與 fiber、image、`disasm`／`trace`／`comptime`、spork 全櫃 |
+| 16b | [image：存成檔](16b-image-存成檔.md) | `janet -c`／程式內 `make-image`／REPL 三條路、⚠ **頂層在 `-c` 時就跑掉**、暫停中的 fiber 也存得下、native 模組存不了 |
+| 16c | [image 怎麼用](16c-image-怎麼用.md) | `-i` 只叫 `main`、⚠ **`import` 先找 `.jimage` 且不比時間戳**、`-l ./x -r` 回到存檔時的 REPL、純 Janet 依賴帶著走 |
+| 16d | [image 與 jpm](16d-image-與-jpm.md) | `declare-archive` 打包、執行檔＝只存 `main` ＋ native 靜態連結、三種各綁 Janet 版本 |
 | 17 | [用 spork/http 打 API](17-用-spork-http-打-api.md) | POST 寫法、buffer／status 兩個雷、沒 TLS 沒串流、★ **HTTP 200 不代表拿到完整答案** |
 
 ## spork 篇（準標準庫）

@@ -52,7 +52,9 @@
 (load-image img)                    # => env
 ```
 
-`jpm build` 編獨立執行檔時，內部也是這一套。
+`jpm build` 編獨立執行檔時，內部也是這一套。怎麼從跑到一半的程式或 REPL 存出 image、
+存不了什麼 → [16b](16b-image-存成檔.md)；`-i`／`import`／REPL 怎麼用它 → [16c](16c-image-怎麼用.md)；
+`declare-archive` 與執行檔 → [16d](16d-image-與-jpm.md)。
 
 ## 自省：看清楚執行期的自己
 

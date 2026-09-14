@@ -43,6 +43,7 @@
 | [`term-shell.janet`](term-shell.janet) | `sh-dsl` 四形式與管線、★ **中文表格對齊的前後對照**、⚠ `rawterm/size` 在非 tty 回未初始化記憶體 |
 | [`spork-math.janet`](spork-math.janet) | 統計／數論／線性代數各跑一輪、⚠ **搜正確拼法找不到函式**的實證、`primes` 是 fiber |
 | [`spork-tour.janet`](spork-tour.janet) | spork 導覽：十四個模組各跑一段（misc／path／base64／utf8／regex／schema／data／date／htmlgen／fmt／zip／randgen／generators／ev-utils） |
+| [`image-tour.janet`](image-tour.janet) | image 全程：`make-image`／`load-image`、暫停中的 fiber 跨檔續跑、存不了的東西、子行程跑 `janet -c`／`-i`、⚠ **`import` 拿到過期的 `.jimage`** |
 | [`native-module/`](native-module/) | 用 C 寫 Janet 原生模組 |
 | [`embed/`](embed/) | 把 Janet 嵌進 C 程式 |
 | `llm-http/` | 打 LLM 的八支範例，另成一頁 → [`llm-http/README.md`](llm-http/README.md) |

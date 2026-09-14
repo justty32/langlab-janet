@@ -32,7 +32,8 @@
 | **印中文也對得齊的表格** | [41](41-spork-終端與-shell.md) | [`term-shell`](../examples/term-shell.janet) | ★ [`aligned-table`](../snippets/aligned-table.janet) |
 | **Ctrl-C／SIGTERM 時優雅收尾** | [11](11-pipeline-signal.md)、[20b](20b-資源管理.md) | — | ★ [`graceful-shutdown`](../snippets/graceful-shutdown.janet) |
 | 跑完掉進 REPL 讓人手動探索 | [07](07-repl.md) | — | [`repl-mode`](../snippets/repl-mode.janet) |
-| 編成單一執行檔 | [05c](05c-jpm-的-rule-系統.md) | — | — |
+| 編成單一執行檔 | [05c](05c-jpm-的-rule-系統.md)、[16d](16d-image-與-jpm.md) | — | — |
+| 把程式編成 `.jimage`、或跑到一半存下來下次續跑 | [16b](16b-image-存成檔.md)、[16c](16c-image-怎麼用.md) | [`image-tour`](../examples/image-tour.janet) | ★ [`checkpoint/`](../snippets/checkpoint/main.janet) |
 
 ## 跟外面打交道
 
