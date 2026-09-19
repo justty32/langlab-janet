@@ -46,5 +46,5 @@
 | 41 | [spork 終端與 shell](41-spork-終端與-shell.md) | `sh-dsl` 的 `\|` 真的是管線、⚠ `$<` 回 buffer、★ **`rawterm/monowidth` 讓中文表格對得齊**、⚠ `rawterm/size` 非 tty 回垃圾 |
 | 42 | [spork/math](42-spork-math.md) | 統計／檢定／線性代數／數論、⚠ **沒有 `mean`**、⚠ **函式名拼錯（`binominal-coeficient`）**、⚠ `permutations` 只吃 `@[]`、`primes` 是無界 fiber |
 
-> 想快速查：**[`html/index.html`](../html/index.html)** 是分頁速查表，開瀏覽器即看。
+> 想快速查：**[`cheatsheets/`](../cheatsheets/README.md)** 是分頁速查表；瀏覽器開 `html/index.html`（閱讀器）可全文搜尋。
 > 完整函式清單看 [`reference/`](../reference/README.md)。

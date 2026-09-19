@@ -18,4 +18,5 @@
 | breaking change | 改公開介面前先全域 `grep` 受影響處（`modules/`、`test/`、`docs/`、`snippets/`、`examples/` 都要看），同一個 commit 一起改 | `jpm test` ＋ `wf-lint` 連結檢查 |
 | 測試 | 每支測試最後印一行「…測試通過 ✓」（`jpm test` 成功時很安靜，沒這行看不出有沒有真的跑到底）| `jpm test` 輸出每支都有 ✓ |
 | `test/` 的共用工具檔 | `jpm test` 會把 `test/` 底下**每一支** `.janet` 都當測試跑，所以共用檔**只能有定義、不能有會印東西或有副作用的頂層程式碼**（見 `test/util.janet` 檔頭）| 單獨跑 `janet test/util.janet` 應該零輸出、exit 0 |
+| 新增／改動 `.md` | **不用改 html 導航**：跑 `python3 bin/md-bundle.py` 即可，閱讀器 `html/index.html` 的首頁篇目、側欄、全文搜尋都從 manifest 自動長出來（`jpm run bundle` 同義）；commit 時把 `html/content.js` 一起進 | `python3 bin/md-bundle.py --check` 0 條壞連結，`git status` 沒有漏掉的 `content.js` |
 | 文件裡的程式碼 | 每段輸出都是**實測貼回來的**，不是推測的（鐵律 5）——包含錯誤訊息的原文 | 改動前先 `janet -e '…'` 跑一次，把真實輸出貼回去 |

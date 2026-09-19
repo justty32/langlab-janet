@@ -2,7 +2,7 @@
 
 [← reference 索引](README.md)｜捕獲那半邊在 [peg-全表b-捕獲.md](peg-全表b-捕獲.md)
 
-對應教學：[14 peg](../docs/14-peg.md)。速查：[html/peg.html](../html/peg.html)。
+對應教學：[14 peg](../docs/14-peg.md)。速查：[cheatsheets/peg.md](../cheatsheets/peg.md)。
 
 > 對著 `root-env` 逐一核過：`peg/*` **6 個**全收，另加 `default-peg-grammar`。
 > PEG 文法的 special **42 個**（本篇 21 個比對用，[b 篇](peg-全表b-捕獲.md) 21 個捕獲用），

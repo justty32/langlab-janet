@@ -18,7 +18,7 @@
 |------|------|------|
 | **程式碼 ＋ 教學裡的輸出**（改完必跑，也是 commit 前的完整驗證）| `jpm test` | agent |
 | **文件連結與結構**（改 `.md` 後跑）| `bash wf/tools/wf-lint.sh --strict .` | agent |
-| **閱讀器內容與 md 連結**（改了任何 `.md` 後）| `python3 bin/md-bundle.py && python3 bin/md-bundle.py --check`（前者重打包 `html/reader/content.js`，後者掃全部 md 的相對連結與 `#錨點`，補 wf-lint 不掃 `reference/` 的洞）| agent |
+| **閱讀器內容與 md 連結**（改了任何 `.md` 後）| `python3 bin/md-bundle.py && python3 bin/md-bundle.py --check`（前者重打包 `html/content.js`，導航自動更新不用手改；後者掃全部 md 的相對連結與 `#錨點`，補 wf-lint 不掃 `reference/` 的洞）| agent |
 | **教學文裡的程式碼**（改到 `docs/`／`reference/`／`examples/` 時）| `janet examples/<對應範例>.janet`，或把那段直接 `janet -e '…'` 跑一次 | agent |
 | **Windows 11 上的行為** | PowerShell 裡 `jpm deps` → `jpm test`（見 [`docs/00b`](../../docs/00b-windows-vscode.md)）| 使用者 → [WAIT_USER](../WAIT_USER.md) |
 
@@ -81,7 +81,7 @@ for f in snippets/*.janet; do
 只有兩類東西 agent 驗不了，都要記到 [WAIT_USER](../WAIT_USER.md)：
 
 - **Windows 行為**——本機是 Manjaro，凡是宣稱「Windows 上會怎樣」的改動都要請使用者實機跑（跨機差異見 [dev-env](dev-env.md)）。
-- **`html/` 速查表的外觀**——方框、亂碼、截斷、排版只有人眼看得出來。
+- **`html/` 閱讀器的外觀**——方框、亂碼、截斷、排版只有人眼看得出來（headless 截圖能看個大概，手感不行）。
 
 ⚠ 另一個容易誤判的：`test/pi-shell-cli.janet` 會印「pi 可用？／claude 可用？」，那**取決於這台機器 PATH 上有沒有那兩支 agent CLI**。它不是斷言、不會讓測試變紅，但在別台機器上輸出會不一樣——**別把那行輸出當成驗證結果**。
 

@@ -138,7 +138,7 @@ spork 給你**兩條**產 HTML 的路，取捨很清楚：
 - **要產 Markdown 風格的文件**而不是 HTML → 看 `spork/mdz`
   （筆記在 [`reference/spork/mdz-文件產生.md`](../reference/spork/mdz-文件產生.md)）。
 
-> 本 repo 的 [`html/`](../html/index.html) 速查表是**手寫**的靜態 HTML，沒有用這兩個——
+> 本 repo 的 [`cheatsheets/`](../cheatsheets/README.md) 速查表原本是手寫的靜態 HTML（現已轉成 md，由 `html/` 的閱讀器渲染），沒有用這兩個——
 > 因為它只有六頁、而且要精細控制排版。有幾十頁要生才划算。
 
 ## 可跑範例

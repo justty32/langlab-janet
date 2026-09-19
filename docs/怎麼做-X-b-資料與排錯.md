@@ -25,7 +25,7 @@
 
 | 我要… | 去哪 |
 |-------|------|
-| **確認「這是不是已知的坑」** | ★ [`html/gotchas.html`](../html/gotchas.html)——全部實測過，每條標了出處 |
+| **確認「這是不是已知的坑」** | ★ [`cheatsheets/地雷.md`](../cheatsheets/地雷.md)——全部實測過，每條標了出處 |
 | 看懂錯誤訊息與堆疊 | [34](34-讀錯誤訊息.md)＋[`error-anatomy`](../examples/error-anatomy.janet) |
 | 知道某個操作貴不貴 | [37](37-什麼操作貴.md)＋[`bench`](../examples/bench.janet)（在你機器上重跑）|
 | 追某個值到底是什麼型別 | [38](38-型別全表.md)＋[`types`](../examples/types.janet) |

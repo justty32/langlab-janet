@@ -29,7 +29,7 @@
 ## roadmap（會做，何時）
 
 > 下面兩列是 2026-09-19 因 token 消耗被中途砍掉的半成品（S2 事後盤點留檔，見各檔 ⚠ 注記）。
-> 第三列 `bin/md2html*`（純 Janet 的 md→html 鏡像）已結案：使用者改決定「md 不動、做瀏覽器閱讀器」，改用 Python 打包＋前端渲染做完（`bin/md-bundle.py` ＋ `html/reader/`），五支 Janet 半成品已刪。
+> 第三列 `bin/md2html*`（純 Janet 的 md→html 鏡像）已結案：使用者改決定「md 不動、做瀏覽器閱讀器」，改用 Python 打包＋前端渲染做完（`bin/md-bundle.py` ＋ `html/` 閱讀器即網站，七頁手寫速查表也轉成 `cheatsheets/*.md`），五支 Janet 半成品已刪。
 > 另外兩列（`docs/47*` agent 教學、`reference/spork/infix`）當時只差掛索引，整合線已補完並結案。
 
 | 事項 | 何時 / 順序 | 前提 |
