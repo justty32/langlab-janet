@@ -1,13 +1,19 @@
 #!/usr/bin/env python3
-"""md-bundle：把 repo 的 markdown 打包成 html/reader/content.js，給 html/reader/ 的閱讀器用。
+"""md-bundle：把 repo 的 markdown 打包成 html/content.js，給 html/ 的閱讀器用。
 
 用法（只要 python3，Windows 的 PowerShell 也一樣）：
-  python3 bin/md-bundle.py            # 打包全部 md → html/reader/content.js
+  python3 bin/md-bundle.py            # 打包全部 md → html/content.js
   python3 bin/md-bundle.py --check    # 掃 md 相對連結與 #錨點，壞的列出並 exit 1（見 md_bundle_check.py）
+
+新增／改動 md 之後只要跑一次 `python3 bin/md-bundle.py`：閱讀器首頁 html/index.html 的分區清單、閱讀器側欄、
+全文搜尋全部從 content.js 的 manifest 動態產生，**不用手改任何導航**；`--check` 掃壞連結。
+（jpm 使用者可在 project.janet 加 `(phony "bundle" [] (shell "python3 bin/md-bundle.py"))` 變成 `jpm run bundle`。）
 
 為什麼要打包：閱讀器要能用 file:// 直接開，而 Chrome 擋 file:// 的 fetch，執行期讀不到 .md，
 所以把原文全塞進一支 JS 讓 <script src> 載入。輸出決定性（路徑排序、無時間戳），產物進 git。
-收錄範圍：wf/、html/、build/、.claude/ 以外的每支 .md，扣掉 AGENTS.md／CLAUDE.md（那是給 agent 看的）。
+收錄範圍：自動掃 wf/、html/、build/、.claude/ 以外的每支 .md，扣掉 AGENTS.md／CLAUDE.md（給 agent 看的），
+不靠任何手寫清單。manifest 每篇：path／section（路徑第一段推）／title（H1）／summary／num（docs 篇號，
+從檔名 `NN[a-z]?-` 抽）／readme（是不是 README.md）。排序：README → 沒篇號的索引類 → 篇號自然排序 → 其餘按名稱。
 """
 from __future__ import annotations
 
@@ -18,11 +24,11 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-OUT = ROOT / "html" / "reader" / "content.js"
+OUT = ROOT / "html" / "content.js"
 SKIP_DIRS = {"wf", "html", "build", ".git", ".claude", "node_modules", "__pycache__"}
 SKIP_FILES = {"AGENTS.md", "CLAUDE.md"}
 # 區的順序與顯示名；不在表裡的第一層目錄用目錄名當區名
-SECTIONS = [("docs", "docs 教學"), ("reference", "reference 內建全表"), ("reference/spork", "reference/spork"),
+SECTIONS = [("cheatsheets", "cheatsheets 速查表"), ("docs", "docs 教學"), ("reference", "reference 內建全表"), ("reference/spork", "reference/spork"),
             ("modules", "modules 模組"), ("examples", "examples 範例"), ("snippets", "snippets 片段"),
             ("exercises", "exercises 練習"), ("try", "try 試作"), ("", "頂層")]
 FENCE_RE = re.compile(r"^\s*(`{3,}|~{3,})")
@@ -54,7 +60,7 @@ def sort_key(path: str):
     parts = path.split("/")
     name = parts[-1]
     m = NUM_RE.match(name)
-    num = (0, int(m.group(1)), m.group(2), name) if m else (1, 0, "", name)
+    num = (1, int(m.group(1)), m.group(2), name) if m else (0, 0, "", name)  # 沒篇號的（索引、路線圖）排篇號前
     return (sec_idx, parts[:-1], 0 if name == "README.md" else 1, num)
 
 
@@ -96,7 +102,9 @@ def build() -> dict:
         text = (ROOT / path).read_text(encoding="utf-8").replace("\r\n", "\n")
         title, summary = title_and_summary(text)
         files[path] = text
-        manifest.append({"path": path, "section": section_of(path), "title": title or path, "summary": summary})
+        m = NUM_RE.match(path.rsplit("/", 1)[-1])
+        manifest.append({"path": path, "section": section_of(path), "title": title or path, "summary": summary,
+                         "num": m.group(0) if m else "", "readme": path.endswith("README.md")})
     return {"sections": [{"key": k, "label": v} for k, v in SECTIONS], "manifest": manifest, "files": files}
 
 

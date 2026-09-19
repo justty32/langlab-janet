@@ -2,6 +2,7 @@
 
 檢查兩件事：(1) 目標檔／目錄存在；(2) 帶 #錨點 的連結，錨點在目標 md（依 wf/tools/check_anchors.py
 的 github_heading_slug，跟閱讀器 app.js 的 slugify 是同一套規則）或目標 html（id=／name=）裡找得到。
+另外掃 html/app.js 首頁固定路線卡片 HOME_CARDS 的 md: '…'（首頁其餘篇目是 manifest 產生的，不會壞）。
 跟 wf-lint 互補：wf-lint 不掃 reference/。壞的每條印一行 BROKEN-LINK／BROKEN-ANCHOR，有壞就回 1。
 """
 from __future__ import annotations
@@ -13,6 +14,7 @@ from pathlib import Path
 LINK_RE = re.compile(r"(?<!!)\[[^\]\n]*\]\(([^)\n]+)\)")
 IMG_RE = re.compile(r"!\[[^\]\n]*\]\(([^)\n]+)\)")
 ID_RE = re.compile(r"""\b(?:id|name)\s*=\s*(['"])(.*?)\1""", re.I)
+HOME_MD_RE = re.compile(r"md: '([^']+)'")
 
 
 def _anchors_tools(root: Path):
@@ -73,5 +75,10 @@ def check(root: Path, paths: list[str]) -> int:
             if frag not in ids:
                 print(f"BROKEN-ANCHOR {rel}:{line} -> {target}")
                 bad += 1
+    app = root / "html" / "app.js"
+    for md in HOME_MD_RE.findall(app.read_text(encoding="utf-8")) if app.exists() else []:
+        if md not in paths:
+            print(f"BROKEN-LINK html/app.js HOME_CARDS -> {md}（不在 bundle 裡）")
+            bad += 1
     print(f"--check：{len(paths)} 篇，{bad} 條壞連結")
     return 1 if bad else 0

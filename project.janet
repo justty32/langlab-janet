@@ -112,3 +112,6 @@
   :name "agent"
   :entry "modules/agent/main.janet"
   :install false)
+
+# 閱讀器內容：把全部 md 打包成 html/reader/content.js（`jpm run bundle`；新增 md 後跑一次，導航自動更新）
+(phony "bundle" [] (shell "python3 bin/md-bundle.py"))
