@@ -1,7 +1,7 @@
 # endpoint registry —— 「表裡有哪些 endpoint」這一件事，只管註冊與查詢。
 #
 # endpoint 那塊拆成五支檔，各管一件事：
-#   builtin.janet   內建四筆的**資料**（不可變）
+#   builtin.janet   內建六筆的**資料**（不可變）
 #   spec.janet      一份設定合不合法（純函式驗證）
 #   registry.janet  本檔：誰在表裡（註冊／移除／重設／查來源）
 #   resolve.janet   把設定組成**可以打的 cfg**（endpoint／env-ready?）
@@ -15,7 +15,7 @@
 #        (endpoint "qwen")
 #   ③ 寫進設定檔，自動載入（見 config.janet 與 endpoints.example.janet）
 #
-# ★ specs 是一張**活的 table**（不是以前的 struct）：內建四筆先躺在裡面，
+# ★ specs 是一張**活的 table**（不是以前的 struct）：內建六筆先躺在裡面，
 #   define-endpoint／設定檔載入會往裡面加。舊寫法 (get specs "local")／(keys specs)
 #   語意不變，而且現在連使用者自訂的也看得到。
 
@@ -23,11 +23,11 @@
 (import ./spec :as sp)
 
 (def specs
-  ``活的 endpoint registry：名字（字串）→ 設定。內建四筆先在裡面。
+  ``活的 endpoint registry：名字（字串）→ 設定。內建六筆先在裡面。
 
   讀法跟以前完全一樣：(get specs "local")、(keys specs)。
   ⚠ 跟舊版的差別只有一個：它現在是 table 不是 struct，而且會長出使用者自訂的 endpoint。
-  只想看內建那四筆請用 builtin/builtin-specs（那份仍然是不可變的 struct）。``
+  只想看內建那六筆請用 builtin/builtin-specs（那份仍然是不可變的 struct）。``
   (table ;(kvs b/builtin-specs)))
 
 (def sources
@@ -63,7 +63,7 @@
   had)
 
 (defn reset-endpoints!
-  "把 registry 打回「只剩內建四筆」的狀態。測試與 REPL 裡很好用。"
+  "把 registry 打回「只剩內建六筆」的狀態。測試與 REPL 裡很好用。"
   []
   (each k (keys specs) (put specs k nil) (put sources k nil))
   (eachp [k v] b/builtin-specs

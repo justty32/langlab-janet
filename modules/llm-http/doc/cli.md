@@ -25,7 +25,14 @@ ANTHROPIC_API_KEY=… ./build/llm-http claude-direct "嗨"      # 直打 Anthrop
 ./build/llm-http --temperature 0 --max-tokens 64 local "嗨"   # 覆寫請求參數
 ./build/llm-http --param seed=7 --param stop=END local "嗨"    # 任意參數（值自動轉型）
 ./build/llm-http --header "x-my-tag: janet" local "嗨"        # 額外 header
-./build/llm-http --api-key sk-xxx local "嗨"                  # 覆寫 Bearer token
+./build/llm-http --api-key sk-xxx local "嗨"                  # 覆寫 Bearer token（⚠ 會上 argv）
+./build/llm-http --api-key-env DEEPSEEK_API_KEY \
+                 --url https://api.deepseek.com/v1/chat/completions \
+                 -m deepseek-flash ds "嗨"                     # 金鑰讀環境變數，不上命令列
+
+# ── 實打 DeepSeek（2026-09-19 實測）──
+./build/llm-http --stream --max-tokens 200 \
+                 --param reasoning_effort=none deepseek-direct "台灣最高的山是哪座？一句話。"
 ```
 
 | 旗標 | 短 | 做什麼 |
@@ -34,7 +41,8 @@ ANTHROPIC_API_KEY=… ./build/llm-http claude-direct "嗨"      # 直打 Anthrop
 | `--model` | `-m` | 覆寫 model 名稱 |
 | `--base` | `-b` | proxy base URL |
 | `--url` | `-u` | **完整**的 chat completions 網址，給了就繞過 `--base` |
-| `--api-key` | | 覆寫 `Authorization: Bearer` 的 token |
+| `--api-key` | | 覆寫 `Authorization: Bearer` 的 token（⚠ `ps` 看得到，優先用下面那個） |
+| `--api-key-env` | | 從這個**環境變數**讀 Bearer token——金鑰不上命令列 |
 | `--header` | | 額外 header，`名字:值`，可重複 |
 | `--endpoints` | | 載入 endpoint 設定檔（`.janet` 或 `.json`），可重複 |
 | `--temperature` `--max-tokens` `--top-p` | | 請求參數，蓋得掉 endpoint 的 `:params` |
@@ -56,3 +64,6 @@ ANTHROPIC_API_KEY=… ./build/llm-http claude-direct "嗨"      # 直打 Anthrop
   `--stream 與 --tools 不能一起用（tool loop 要拿到完整的 tool_calls 才能執行）。`
 - ⚠ 沒給 prompt 又不是 tty 時會讀 stdin 讀到 EOF——沒人餵就會一直等（unix filter 的正常語意）。
   在腳本／CI 裡測請帶 `< /dev/null`。
+
+⚠ **臨時 endpoint（`--url` ＋ `--model`）沒給金鑰時用的是預設的 `dummy`**，打外部服務會拿到
+`HTTP 401 … your api key: ****ummy is invalid`。要嘛給 `--api-key-env`，要嘛走 `--endpoints` 設定檔。

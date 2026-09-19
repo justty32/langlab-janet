@@ -22,7 +22,8 @@
    "base"        {:kind :option :short "b" :help "proxy base URL，預設 http://127.0.0.1:4000。"}
    "url"         {:kind :option :short "u"
                   :help "完整的 chat completions 網址，給了就完全繞過 --base（例如 LM Studio 的 http://127.0.0.1:1234/v1/chat/completions）。"}
-   "api-key"     {:kind :option :help "覆寫 Authorization: Bearer 的 token。"}
+   "api-key"     {:kind :option :help "覆寫 Authorization: Bearer 的 token。⚠ 會出現在 ps 的 argv 裡，優先用 --api-key-env。"}
+   "api-key-env" {:kind :option :help "從這個環境變數讀 Bearer token（金鑰不上命令列）。"}
    "header"      {:kind :accumulate
                   :help "額外的 request header，寫成 名字:值，可重複給。"}
    "endpoints"   {:kind :accumulate

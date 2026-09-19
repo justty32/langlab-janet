@@ -55,6 +55,15 @@
 (assert (string/find "[完成] 1 步，停在 done，tokens=3+4" logged))
 (os/rm tf)
 
+# ── trace 的截斷要切在 UTF-8 邊界（⚠ length／string/slice 都是 byte）──
+(assert (= "abc" (ag/utf8-cut "abc台北市" 5)) "切在中文字中間要退回邊界")
+(assert (= "abc台" (ag/utf8-cut "abc台北市" 6)) "剛好對齊就整個留下")
+(assert (= "abc台北市" (ag/utf8-cut "abc台北市" 99)) "不超長就原樣")
+(def 長 (ag/format-event @{:kind :tool :step 1 :name "t" :args {} :ms 0
+                           :result (string/repeat "中" 100)}))
+(assert (zero? (% (- (length 長) (length "[步 1] → t() 0ms\n        ← …")) 3))
+        "截斷後剩的中文一定是 3 的倍數個 byte，沒有半個字")
+
 # ── agent-opts：整包組起來（含 --resume）────────────────────────────
 (def opts (cli/agent-opts (cli/parse-args @["agent" "-r" "modules" "-s" "S" "--max-steps" "4" "--temperature" "0.2" "問"])))
 (assert (= "S" (opts :system)))

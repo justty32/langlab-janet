@@ -20,6 +20,10 @@
 ./build/llm-http --stream local "用三句話介紹 Janet"     # CLI；⚠ 不能跟 --tools 一起用
 ```
 
+**真打過一次**（2026-09-19，`deepseek-direct` → `https://api.deepseek.com`，curl 那條）：
+35 個 SSE 事件、33 次 `on-delta`、`finish_reason "stop"`，最後一塊帶 usage
+（`stream_options.include_usage` DeepSeek 認得）。
+
 實測（另一個行程起一台假 SSE 伺服器，每 50 ms 推一塊；答案是一塊塊印出來的，最後補換行）：
 
 ```
@@ -65,6 +69,9 @@ data: [DONE]
   `HTTP 429（http://127.0.0.1:45731/err）：{"error":"太多了"}`。
 - **`--stream` 與 `--tools` 不能一起用**：tool loop 要拿到完整的 `tool_calls` 才能執行，串流版的 loop 沒做。
   函式庫這邊可以自己用 `chat-stream` 的回應（形狀跟 `chat` 一樣）接進歷史再繼續。
+- ⚠ **`stream-http` 對 https 是立刻丟錯不是卡住**（2026-09-19 實測確認）：
+  `stream-http 只走 http://，https 請走 curl`。正常路徑下走不到它（`use-curl?` 看到 `https://`
+  就導去 curl，`:transport :http` 也蓋不掉），要撞到只能自己直接叫 `stream-http/stream-post`。
 - **Anthropic 那條也能串流**：事件形狀不同（`message_start`／`content_block_delta`…），由 `stream-anthropic.janet`
   合成 Anthropic 回應再走同一個 `from-anthropic`，見 [Anthropic 原生](anthropic-原生.md)。
 

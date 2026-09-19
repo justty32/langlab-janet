@@ -11,6 +11,8 @@ sandbox 檔案工具、shell、http-get、算數）＋ **記憶**（截斷不拆
 (import ../modules/agent/init :as ag)
 
 (def a (ag/make-agent {:endpoint "local"                    # 見 llm-http 的 endpoint 名字
+                                                            # 也可以直接給一張設定 table，或用
+                                                            # "deepseek-direct" 打真的 DeepSeek
                         :system "你是一個簡短回答問題的助理。"
                         :tools (ag/default-tools :root ".")  # 只讀：read-file/list-dir/search-files/now/calc/http-get
                         :trace (ag/stderr-tracer)}))         # 每一步印到 stderr；省略就安靜
@@ -64,6 +66,13 @@ janet modules/agent/main.janet "這個資料夾有什麼？"                  # 
 ```
 
 旗標定義在 `cli-flags.janet`；`--help` 看完整清單。stdout 只有答案本文，trace／提示／錯誤一律 stderr。
+
+## 真後端驗過一次（2026-09-19）
+
+`janet modules/agent/main.janet -e deepseek-direct -v --max-steps 4 "…讀 README.md…"`——
+模型叫了 `list-dir` ＋ `read-file`，2 步答完、`stopped-by :done`、usage 累計 3751+128 tokens。
+⚠ 那次順便抓到 trace 把中文截一半的 bug，見
+[`../../FINDINGS-踩坑c-傳輸與串流.md`](../../FINDINGS-踩坑c-傳輸與串流.md) 第二十四節。
 
 ## 還沒做的
 

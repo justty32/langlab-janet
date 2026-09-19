@@ -4,7 +4,7 @@
 
 | 模組 | 是什麼 | 執行檔 |
 |------|--------|--------|
-| [`llm-http/`](llm-http/README.md) | 純 Janet 打 OpenAI 相容端點（本機 litellm proxy 或直接打 LM Studio）；**多輪 tool loop**＋**圖像輸入**＋**自訂 endpoint／參數**＋**https（curl）／串流／Anthropic 原生**。內建五筆：`local`／`deepseek`／`claude`／`openrouter`／`claude-direct` | `build/llm-http` |
+| [`llm-http/`](llm-http/README.md) | 純 Janet 打 OpenAI 相容端點（本機 litellm proxy 或直接打 LM Studio）；**多輪 tool loop**＋**圖像輸入**＋**自訂 endpoint／參數**＋**https（curl）／串流／Anthropic 原生**。內建六筆：`local`／`deepseek`／`claude`／`openrouter`／`claude-direct`／`deepseek-direct` | `build/llm-http` |
 | [`agent/`](agent/README.md) | 站在 llm-http 上面的 agent 層：工具箱（sandbox 檔案工具／shell／http／算數）＋記憶截斷＋agent loop＋trace＋CLI | `build/agent` |
 | [`pi-shell/`](pi-shell/README.md) | 把非互動 agent CLI（`pi -p`／`claude -p`／**你自己註冊的**）包成子行程的**薄透傳殼** | `build/pi-shell` |
 | [`aos/`](aos/README.md) | aos 的 Janet 綁定：資料夾當函式、檔案當指令；檔案協定用 Janet，推進仍叫 Python 原型 | —（函式庫） |

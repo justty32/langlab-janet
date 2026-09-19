@@ -3,7 +3,7 @@
 # 原本這支檔案什麼都自己做；加了 registry ＋ 設定檔之後拆成六支，各管一件事：
 #
 #   defaults.janet  預設位址／金鑰、chat-url 怎麼組（LITELLM_BASE／LITELLM_API_KEY）
-#   builtin.janet   內建四筆 endpoint 的**純資料**（local／deepseek／claude／openrouter）
+#   builtin.janet   內建六筆 endpoint 的**純資料**（local／deepseek／claude／openrouter／claude-direct／deepseek-direct）
 #   spec.janet      一份設定合不合法：normalize-spec（純函式驗證）
 #   registry.janet  表裡有誰：define-endpoint／reset-endpoints!／查來源
 #   resolve.janet   組成可以打的 cfg：endpoint／env-ready?

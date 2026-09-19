@@ -72,3 +72,68 @@ Anthropic 回的 assistant `content` 可能含 `thinking`（帶 `signature`）bl
 assistant 訊息第一個 block 仍是 `thinking`。⚠ 這份歷史若轉送到嚴格的 OpenAI 相容端點，要先拿掉這個 key。
 
 （真打 api.anthropic.com 本機沒 key，未實測；以上是照 claude-api skill 的資料與假伺服器驗的。）
+
+---
+
+以下是 **2026-09-19 拿 DeepSeek（`deepseek-flash`）真打**時踩到的——前面十四～十九全是
+假伺服器驗出來的，這一批才是第一次對真後端。
+
+## 二十、⚠ 推理模型會把 `max_tokens` 全花在 `reasoning_tokens` 上
+
+`(llm/ask ds "用一句話說明 Janet" nil nil :max-tokens 120)` 回空字串，HTTP 200：
+
+```
+finish → "length"
+usage  → @{:completion_tokens 120 :completion_tokens_details @{:reasoning_tokens 120} …}
+```
+
+`ask` 本來就擋得住這件事（丟「答案被 max_tokens 截斷了（finish_reason=length）」的中文錯誤），
+所以**不是 bug，是模型行為**。但 `ask-json` 更嚴重：送了 `response_format {:type "json_object"}`
+之後，連「台北在哪個國家」這種問題也穩定燒掉 200 個 reasoning token，一次都成功不了。
+
+解法是送 `:params {:reasoning_effort "none"}`（CLI：`--param reasoning_effort=none`），
+同一題 200 tokens 就綽綽有餘。⚠ `"minimal"` **沒用**，實測照樣 200 全燒光，只有 `"none"` 有效。
+
+## 二十一、⚠ CLI 的臨時 endpoint 沒辦法安全地給金鑰（已修）
+
+`--url` ＋ `--model` 組出來的臨時 endpoint，金鑰只能走 `--api-key sk-…`——正好違反本模組
+「金鑰不上命令列」那條原則（十六）。不給的話會靜靜落到 `defaults/proxy-key` 的 `dummy`：
+
+```
+呼叫 deepseek-live 失敗：HTTP 401（…）：{"error":{"message":"Authentication Fails,
+Your api key: ****ummy is invalid","type":"authentication_error",…}}
+```
+
+`resolve.janet` 的 `build-cfg` 其實早就認得 overrides 的 `:api-key-env`，只是 CLI 沒有對應的旗標。
+補上 `--api-key-env`（`cli-flags.janet`／`cli-args.janet`）就通了。
+⚠ 兩個都給時 `--api-key` 贏，那是 `build-cfg` 的 `or` 順序，不是 CLI 的。
+
+## 二十二、`models-url` 推出來的網址直接可用，不必加 `:models-url` 欄位
+
+原本擔心 DeepSeek 的模型列表在 `/models` 而不是 `/v1/models`，`models-url` 會推錯。
+實測**兩個都通**，回的是同一份：
+
+```
+https://api.deepseek.com/models    → @["deepseek-flash" "deepseek-v4-pro"]
+https://api.deepseek.com/v1/models → @["deepseek-flash" "deepseek-v4-pro"]
+```
+
+所以沒有新增 `:models-url`。真撞到路徑對不上的後端，自己叫 `request-json` 就好，
+不值得為此多一個欄位（`spec-keys` 每多一個，三個地方的錯誤訊息都要跟著改）。
+
+## 二十三、⚠ `:transport :http` 蓋不掉「https → curl」
+
+`use-curl?` 是 `(or (= :curl (cfg :transport)) (string/has-prefix? "https://" u))`——
+`:transport :http` 只是「沒有明講要 curl」，https 仍然贏。這是**刻意的**（spork/http 沒有 TLS，
+讓它去打 https 只會失敗），但寫設定的人容易以為 `:transport` 是最終決定權。
+
+要驗「net 手寫那條對 https 的反應」只能直接叫 `stream-http/stream-post`，
+它會**立刻**丟 `stream-http 只走 http://，https 請走 curl`，不會卡住（實測確認）。
+
+## 二十四、⚠ trace 截斷切在 byte 上，會把中文剖一半（已修）
+
+agent 的 trace 印工具結果時截到 200 —— 但 Janet 的 `length`／`string/slice` 都是以 **byte** 計的，
+一個中文字 3 bytes，於是終端上真的看到 `…都裝在 ~/.local（原始碼編譯、不�…`。
+修法是往回退到 UTF-8 的字元邊界（接續 byte 是 `0b10xxxxxx`），見 `trace.janet` 的 `utf8-cut`。
+同一個坑的另一面在 `trace.janet` 檔頭已經寫過了：**印中文不要用 `%q`**，它會逃逸成 `\xE5\x8F\xB0`。
+⚠ `protect` 回來的錯誤訊息用 `printf "%q"` 印也會中招，要 `(string e)` 再 `%s`。

@@ -68,15 +68,26 @@ model_list:
 `lite.yaml` 裡的 `model_name` 就是本模組內建 endpoint 的 `:model`——**兩邊要對得起來**。
 要換 provider 就改 yaml，Janet 這邊一行都不用動。
 
-## 五個內建 endpoint 的現況
+## 六個內建 endpoint 的現況
 
 | 名字 | 後端 | 憑證 | 吃圖 | 驗證狀態 |
 |------|------|------|------|----------|
 | `local` | 本機 LM Studio | 免 | ✅ gemma-4 系列 | **已實測**（問答／tool loop／圖像） |
-| `deepseek` | DeepSeek API | `DEEPSEEK_API_KEY` | ❌ 純文字 | **已實測**（問答） |
+| `deepseek` | DeepSeek API（經 proxy） | `DEEPSEEK_API_KEY` | ❌ 純文字 | **已實測**（問答） |
+| `deepseek-direct` | DeepSeek **官方 API，不經 proxy**（https 自動走 curl） | `DEEPSEEK_API_KEY` | ❌ 純文字 | **已實測 2026-09-19**（見下） |
 | `claude` | Anthropic（經 proxy） | `ANTHROPIC_API_KEY` | ✅ | ⚠ **未實測**（本機沒設 key） |
 | `claude-direct` | Anthropic **原生 API，不經 proxy**（curl 走 https，本機轉換） | `ANTHROPIC_API_KEY` | ✅ | ⚠ 轉換與 tool loop 離線驗過；**真打未實測**（本機沒設 key） |
 | `openrouter` | OpenRouter | `OPENROUTER_API_KEY` | 看你選的 slug | ⚠ **未實測**（本機沒設 key） |
+
+**`deepseek-direct` 2026-09-19 真打通過的項目**（`deepseek-flash`，每次 `max_tokens` ≤ 200）：
+`ask`／`reply-usage`、`list-models`、`ask-json`（`json_object`）、`with-tools` 多輪 tool loop、
+`chat-stream`／`ask-stream`（curl 那條）、打錯 model id 的中文錯誤、CLI 的 `--stream`、
+以及 [`../agent/`](../agent/README.md) 的 `make-agent`／`run`（`read-file` 讀 README 回答問題）。
+踩到的坑寫在 [`../../FINDINGS-踩坑c-傳輸與串流.md`](../../FINDINGS-踩坑c-傳輸與串流.md)。
+
+⚠ **`deepseek-flash` 是推理模型**：`max_tokens` 200 以內時它常把預算全花在 `reasoning_tokens`，
+`content` 回空字串、HTTP 仍然 200（`ask` 會丟中文錯誤講清楚）。要短回應請加
+`--param reasoning_effort=none`（函式庫那邊是 `:params {:reasoning_effort "none"}`）。
 
 ⚠ **圖像要挑支援的模型**：送圖給純文字模型（例如 DeepSeek），行為從報錯到**靜默無視**都有可能。
 `--image` 搭配標記為 `:vision? false` 的 endpoint 時 CLI 會先在 stderr 警告。

@@ -48,6 +48,24 @@
 # 什麼都沒給就回 nil，由 run 去報「沒有這個 endpoint」
 (assert (nil? (cli/resolve-endpoint (cli/parse-args @["x" "沒這個" "嗨"]) "沒這個")))
 
+# ── --api-key-env：金鑰讀環境變數，不上命令列 ──────────────────────
+(def 變數 (string "LLM_HTTP_TEST_KEY_" (os/getpid)))
+(os/setenv 變數 "sk-測試用的假金鑰")
+(defn 組 [& 旗標]
+  (cli/resolve-endpoint
+    (cli/parse-args @["x" "--url" "http://127.0.0.1:1234/v1/chat/completions"
+                      "-m" "qwen3" ;旗標 "ad-hoc" "嗨"])
+    "ad-hoc"))
+(assert (= "sk-測試用的假金鑰" ((組 "--api-key-env" 變數) :api-key))
+        "--api-key-env 的值當成環境變數名去讀")
+(assert (= "sk-直接給的" ((組 "--api-key-env" 變數 "--api-key" "sk-直接給的") :api-key))
+        "⚠ 兩個都給時 --api-key 贏（build-cfg 的 or 順序）")
+(assert (not= "sk-測試用的假金鑰" ((組) :api-key))
+        "沒給 --api-key-env 就不該讀到它")
+(assert (nil? ((組 "--api-key-env" "LLM_HTTP_絕對沒設過這個變數") :api-key-env))
+        "⚠ :api-key-env 是 special-override-key，不會原樣留在 cfg 裡")
+(os/setenv 變數 nil)
+
 # ── --list 的輸出要分得出內建與自訂 ─────────────────────────────────
 (llm/define-endpoint "我的" {:model "mine"})
 (def listed (cli/list-text))

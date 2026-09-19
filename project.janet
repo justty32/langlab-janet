@@ -26,7 +26,7 @@
   :source ["modules/llm-http/init.janet"        # 門面
            "modules/llm-http/endpoints.janet"   # endpoint 門面（＋觸發設定檔自動載入）
            "modules/llm-http/defaults.janet"    # 預設位址／金鑰、chat-url 怎麼組
-           "modules/llm-http/builtin.janet"     # 內建四筆 endpoint 的純資料
+           "modules/llm-http/builtin.janet"     # 內建六筆 endpoint 的純資料
            "modules/llm-http/spec.janet"        # 一份 endpoint 設定合不合法（純函式驗證）
            "modules/llm-http/registry.janet"    # registry：誰在表裡（define-endpoint／reset）
            "modules/llm-http/resolve.janet"     # 組成可以打的 cfg：endpoint／env-ready?

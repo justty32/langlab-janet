@@ -11,12 +11,21 @@ spork/http 底層是 `net/connect`，**沒有 TLS**。以前 `:url` 寫 `https:/
 | 其餘（`http://`） | 照舊 spork/http |
 
 ```janet
-(def ds (llm/endpoint {:model "deepseek-v4-flash"
+(def ds (llm/endpoint "deepseek-direct"))    # 內建的那一筆，內容就是下面這張表
+(def ds (llm/endpoint {:model "deepseek-flash"      # 自己寫也一樣
                        :url "https://api.deepseek.com/v1/chat/completions"
                        :api-key-env "DEEPSEEK_API_KEY"}))
 (llm/ask ds "嗨")                     # https → 自動走 curl，不用寫 :transport
 (llm/list-models ds)                  # GET https://api.deepseek.com/v1/models
 ```
+
+⚠ **`:api-key-env` 只在 `endpoint` 組 cfg 的那一刻讀一次** `os/getenv`（見 `resolve.janet`）——
+環境變數沒設時就靜靜落到 `defaults/proxy-key`（`dummy`），要到伺服器回 401 才看得出來。
+
+⚠ **`models-url` 是從 `:url` 推的**（砍掉結尾的 `/chat/completions` 再接 `/models`），
+所以沒有 `:models-url` 這個欄位。DeepSeek 的 `/models` 與 `/v1/models` **兩個都通**
+（2026-09-19 實測都回 `deepseek-flash`／`deepseek-v4-pro`），所以推出來的網址直接可用。
+真遇到路徑對不上的後端，就自己 `(llm/request-json cfg "GET" "…")`。
 
 - `(llm/curl-available?)` 探一次 PATH 上有沒有 curl（環境變數 `LLM_HTTP_CURL` 可指到別的路徑）。
 - 沒 curl 的機器：`https://` 仍然打不通，錯誤是「叫不動 curl（不在 PATH 上？）」；要打外部服務就回頭架 proxy。
@@ -79,6 +88,11 @@ OpenRouter 有些模型會靜靜無視 `response_format`，這一層才是真的
 模型回的不是合法 JSON：decode error at position 0: unexpected character
 原文：我不想回 JSON
 ```
+
+⚠ **推理模型 ＋ `json_object` 很容易把預算燒光**：2026-09-19 實測 `deepseek-flash`，
+`max_tokens` 200 時 `reasoning_tokens` 就吃掉 200、`content` 是空字串，`ask` 會丟
+「答案被 max_tokens 截斷了（finish_reason=length）」。加 `:params {:reasoning_effort "none"}`
+之後同一個問題 200 tokens 綽綽有餘。
 
 `:api :anthropic` 那條由轉換層改成 `output_config.format`（`json_object` 沒有對應，改塞一句 system 提示）。
 `chat`／`ask` 也直接吃 `:response-format`，`reply-usage` 拿 token 用量。

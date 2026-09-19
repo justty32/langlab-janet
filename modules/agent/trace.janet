@@ -9,7 +9,7 @@
 # ⚠ 印參數不用 %q：Janet 的 quoted 印法會把中文逃逸成 \xE5\x8F\xB0，看不懂。
 
 (def result-limit
-  "工具結果印到 stderr 時最多幾個字元，太長會弄髒終端。"
+  "工具結果印到 stderr 時最多幾個 **bytes**，太長會弄髒終端。"
   200)
 
 (defn fmt-args
@@ -20,9 +20,23 @@
       (string/format "%s=%s" k (if (bytes? v) (string v) (string/format "%q" v))))
     " "))
 
+(defn utf8-cut
+  ``把字串切到最多 n 個 bytes，但**退回到 UTF-8 的字元邊界**，不會把一個中文字切一半。
+
+  ⚠ 踩過：string/slice 與 length 都是以 **byte** 計的，一個中文字 3 bytes；
+    直接切在 200 會剖開一個字，終端印出來是一個亂碼方塊（實測真的看到）。
+    UTF-8 的接續 byte 是 0b10xxxxxx（0x80–0xBF），往回退到不是接續 byte 為止就對了。``
+  [s n]
+  (if (<= (length s) n)
+    (string s)
+    (do
+      (var i n)
+      (while (and (pos? i) (= 8r200 (band (get s i) 8r300))) (-- i))
+      (string/slice s 0 i))))
+
 (defn- one-line [s limit]
   (def flat (string/replace-all "\n" "⏎" (string s)))
-  (if (> (length flat) limit) (string (string/slice flat 0 limit) "…") flat))
+  (if (> (length flat) limit) (string (utf8-cut flat limit) "…") flat))
 
 (defn- fmt-usage [u]
   (if u

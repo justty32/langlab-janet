@@ -5,14 +5,18 @@
 #   全部由前面那台 litellm proxy 吸收，所以這裡的 :model 其實是 **proxy config 裡的
 #   model_name**（見同目錄 lite.yaml），不是 provider 自己的 model id。
 #   要換 provider 就換 proxy 的 config，Janet 這邊一行都不用改。
-#   唯一的例外是 claude-direct：:api :anthropic 讓 provider-anthropic.janet 在本機做
-#   OpenAI ↔ Anthropic 的雙向轉換，:transport :curl 讓 https 打得出去，不需要 proxy。
+#   例外有兩筆，都直打、不經 proxy：
+#     claude-direct   :api :anthropic 讓 provider-anthropic.janet 在本機做 OpenAI ↔ Anthropic
+#                     的雙向轉換，:transport :curl 讓 https 打得出去。
+#     deepseek-direct 本來就是 OpenAI 相容，只要給完整的 https :url，transport 會自動選 curl，
+#                     所以連 :transport 都不用寫（:model 是 **provider 自己的 model id**）。
 #
 # 使用者自己的 endpoint **不要**寫進這裡 —— 走 registry.janet 的 define-endpoint
 # 或 config.janet 的設定檔（見 endpoints.example.janet）。
 
 (def builtin-specs
-  ``五個一等公民 endpoint（四筆走 proxy ＋ claude-direct 直打）。key 是給人用的名字，值是這一筆的中繼資料。
+  ``六個一等公民 endpoint（四筆走 proxy ＋ claude-direct／deepseek-direct 直打）。
+  key 是給人用的名字，值是這一筆的中繼資料。
 
   一份 endpoint 設定認得的欄位（全部可省略，只有 :model 必填）：
 
@@ -45,6 +49,14 @@
     :env     "DEEPSEEK_API_KEY"
     :vision? false
     :note    "DeepSeek 官方 API。⚠ 現行 model id 是 deepseek-v4-flash／deepseek-v4-pro，純文字、不吃圖。"}
+
+   "deepseek-direct"
+   {:model       "deepseek-flash"
+    :url         "https://api.deepseek.com/v1/chat/completions"
+    :api-key-env "DEEPSEEK_API_KEY"
+    :env         nil
+    :vision?     false
+    :note        "直打 DeepSeek 官方 API（不經 proxy，https 自動走 curl）。純文字、不吃圖。"}
 
    "claude"
    {:model   "claude"

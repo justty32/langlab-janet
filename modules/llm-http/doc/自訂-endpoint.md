@@ -3,7 +3,7 @@
 [← 回 llm-http README](../README.md)
 
 
-內建只有四筆，但**你不需要改 repo 原始碼**就能加自己的。四條路，由輕到重：
+內建只有六筆，但**你不需要改 repo 原始碼**就能加自己的。四條路，由輕到重：
 
 | 想做的事 | 走哪 |
 |----------|------|
@@ -60,7 +60,7 @@
 (llm/endpoint "qwen")                       # 之後照舊用名字取
 (llm/endpoint-source "qwen")                # → :runtime（--list 會拿它分內建／自訂）
 (llm/undefine-endpoint! "qwen")             # 拿掉
-(llm/reset-endpoints!)                      # 打回「只剩內建四筆」
+(llm/reset-endpoints!)                      # 打回「只剩內建六筆」
 ```
 
 ## ③ 設定檔：不必改 repo、也不必 commit 自己的設定

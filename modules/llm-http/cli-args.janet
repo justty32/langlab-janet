@@ -83,6 +83,8 @@
   (when-let [v (res "base")]    (put overrides :base v))
   (when-let [v (res "url")]     (put overrides :url v))
   (when-let [v (res "api-key")] (put overrides :api-key v))
+  # ⚠ --api-key-env 比 --api-key 安全（金鑰不上 argv）；兩個都給時 --api-key 贏（見 resolve.janet 的優先序）
+  (when-let [v (res "api-key-env")] (put overrides :api-key-env v))
   (def hs (header-table (res "header")))
   (unless (empty? hs) (put overrides :headers hs))
 

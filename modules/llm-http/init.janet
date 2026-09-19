@@ -13,7 +13,7 @@
 # ── 這支檔案只做 re-export ──────────────────────────────────────────
 #   endpoints.janet  ← 門面，底下再分四支：
 #       defaults.janet   預設位址／金鑰、chat-url 怎麼組
-#       builtin.janet    內建四筆 endpoint 的純資料
+#       builtin.janet    內建六筆 endpoint 的純資料
 #       registry.janet   registry 行為：define-endpoint／endpoint／驗證
 #       config.janet     設定檔載入：load-endpoints!／autoload-endpoints!
 #   client.janet     ← 門面，底下再分幾支：

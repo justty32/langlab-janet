@@ -1,6 +1,7 @@
 # llm-http 範例 ⑥ —— 自訂 endpoint 的四種寫法。
 #
-# 內建只有 local／deepseek／claude／openrouter 四筆，但你**不需要改 repo 原始碼**
+# 內建只有 local／deepseek／claude／openrouter／claude-direct／deepseek-direct 六筆，
+# 但你**不需要改 repo 原始碼**
 # 就能加自己的。四條路，由輕到重：
 #
 #   ① inline table       —— 完全不註冊，當場給一張 table 就是一個 endpoint
