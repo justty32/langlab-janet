@@ -35,58 +35,38 @@
 | 編成單一執行檔 | [05c](05c-jpm-的-rule-系統.md)、[16d](16d-image-與-jpm.md) | — | — |
 | 把程式編成 `.jimage`、或跑到一半存下來下次續跑 | [16b](16b-image-存成檔.md)、[16c](16c-image-怎麼用.md) | [`image-tour`](../examples/image-tour.janet) | ★ [`checkpoint/`](../snippets/checkpoint/main.janet) |
 
+## 從別的語言搬過來
+
+| 我要… | 教學 | 可跑 | 抄 |
+|-------|------|------|-----|
+| 寫 return／break／continue／跳出巢狀迴圈 | [01d](01d-提早離開-return-break-continue.md) | [`early-exit`](../examples/early-exit.janet) | — |
+| 把 C／C++ 的寫法對到 Janet | [43](43-從-C-C++-過來.md) | [`compare-c`](../examples/compare-c.janet) | — |
+| 把 Lua 的寫法對到 Janet | [44](44-從-Lua-過來.md) | [`compare-lua`](../examples/compare-lua.janet) | — |
+| 把 Go 的寫法對到 Janet | [45](45-從-Go-過來.md) | [`compare-go`](../examples/compare-go.janet) | — |
+| 把 Python 的寫法對到 Janet | [46](46-從-Python-過來.md) | [`compare-python`](../examples/compare-python.janet) | — |
+
+整組的索引（含 43b／43c／44b／45b／46b–46f）在
+[從別的語言過來](從別的語言過來-索引.md)。
+
 ## 跟外面打交道
 
 | 我要… | 教學 | 可跑 | 抄 |
 |-------|------|------|-----|
 | 跑外部命令、接管線 | [11](11-pipeline-signal.md)、[41](41-spork-終端與-shell.md) | [`pipeline`](../examples/pipeline.janet)、[`term-shell`](../examples/term-shell.janet) | [`pipe-to-child`](../snippets/pipe-to-child/) |
 | 打 HTTP API | [17](17-用-spork-http-打-api.md) | — | [`http-local`](../snippets/http-local/main.janet) |
-| 打 LLM | — | [`examples/llm-http/`](../examples/llm-http/README.md) | [`modules/llm-http/`](../modules/llm-http/README.md) |
+| 打 LLM | [47](47-llm-api-是什麼.md)（七篇從零學）| [`examples/agent-tutorial/`](../examples/agent-tutorial/README.md)、[`examples/llm-http/`](../examples/llm-http/README.md) | [`modules/llm-http/`](../modules/llm-http/README.md) |
+| **做一個能讀檔、算數、抓網頁的 agent** | [47d](47d-自己寫-agent-loop.md) | [`examples/agent/`](../examples/agent/README.md) | ★ [`modules/agent/`](../modules/agent/README.md) |
+| 串流輸出／直打 https／Anthropic 原生 | — | [`examples/llm-http/`](../examples/llm-http/README.md) | [`streaming`](../modules/llm-http/doc/streaming.md)、[`https-與-curl`](../modules/llm-http/doc/https-與-curl.md)、[`anthropic-原生`](../modules/llm-http/doc/anthropic-原生.md) |
 | **重試與逾時** | [15](15-ev-channel-net.md) | — | ★ [`retry-timeout`](../snippets/retry-timeout.janet) |
 | **並行跑一批工作（限流、單一失敗不拖垮）** | [30](30-spork-並行與服務.md) | — | ★ [`parallel-batch`](../snippets/parallel-batch.janet) |
 | 判斷作業系統、處理跨平台 | [39](39-跟作業系統打交道.md) | [`os-tour`](../examples/os-tour.janet) | — |
 | 呼叫 C 函式庫 | [10](10-c-互通.md)、[10b](10b-ffi-型別與指標.md) | [`ffi-demo`](../examples/ffi-demo.janet)、[`ffi-pointers`](../examples/ffi-pointers.janet) | — |
 
-## 處理資料
+## 剩下的三區在後半
 
-| 我要… | 教學 | 可跑 | 抄 |
-|-------|------|------|-----|
-| map／filter／reduce | [25](25-序列工具.md) | [`seq-tools`](../examples/seq-tools.janet) | — |
-| 走訪／改寫**巢狀**資料 | [35b](35b-走訪與改寫巢狀資料.md) | [`copy-freeze`](../examples/copy-freeze.janet) | — |
-| 拷貝一份（淺／深）| [35](35-拷貝與凍結.md) | [`copy-freeze`](../examples/copy-freeze.janet) | — |
-| 排序（多鍵、自訂比較）| [36](36-排序與比較.md) | [`sorting`](../examples/sorting.janet) | — |
-| 依形狀比對並拆解 | [32](32-條件與模式比對.md) | [`match-demo`](../examples/match-demo.janet) | — |
-| 解析有結構的文字 | [14](14-peg.md) | [`peg-demo`](../examples/peg-demo.janet) | [`csv`](../snippets/csv.janet) |
-| 驗證資料形狀 | [29](29-spork-資料與文字.md) | — | [`config-load`](../snippets/config-load.janet) |
-| 處理 UTF-8（字元數、切片）| [18](18-字串與-buffer.md) | — | [`utf8-strings`](../snippets/utf8-strings.janet) |
-| 統計／線性代數／數論 | [42](42-spork-math.md) | [`spork-math`](../examples/spork-math.janet) | — |
-| 亂數、洗牌、隨機 ID | [26](26-隨機數.md)、[26b](26b-隨機數配方.md) | [`random-demo`](../examples/random-demo.janet) | — |
-| 時間、日期、計時 | [24](24-時間與日期.md) | [`time-demo`](../examples/time-demo.janet) | [`every-5s-clock`](../snippets/every-5s-clock.janet) |
+[**我要做 X · 資料、排錯、寫大一點**](怎麼做-X-b-資料與排錯.md)——
+處理資料（map／排序／PEG／時間／亂數）、出問題的時候（讀錯誤、量效能、查型別）、
+寫得比較大之後（拆模組、prototype、資源管理、巨集、產 HTML）。
 
-## 出問題的時候
-
-| 我要… | 去哪 |
-|-------|------|
-| **確認「這是不是已知的坑」** | ★ [`html/gotchas.html`](../html/gotchas.html)——全部實測過，每條標了出處 |
-| 看懂錯誤訊息與堆疊 | [34](34-讀錯誤訊息.md)＋[`error-anatomy`](../examples/error-anatomy.janet) |
-| 知道某個操作貴不貴 | [37](37-什麼操作貴.md)＋[`bench`](../examples/bench.janet)（在你機器上重跑）|
-| 追某個值到底是什麼型別 | [38](38-型別全表.md)＋[`types`](../examples/types.janet) |
-| 追 import 找不到模組 | [05e](05e-import-與模組路徑.md)、[40](40-內建動態變數.md)（印 `module/paths`）|
-| 寫測試 | [23](23-測試怎麼寫.md)、[23b](23b-用-spork-test-寫測試.md)＋[`testing-demo`](../examples/testing-demo.janet) |
-
-## 寫得比較大之後
-
-| 我要… | 去哪 |
-|-------|------|
-| 把程式拆成模組 | [05](05-jpm-與專案.md)、[05e](05e-import-與模組路徑.md)、[`modules/`](../modules/README.md) |
-| **看一個真東西怎麼分層** | ★ [`try/`](../try/README.md)——從零蓋一個 LLM 客戶端，每個決定都寫了為什麼 |
-| 做出「類別」的效果 | [02b](02b-方法與-prototype.md)、[22](22-原型與方法.md)＋[`prototypes`](../examples/prototypes.janet) |
-| 管理資源（開了要關）| [20b](20b-資源管理.md)＋[`errors-raii`](../examples/errors-raii.janet) |
-| 寫巨集 | [08](08-巨集-macro.md)＋[`macros`](../examples/macros.janet) |
-| 產生 HTML | [31](31-spork-產生-html.md) | 
-
-> **想確認自己真的懂了** → [`exercises/`](../exercises/README.md)：題目專挑 ⚠ 陷阱，
-> 跑起來會告訴你第幾題錯、預期什麼、你給了什麼。
->
 > 找不到你要的？[README](README.md) 有完整目錄，
 > [`reference/`](../reference/README.md) 可以查「這個領域到底有哪些函式」。

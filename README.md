@@ -25,6 +25,8 @@ jpm build && ./build/janet-lab --json -n world  # 編成單一執行檔再跑
 | **想學** —— 從頭把 Janet 搞懂 | [`docs/`](docs/README.md)：00 環境 → 06 編輯器逐篇遞進，18～26b 是日常會用到的；32～40 是「寫熟之後才會踩到」的語言細節，07～17 與 27～31 需要時再翻 |
 | **要做某件事** —— 「我現在要做 X」 | [`docs/怎麼做-X.md`](docs/怎麼做-X.md)：按**任務**排的索引，每列給你教學／可跑／可抄三欄 |
 | **從 C++ 過來** —— 想快速對上概念 | [`docs/01b`](docs/01b-給-C++-開發者.md)：一張概念對照表 + 五個一定會誤會的地方 |
+| **從 C／Lua／Go／Python 過來** —— 想逐條對照語法 | [`docs/01d`](docs/01d-提早離開-return-break-continue.md) 先解決 return／break／continue，再看 [`43`](docs/43-從-C-C++-過來.md)／[`44`](docs/44-從-Lua-過來.md)／[`45`](docs/45-從-Go-過來.md)／[`46`](docs/46-從-Python-過來.md) |
+| **想做 AI agent** | [`docs/47`](docs/47-llm-api-是什麼.md) 從零學（離線就能跑），[`modules/agent/`](modules/agent/README.md) 直接用，[`modules/llm-http/`](modules/llm-http/README.md) 打模型（https／串流／Anthropic 原生）|
 | **想查** —— 忘了某個寫法 | [`html/index.html`](html/index.html)：分頁速查表，開瀏覽器即看 |
 | **撞到怪行為** —— 「這是已知的坑嗎」 | [`html/gotchas.html`](html/gotchas.html)：全部實測過的地雷集中一頁，每條標了出處 |
 | **想查全** —— 這個領域到底有哪些函式 | [`reference/`](reference/README.md)：內建的從 root-env 逐一列舉，spork 只收常用（最全的在[官方](https://github.com/janet-lang/spork)）|
@@ -40,18 +42,19 @@ jpm build && ./build/janet-lab --json -n world  # 編成單一執行檔再跑
 project.janet        專案宣告（依賴、要編的執行檔）
 janet-lab/init.janet 核心模組（純函式）
 bin/main.janet       CLI 進入點（argparse 實例）
-test/                 測試（13 支）——其中 doc-examples.janet 守的是**教學裡的輸出**不是程式碼
-docs/                分篇教學（00～42，70 篇）——掌握概念用；幾乎每篇都配一支可跑範例
+test/                測試（清單見 test/）——其中 doc-examples.janet 守的是**教學裡的輸出**不是程式碼
+docs/                分篇教學（編號 00 起，目錄見 docs/README.md）——掌握概念用；幾乎每篇都配一支可跑範例
 reference/           查「有哪些可用」——內建的求全，spork 只收常用
 html/                分頁速查表（index / data-io / peg / concurrency / ffi / env / ★ gotchas 地雷）
 examples/            教學附件，配合 docs 某一篇
 snippets/            做事的起點，「我要做 X，抄哪段」
 exercises/           練習題（專挑 ⚠ 陷阱）＋參考解答；解答有納入 jpm test
-modules/             能用的小模組（llm-http 打 LLM、pi-shell 包 agent CLI）
+modules/             能用的小模組（llm-http 打 LLM、agent 組 agent、pi-shell 包 agent CLI、aos）
 try/                 從零蓋一個 LLM 客戶端的**過程**——看「怎麼分層」，不是看 API
 FINDINGS.md          環境與架構的實測筆記（LLM 供應商、為什麼走 litellm proxy）
 FINDINGS-踩坑.md     實作時被 LLM API／模組設計咬到的地方（七～十）
 FINDINGS-踩坑b-工具鏈.md  jpm 與 import 的坑（十一～十三）
+FINDINGS-踩坑c-傳輸與串流.md  https／Anthropic 原生／串流的坑（十四起）
 AGENTS.md            AI agent 的入口（人可以不用看）；工作流本體收在 wf/
 ```
 
@@ -70,6 +73,9 @@ symbol↔字串、**字串與 buffer**、**檔案與檔案系統**、**錯誤處
 **數字與位元運算**、**原型與方法（Janet 版的類別）**、**marshal 序列化與自省**、
 **測試怎麼寫**、**時間與日期**、**序列工具全家**、**隨機數（PRNG vs 密碼學亂數）**、
 **spork 準標準庫**（51 個模組的地圖、misc／schema／regex／date／pmap／generators）。
+
+另有兩組成套的：**從別的語言過來**（C／C++、Lua、Go、Python 各一組逐條對照，43–46）
+與**從零寫一個 AI agent**（47–47g，七篇離線可跑，成品是 `modules/agent/`）。
 
 外加「寫熟之後才會踩到」的一整區（32–40）：**模式比對 `match`**、**`loop` 全表**、
 **函式參數與閉包**、**讀錯誤訊息與除錯**、**拷貝與凍結**、**走訪巢狀資料**、

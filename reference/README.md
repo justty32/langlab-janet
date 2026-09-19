@@ -14,25 +14,23 @@
 
 ## 有哪些
 
-| 檔 | 收什麼 | 對應教學 |
-|----|--------|----------|
-| [序列與集合.md](序列與集合.md) | 轉換／篩選與尋找／聚合：`map` `filter` `keep` `reduce` `accumulate` `seq` `count` `find` `sum` `mean` `extreme`… | [25 序列工具](../docs/25-序列工具.md) |
-| [序列與集合b-切割與重排.md](序列與集合b-切割與重排.md) | 切割／排序／去重分組分塊／型別判斷：`take` `drop` `slice` `sort` `distinct` `frequencies` `group-by` `partition` `flatten` `range`… | 同上 |
-| [序列與集合c-字典與組合.md](序列與集合c-字典與組合.md) | 字典操作／組合函式／走訪：`keys` `values` `kvs` `invert` `merge` `zipcoll` `get-in` `juxt` `comp` `partial` `walk`… | 同上 |
-| [fiber-與-ev.md](fiber-與-ev.md) | **全部 50 個**（`fiber/` 10 ＋ `ev/` 40）：起任務／等待與取消／channel／鎖／stream；先分清 fiber、ev task、真執行緒三層 | [09](../docs/09-fiber.md)、[15](../docs/15-ev-channel-net.md) |
-| [容器操作.md](容器操作.md) | **全部 37 個** 型別專屬操作（`array/` 15、`table/` 11、`struct/` 5、`tuple/` 6）：增刪／容量／prototype／弱參照；⚠ `concat` 吃單值、`join` 只吃序列 | [02](../docs/02-資料結構.md)、[02b](../docs/02b-方法與-prototype.md) |
-| [字串與-buffer.md](字串與-buffer.md) | **全部 45 個**（`string/*` 20 ＋ `buffer/*` 25）：查找／切割／取代／格式動詞表／二進位 push／位元操作；⚠ 參數順序、`%s` 只吃字串類 | [18](../docs/18-字串與-buffer.md) |
-| [控制流.md](控制流.md) | 條件／`match` 模式表／`loop` 的八個 verb 與八個條件詞／非區域跳出；⚠ 標出哪些是**特殊形式**（`if` `while` `break` `do` 查不到 doc）| [32](../docs/32-條件與模式比對.md)、[32b](../docs/32b-loop-全表.md) |
-| [型別判斷與轉換.md](型別判斷與轉換.md) | **全部 37 個判斷函式** ＋ `(type x)` 的 19 種回傳值 ＋ 轉換表；⚠ **字典存不了 `nil` 值** | [38](../docs/38-型別全表.md)、[13](../docs/13-symbol-keyword-字串.md) |
-| [斷言與錯誤.md](斷言與錯誤.md) | `assert` `assertf` `error` `errorf` `protect` `try` `signal` `propagate` `defer` `edefer`… | [23 測試怎麼寫](../docs/23-測試怎麼寫.md)、[20 錯誤處理](../docs/20-錯誤處理與資源管理.md) |
-| [os-全表.md](os-全表.md) | **全部 48 個 `os/*`**：這台機器／終端機／檔案目錄／權限／子行程／環境變數／POSIX 專屬；⚠ `os/shell` 回 exit code × 256 | [39](../docs/39-跟作業系統打交道.md)、[11](../docs/11-pipeline-signal.md) |
-| [os-時間.md](os-時間.md) | `os/time` `os/date` `os/mktime` `os/clock` `os/strftime` `os/sleep`，含 `os/date` 欄位表與 `strftime` 格式碼表 | [24 時間與日期](../docs/24-時間與日期.md) |
-| [math-數學與隨機.md](math-數學與隨機.md) | **全部 53 個 `math/*`**：常數、取整、冪與對數、三角雙曲、特殊函式、整數工具、隨機數 | [26 隨機數](../docs/26-隨機數.md) |
-| [spork/](spork/README.md) | **spork 常用模組的實測筆記**（不求窮盡，最全的在[官方 repo](https://github.com/janet-lang/spork)） | [27 spork 全覽](../docs/27-spork-全覽.md) |
+分兩區：**Janet 內建的**求全（對著 `root-env` 逐一核過），**spork 的**只收常用。
 
-⚠ **上面那五份跟 `spork/` 的標準不一樣**：前者是 Janet **內建**的東西，數量固定、
+| 區 | 收什麼 | 去哪 |
+|----|--------|------|
+| **內建全表**（22 份）| 資料與序列 8 份、語言本身 6 份、並行／IO／系統 6 份、PEG 2 份 | [README-內建全表.md](README-內建全表.md) |
+| **spork** | spork 常用模組的實測筆記（不求窮盡，最全的在[官方 repo](https://github.com/janet-lang/spork)）| [spork/](spork/README.md)（配 [27 spork 全覽](../docs/27-spork-全覽.md)）|
+
+常查的幾份直接進：[序列與集合](序列與集合.md)、[字串與-buffer](字串與-buffer.md)、
+[控制流](控制流.md)、[型別判斷與轉換](型別判斷與轉換.md)、[os-全表](os-全表.md)、
+[fiber-與-ev](fiber-與-ev.md)、[特殊形式與核心巨集](特殊形式與核心巨集.md)、[peg-全表](peg-全表.md)。
+
+⚠ **上面 Janet 內建那幾份跟 `spork/` 的標準不一樣**：前者是 Janet **內建**的東西，數量固定、
 可以窮盡（而且真的對著 `root-env` 逐一核過）；`spork/` 是**第三方庫**，
 會改版、會長新東西，這裡只挑常用的記錄實測結果，**完整清單一律以官方為準**。
+
+⚠ [file-與-net.md](file-與-net.md) 是**半成品**：`file/*` 那半邊寫完了，`net/*` 那 19 個還沒動筆
+（R1 線中止），檔頭有標，進度記在 [planning](../wf/workflows/planning.md)。
 
 ## 這些清單怎麼來的
 
@@ -44,7 +42,7 @@
     (print k "\t" (first (string/split "\n" (or (get (get root-env k) :doc) ""))))))
 ```
 
-這台機器上共 **703 個** root-env 綁定。每一份文檔都對著這張表逐一核過，
+這台機器上跑出來是 **702 行**（`root-env` 裡另有 5 個 keyword 鍵不算綁定）。每一份文檔都對著這張表逐一核過，
 **每個範例都真的跑過、輸出照抄實際結果**——所以你看到的 `=>` 右邊是真的，不是想當然耳。
 
 > 想自己查某個函式：REPL 裡 `(doc 函式名)` 最快，這裡是「我不知道有什麼可用」時才需要的。

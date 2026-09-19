@@ -11,32 +11,9 @@
 (import spork/misc)
 (import spork/path)
 
-# 刻意不比對的案例，按原因分組。名單只准縮短，不准為了讓測試變綠而隨便加長。
-(def 不比對
-  (merge
-    # ① %j 會把中文逃逸成 \xE4\xBD\xA0…，文件寫給人看的那個才是對的
-    (tabseq [k :in ["02-資料結構.md:92" "03-json.md:57" "32-條件與模式比對.md:73"
-                    "32-條件與模式比對.md:74" "40-內建動態變數.md:45"
-                    "28b-spork-misc-文字與流程.md:65"]] k :逃逸中文)
-    # ② 文件寫的是散文描述或所有可能值，不是單一個值
-    (tabseq [k :in ["16-marshal-與自省.md:51" "16-marshal-與自省.md:52"
-                    "19b-檔案系統與路徑.md:32" "19b-檔案系統與路徑.md:51"
-                    "24-時間與日期.md:89" "03-json.md:48"]] k :散文)
-    # ③ 結果本來就會變（時間、亂數、當下的檔案）
-    (tabseq [k :in ["24-時間與日期.md:15" "26-隨機數.md:30" "26-隨機數.md:99"
-                    "29-spork-資料與文字.md:123" "29-spork-資料與文字.md:124"
-                    "19b-檔案系統與路徑.md:12" "19b-檔案系統與路徑.md:13"]] k :會變)
-    # ④ 預期值本身含兩個空白，被說明文字的切法切爛（見「期望值」的註解）
-    (tabseq [k :in ["02-資料結構.md:36" "reference/spork/資料格式與驗證.md:18"]] k :切不乾淨)))
-
-# 這些字樣一出現就整個區塊不跑：會動檔案系統、開子行程、或需要外部服務。
-(def 危險 ["xprint" "os/execute" "os/spawn" "os/shell" "os/rm" "os/rmdir" "os/mkdir" "os/cd"
-           "spit" "file/open" "file/temp" "net/" "http/" "sh/$" "os/exit" "os/sleep"
-           # ⚠ ev/ 一定要排除：開了 ev/thread 或 ev/go 的區塊會讓**整個行程結束不了**
-           #   （Janet 會等那些任務），症狀是測試跑完卻不退出，很難聯想。
-           "ev/"])
-
-(defn 危險區塊? [src] (some |(string/find $ src) 危險))
+(import ./doc-examples-skip :as skip)
+(def 不比對 skip/不比對)
+(defn 危險區塊? [src] (skip/危險區塊? src))
 
 (def 行案例
   (peg/compile
@@ -86,7 +63,7 @@
     後面才用得到。不能改成「每次重跑整段前綴」——那是 O(n²)，跑起來要好幾分鐘。``
   [src env]
   (var 結果 nil)
-  (def f (fiber/new (fn [] (set 結果 (with-dyns [*out* @"" *err* @""] (eval-string src)))) :e))
+  (def f (fiber/new (fn [] (set 結果 (with-dyns [*out* @"" *err* @""] (eval-string src env)))) :e))
   (fiber/setenv f env)
   (def r (resume f))
   (if (= :error (fiber/status f)) [false r] [true 結果]))

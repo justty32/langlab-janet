@@ -4,7 +4,8 @@
 
 | 模組 | 是什麼 | 執行檔 |
 |------|--------|--------|
-| [`llm-http/`](llm-http/README.md) | 純 Janet 打 OpenAI 相容端點（本機 litellm proxy 或直接打 LM Studio）；**多輪 tool loop**＋**圖像輸入**＋**自訂 endpoint／參數**。內建四筆：`local`／`deepseek`／`claude`／`openrouter` | `build/llm-http` |
+| [`llm-http/`](llm-http/README.md) | 純 Janet 打 OpenAI 相容端點（本機 litellm proxy 或直接打 LM Studio）；**多輪 tool loop**＋**圖像輸入**＋**自訂 endpoint／參數**＋**https（curl）／串流／Anthropic 原生**。內建五筆：`local`／`deepseek`／`claude`／`openrouter`／`claude-direct` | `build/llm-http` |
+| [`agent/`](agent/README.md) | 站在 llm-http 上面的 agent 層：工具箱（sandbox 檔案工具／shell／http／算數）＋記憶截斷＋agent loop＋trace＋CLI | `build/agent` |
 | [`pi-shell/`](pi-shell/README.md) | 把非互動 agent CLI（`pi -p`／`claude -p`／**你自己註冊的**）包成子行程的**薄透傳殼** | `build/pi-shell` |
 | [`aos/`](aos/README.md) | aos 的 Janet 綁定：資料夾當函式、檔案當指令；檔案協定用 Janet，推進仍叫 Python 原型 | —（函式庫） |
 
@@ -14,9 +15,11 @@ llm-http 與 pi-shell 共用同一套設計思想：**內建的只是預設值�
 範本分別是 [`llm-http/endpoints.example.janet`](llm-http/endpoints.example.janet) 與
 [`pi-shell/agents.example.janet`](pi-shell/agents.example.janet)。
 
-能跑的範例在 [`../examples/llm-http/`](../examples/llm-http/)（八支）與 [`../examples/aos-call.janet`](../examples/aos-call.janet)。
+能跑的範例在 [`../examples/llm-http/`](../examples/llm-http/README.md)（十一支）、
+[`../examples/agent/`](../examples/agent/README.md)（兩支）與 [`../examples/aos-call.janet`](../examples/aos-call.janet)。
+從零學怎麼做 agent 的教學在 [`../docs/47`](../docs/47-llm-api-是什麼.md) 起七篇。
 
-三者都在 [`../project.janet`](../project.janet) 宣告；`jpm build` 編前兩支執行檔，`jpm test` 跑
+四者都在 [`../project.janet`](../project.janet) 宣告；`jpm build` 編出三支執行檔，`jpm test` 跑
 [`../test/`](../test/) 底下對應的離線測試（不打網路、不呼叫真的模型）。
 
 環境與架構的實測背景（為什麼走 litellm proxy）→ [`../FINDINGS.md`](../FINDINGS.md)；

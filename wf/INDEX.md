@@ -8,15 +8,15 @@ janet-lab = **Janet 語言的遊樂場**：一個真的跑得起來的 jpm 專�
 
 | 路徑 | 內容 |
 |------|------|
-| [`docs/`](../docs/README.md) | **分篇教學**（00–31，含 b/c/d 分身）——目的是**讓人掌握概念**。基礎篇 00–06 依序讀，18–26b 是日常會用到的，07–17 主題篇與 27–31 spork 篇需要時再翻（另一份索引：[主題與 spork 索引](../docs/主題與-spork-索引.md)）|
+| [`docs/`](../docs/README.md) | **分篇教學**（00–47，含 b/c/d 分身）——目的是**讓人掌握概念**。基礎篇 00–06 依序讀，18–26b 是日常會用到的，07–17 主題篇與 27–31 spork 篇需要時再翻；43–46 是[從別的語言過來](../docs/從別的語言過來-索引.md)的逐條對照，47–47g 是[從零寫 AI agent](../docs/47-llm-api-是什麼.md)（另兩份索引：[主題與 spork](../docs/主題與-spork-索引.md)、[語言細節](../docs/語言細節索引.md)）|
 | [`reference/`](../reference/README.md) | **查「有哪些可用」**——內建的從 `root-env` 逐一列舉求全，[`reference/spork/`](../reference/spork/README.md) 只收常用（最全的在[官方](https://github.com/janet-lang/spork)）|
 | [`html/`](../html/index.html) | 手寫的**六頁靜態速查表**（index / data-io / peg / concurrency / ffi / env），瀏覽器開檔即看。**唯一不受檔案大小慣例約束的目錄** |
 | [`examples/`](../examples/README.md) | **教學附件**：配合 `docs/` 某一篇的可跑範例（`janet examples/x.janet`）|
 | [`snippets/`](../snippets/README.md) | **做事的起點**：「我要做 X，抄哪段」的可貼可改片段 |
-| [`modules/`](../modules/README.md) | 真的拿來用的小模組：`llm-http`（純 Janet 打 OpenAI 相容 proxy，含多輪 tool loop）、`pi-shell`（把非互動 agent CLI 包成子行程）|
-| `bin/`、`janet-lab/`、`test/` | CLI 進入點（`bin/main.janet`，argparse 實例）、核心模組（`janet-lab/init.janet`）、測試（11 支，全離線）|
+| [`modules/`](../modules/README.md) | 真的拿來用的小模組：`llm-http`（純 Janet 打 OpenAI 相容端點，含多輪 tool loop、https／串流／Anthropic 原生）、`agent`（工具箱＋記憶＋agent loop＋CLI，站在 llm-http 上）、`pi-shell`（把非互動 agent CLI 包成子行程）、`aos`（資料夾當函式的綁定）|
+| `bin/`、`janet-lab/`、`test/` | CLI 進入點（`bin/main.janet`，argparse 實例）、核心模組（`janet-lab/init.janet`）、測試（`test/` 底下每支 `.janet` 都算一支，全離線；清單直接看目錄）|
 | `try/` | 一次性的試作區，從零寫一個 LLM 客戶端的過程 |
-| `build/` | `jpm build` 的產物（三個執行檔，`:install false`）|
+| `build/` | `jpm build` 的產物（四個執行檔，`:install false`）|
 
 ### 實測筆記
 
@@ -25,8 +25,9 @@ janet-lab = **Janet 語言的遊樂場**：一個真的跑得起來的 jpm 專�
 | [`FINDINGS.md`](../FINDINGS.md) | 環境與架構的實測結論（LLM 供應商、為什麼走 litellm proxy）|
 | [`FINDINGS-踩坑.md`](../FINDINGS-踩坑.md) | 被 LLM API／模組設計咬到的地方（七～十）|
 | [`FINDINGS-踩坑b-工具鏈.md`](../FINDINGS-踩坑b-工具鏈.md) | jpm 與 import 的坑（十一～十三）|
+| [`FINDINGS-踩坑c-傳輸與串流.md`](../FINDINGS-踩坑c-傳輸與串流.md) | 補 https／Anthropic 原生／串流時踩到的（十四起）|
 
-> 這三份是**歷史性的實測紀錄**（有編號、會累積）；工作流層新踩到的坑記 [workflows/common/gotchas.md](workflows/common/gotchas.md)，兩邊不互相搬。
+> 這幾份是**歷史性的實測紀錄**（有編號、會累積）；工作流層新踩到的坑記 [workflows/common/gotchas.md](workflows/common/gotchas.md)，兩邊不互相搬。
 
 ### 工作流（本層）
 

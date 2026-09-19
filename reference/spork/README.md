@@ -23,6 +23,7 @@
 | [sh-執行外部指令.md](sh-執行外部指令.md) | `sh`、`sh-dsl` |
 | [終端互動.md](終端互動.md) | `getline`、`rawterm` |
 | [資料格式與驗證.md](資料格式與驗證.md) | `json`、`schema`、`data`、`infix` |
+| [infix-中綴算式.md](infix-中綴算式.md) | `infix` 專篇：`$$` 一個綁定就是一套小語言，把 `a + b * c` 在**編譯期**翻成前綴；運算子表、優先序、⚠ 優先序表裡的兩個陷阱 |
 | [編碼與位元組.md](編碼與位元組.md) | `base64`、`crc`、`utf8` |
 | [壓縮與封存-zip.md](壓縮與封存-zip.md) | `zip` |
 | [文字比對-regex.md](文字比對-regex.md) | `regex` |

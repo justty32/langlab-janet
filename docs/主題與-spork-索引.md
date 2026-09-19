@@ -3,7 +3,7 @@
 [← docs 目錄](README.md)
 
 [README](README.md) 收的是**依序讀**的兩區（基礎篇 00–06、日常會用到的 18–26）；
-這份收**需要時再翻**的兩區：主題篇（07–17）與 spork 篇（27–31）。
+這份收**需要時再翻**的兩區：主題篇（07–17）與 spork 篇（27–31、41–42）。
 
 ## 主題篇（需要時再翻）
 
@@ -29,7 +29,7 @@
 | 16b | [image：存成檔](16b-image-存成檔.md) | `janet -c`／程式內 `make-image`／REPL 三條路、⚠ **頂層在 `-c` 時就跑掉**、暫停中的 fiber 也存得下、native 模組存不了 |
 | 16c | [image 怎麼用](16c-image-怎麼用.md) | `-i` 只叫 `main`、⚠ **`import` 先找 `.jimage` 且不比時間戳**、`-l ./x -r` 回到存檔時的 REPL、純 Janet 依賴帶著走 |
 | 16d | [image 與 jpm](16d-image-與-jpm.md) | `declare-archive` 打包、執行檔＝只存 `main` ＋ native 靜態連結、三種各綁 Janet 版本 |
-| 17 | [用 spork/http 打 API](17-用-spork-http-打-api.md) | POST 寫法、buffer／status 兩個雷、沒 TLS 沒串流、★ **HTTP 200 不代表拿到完整答案** |
+| 17 | [用 spork/http 打 API](17-用-spork-http-打-api.md) | POST 寫法、buffer／status 兩個雷、沒 TLS 沒串流、★ **HTTP 200 不代表拿到完整答案**；打 LLM 那一層接 [47 系列](47-llm-api-是什麼.md) |
 
 ## spork 篇（準標準庫）
 

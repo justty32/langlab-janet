@@ -46,15 +46,19 @@
 | [`image-tour.janet`](image-tour.janet) | image 全程：`make-image`／`load-image`、暫停中的 fiber 跨檔續跑、存不了的東西、子行程跑 `janet -c`／`-i`、⚠ **`import` 拿到過期的 `.jimage`** |
 | [`native-module/`](native-module/) | 用 C 寫 Janet 原生模組 |
 | [`embed/`](embed/) | 把 Janet 嵌進 C 程式 |
-| `llm-http/` | 打 LLM 的八支範例，另成一頁 → [`llm-http/README.md`](llm-http/README.md) |
+| `llm-http/` | 打 LLM 的十一支範例（含串流、Anthropic 原生、JSON 輸出），另成一頁 → [`llm-http/README.md`](llm-http/README.md) |
+| `agent/` | agent 模組的兩支範例：十行組一個 agent、工具箱離線示範，另成一頁 → [`agent/README.md`](agent/README.md) |
+| `agent-tutorial/` | docs/47 系列的離線範例（自帶假伺服器，不需後端與金鑰），另成一頁 → [`agent-tutorial/README.md`](agent-tutorial/README.md) |
+| 語言對照七支 | `early-exit`、`compare-c`／`-lua`／`-go`／`-python`（＋`-fn`／`-oop`），另成一頁 → [`README-語言對照.md`](README-語言對照.md) |
 
-## llm-http（八支，另成一頁）
+## 打 LLM 的那三組
 
-配 [`modules/llm-http/`](../modules/llm-http/README.md) 的一整組範例——**跑起來就是一份教材**，
-從兩行問答一路到多輪 tool loop 與圖像輸入。清單、前置條件與怎麼把後端起起來
-→ **[`examples/llm-http/README.md`](llm-http/README.md)**。
+[`llm-http/`](llm-http/README.md) 十一支**跑起來就是一份教材**，從兩行問答到 tool loop、
+圖像、串流、Anthropic 原生、JSON 輸出；[`agent/`](agent/README.md) 兩支；
+[`agent-tutorial/`](agent-tutorial/README.md) 七支配 [docs/47](../docs/47-llm-api-是什麼.md)。
 
-> ⚠ 這八支**不在 `jpm test` 裡**——測試一律離線，不打網路、不呼叫真模型。
+> ⚠ 三組都**不在 `jpm test` 裡**——測試一律離線走假後端（`test/llm-http-*`、`test/agent-*`）。
+> 需要真後端的那幾支拿不到後端時印一行提示就結束，exit 0，不噴 stacktrace。
 
 ## native-module
 
@@ -75,14 +79,14 @@ cc embed.c -I$HOME/.local/include/janet $HOME/.local/lib/libjanet.a \
 
 ## 哪一支配哪一篇
 
-**33 支範例的檔頭都寫了它對應哪一篇 docs**，所以要反查就跑這行（實測 33/33 全中）：
+**每支範例的檔頭都寫了它對應哪一篇 docs**，所以要反查就跑這行（空白那欄就是漏寫的）：
 
 ```sh
 for f in examples/*.janet; do printf '%-24s %s\n' "$(basename $f)" "$(head -8 "$f" | grep -o 'docs/[0-9a-zA-Z-]*' | head -1)"; done
 ```
 
-反過來，每篇教學結尾的「可跑範例」段也連著它的範例——兩邊都走得通，
-不再另外維護一張對照表（那種表一定會過時，原本那張就只涵蓋 9 支）。
+反過來，每篇教學結尾的「可跑範例」段也連著它的範例——兩邊都走得通，不另外維護對照表。
 
 `llm-http/` 那組對應的是 [modules/llm-http/README.md](../modules/llm-http/README.md)
-與 [FINDINGS.md](../FINDINGS.md)（架構為什麼這樣選、環境有哪些雷）。
+與 [FINDINGS.md](../FINDINGS.md)（架構為什麼這樣選、環境有哪些雷）；
+`agent/` 對應 [modules/agent/README.md](../modules/agent/README.md)。
