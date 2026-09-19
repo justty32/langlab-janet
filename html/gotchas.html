@@ -134,7 +134,7 @@
     <tr><td><code>spork/math</code> 的 <code>mean</code></td><td><b>不存在</b>。自己算 <code>(/ (sum xs) (length xs))</code>；<code>z-score</code> 也要你餵平均</td><td>42</td></tr>
     <tr><td><code>binomial-coefficient</code></td><td><code>binominal-coeficient</code>（多一個 n、少一個 f）。搜正確拼法一個都找不到</td><td>42</td></tr>
     <tr><td><code>callable?</code></td><td>沒有這個。要「真的是函式」用 <code>(or (function? f) (cfunction? f))</code></td><td>38</td></tr>
-    <tr><td>可以 <code>(import spork)</code> 一次拿全部</td><td>會把 700 個 binding 灌進 env。<b>一個一個 import</b></td><td>27</td></tr>
+    <tr><td>可以 <code>(import spork)</code> 一次拿全部</td><td>會把 707 個 binding 灌進 env。<b>一個一個 import</b></td><td>27</td></tr>
     <tr><td>argparse 的 <code>:count</code></td><td>沒有這個 kind，會拿到 <code>unknown option kind</code>。四種是 <code>:flag</code> <code>:multi</code> <code>:option</code> <code>:accumulate</code></td><td>04</td></tr>
   </table>
   <p class="sub" style="font-size:.8rem">

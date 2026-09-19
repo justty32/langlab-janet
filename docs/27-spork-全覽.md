@@ -1,7 +1,7 @@
 # 27 · spork 全覽
 
 `spork` 是 Janet 的**準標準庫**——不是內建（`janet` 執行檔裡沒有），但幾乎人人都裝，
-官方維護，`jpm install spork` 就有。這台機器上共 **51 個模組、706 個公開綁定**。
+官方維護，`jpm install spork` 就有。這台機器上共 **51 個模組、707 個公開綁定**。
 
 > ⚠ 版本號有兩個說法：`(import spork/version)` 的 `version/text` 說 **1.0.1**，
 > 但 jpm 的 manifest 記的是 **1.2.0**。前者是庫自己寫死的常數、後者是 jpm 裝的時候記的，

@@ -12,7 +12,7 @@
 | `math/e` | `2.71828182845905` | 自然對數的底 e |
 | `math/inf` | `inf` | 正無窮 |
 | `math/-inf` | `-inf` | 負無窮 |
-| `math/nan` | `nan` | 不是一個數字（IEEE-754 NaN）。任何比較都是 false，連 `(= math/nan math/nan)` 也是 false，要判斷用 `math/nan?`（不在本表，那是 boot.janet 定義的一般函式，不是 `math/*` 底層） |
+| `math/nan` | `nan` | 不是一個數字（IEEE-754 NaN）。任何比較都是 false，連 `(= math/nan math/nan)` 也是 false，要判斷用 `nan?`（不在本表，那是 boot.janet 定義的一般函式，不是 `math/*` 底層） |
 | `math/int-max` | `9007199254740992`（2^53） | double 能精確表示的最大連續整數 |
 | `math/int-min` | `-9007199254740992` | 同上，負的 |
 | `math/int32-max` | `2147483647` | 32 位元有號整數上限 |

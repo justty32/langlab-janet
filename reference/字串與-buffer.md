@@ -78,6 +78,7 @@
 |------|------|
 | `buffer/new` | `(buffer/new capacity)` 預留容量的空 buffer |
 | `buffer/new-filled` | `(buffer/new-filled count &opt byte)` 先填滿 |
+| `buffer/from-bytes` | `(buffer/from-bytes & vals)` byte 數字 → buffer（`string/from-bytes` 的 buffer 版）|
 | `buffer/clear` | 長度歸零（容量留著）|
 | `buffer/trim` | 把容量縮到剛好等於長度 |
 | `buffer/fill` | `(buffer/fill buffer &opt byte)` 整個填同一個 byte |

@@ -23,11 +23,12 @@
 ```
 
 ```
-✘ t2.janet:4: "這條會失敗": false
+✘ t2.janet:4: "\xE9\x80\x99\xE6\xA2\x9D\xE6\x9C\x83\xE5\xA4\xB1\xE6\x95\x97": false
 test suite 會失敗的 finished in 0.000 seconds - 2 of 3 tests passed.
 ```
 
 **一次就看到全部災情。**失敗那行會印出**檔名:行號、你給的訊息、實際的值**。
+那串 `\xE9…` 就是 `"這條會失敗"`——中文訊息會被逃逸，原因與繞法見下面「兩個會咬人的地方」第二條。
 
 ## 跟 jpm test 怎麼搭
 
