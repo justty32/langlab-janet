@@ -27,7 +27,8 @@ jpm build && ./build/janet-lab --json -n world  # 編成單一執行檔再跑
 | **從 C++ 過來** —— 想快速對上概念 | [`docs/01b`](docs/01b-給-C++-開發者.md)：一張概念對照表 + 五個一定會誤會的地方 |
 | **從 C／Lua／Go／Python 過來** —— 想逐條對照語法 | [`docs/01d`](docs/01d-提早離開-return-break-continue.md) 先解決 return／break／continue，再看 [`43`](docs/43-從-C-C++-過來.md)／[`44`](docs/44-從-Lua-過來.md)／[`45`](docs/45-從-Go-過來.md)／[`46`](docs/46-從-Python-過來.md) |
 | **想做 AI agent** | [`docs/47`](docs/47-llm-api-是什麼.md) 從零學（離線就能跑），[`modules/agent/`](modules/agent/README.md) 直接用，[`modules/llm-http/`](modules/llm-http/README.md) 打模型（https／串流／Anthropic 原生）|
-| **想查** —— 忘了某個寫法 | [`html/index.html`](html/index.html)：分頁速查表，開瀏覽器即看 |
+| **想讀** —— 在瀏覽器裡翻全部教學 | [`html/reader/index.html`](html/reader/index.html)：閱讀器，瀏覽器開檔即看（`file://` 就能開），左側目錄、全文搜尋、亮暗切換；md 改了就跑 `python3 bin/md-bundle.py` |
+| **想查** —— 忘了某個寫法 | 瀏覽器開 [`html/home.html`](html/home.html)，全部入口都在：七頁速查表、閱讀器、教學路線、全表、模組、實測筆記 |
 | **撞到怪行為** —— 「這是已知的坑嗎」 | [`html/gotchas.html`](html/gotchas.html)：全部實測過的地雷集中一頁，每條標了出處 |
 | **想查全** —— 這個領域到底有哪些函式 | [`reference/`](reference/README.md)：內建的從 root-env 逐一列舉，spork 只收常用（最全的在[官方](https://github.com/janet-lang/spork)）|
 | **想抄** —— 現在要做某件事 | [`snippets/`](snippets/README.md)：可貼可改的片段（定時器、管線、檔案 IO、閉包、context…） |
@@ -45,7 +46,7 @@ bin/main.janet       CLI 進入點（argparse 實例）
 test/                測試（清單見 test/）——其中 doc-examples.janet 守的是**教學裡的輸出**不是程式碼
 docs/                分篇教學（編號 00 起，目錄見 docs/README.md）——掌握概念用；幾乎每篇都配一支可跑範例
 reference/           查「有哪些可用」——內建的求全，spork 只收常用
-html/                分頁速查表（index / data-io / peg / concurrency / ffi / env / ★ gotchas 地雷）
+html/                分頁速查表（index / data-io / peg / concurrency / ffi / env / ★ gotchas 地雷）＋ reader/ 閱讀器（全部 md 的瀏覽器版，含全文搜尋）
 examples/            教學附件，配合 docs 某一篇
 snippets/            做事的起點，「我要做 X，抄哪段」
 exercises/           練習題（專挑 ⚠ 陷阱）＋參考解答；解答有納入 jpm test

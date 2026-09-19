@@ -10,7 +10,7 @@ janet-lab = **Janet 語言的遊樂場**：一個真的跑得起來的 jpm 專�
 |------|------|
 | [`docs/`](../docs/README.md) | **分篇教學**（00–47，含 b/c/d 分身）——目的是**讓人掌握概念**。基礎篇 00–06 依序讀，18–26b 是日常會用到的，07–17 主題篇與 27–31 spork 篇需要時再翻；43–46 是[從別的語言過來](../docs/從別的語言過來-索引.md)的逐條對照，47–47g 是[從零寫 AI agent](../docs/47-llm-api-是什麼.md)（另兩份索引：[主題與 spork](../docs/主題與-spork-索引.md)、[語言細節](../docs/語言細節索引.md)）|
 | [`reference/`](../reference/README.md) | **查「有哪些可用」**——內建的從 `root-env` 逐一列舉求全，[`reference/spork/`](../reference/spork/README.md) 只收常用（最全的在[官方](https://github.com/janet-lang/spork)）|
-| [`html/`](../html/index.html) | 手寫的**六頁靜態速查表**（index / data-io / peg / concurrency / ffi / env），瀏覽器開檔即看。**唯一不受檔案大小慣例約束的目錄** |
+| [`html/`](../html/home.html) | [`home.html`](../html/home.html) 是**單一入口**（卡片列出 repo 全部東西）；手寫的**七頁靜態速查表**（index / data-io / peg / concurrency / ffi / env / gotchas）＋ [`reader/`](../html/reader/index.html) **閱讀器**（單頁應用：目錄樹、全文搜尋、亮暗切換，內容來自 `bin/md-bundle.py` 打包的 `content.js`），瀏覽器 `file://` 開檔即看。**唯一不受檔案大小慣例約束的目錄** |
 | [`examples/`](../examples/README.md) | **教學附件**：配合 `docs/` 某一篇的可跑範例（`janet examples/x.janet`）|
 | [`snippets/`](../snippets/README.md) | **做事的起點**：「我要做 X，抄哪段」的可貼可改片段 |
 | [`modules/`](../modules/README.md) | 真的拿來用的小模組：`llm-http`（純 Janet 打 OpenAI 相容端點，含多輪 tool loop、https／串流／Anthropic 原生）、`agent`（工具箱＋記憶＋agent loop＋CLI，站在 llm-http 上）、`pi-shell`（把非互動 agent CLI 包成子行程）、`aos`（資料夾當函式的綁定）|

@@ -28,12 +28,12 @@
 
 ## roadmap（會做，何時）
 
-> 下面三列是 2026-09-19 因 token 消耗被中途砍掉的半成品（S2 事後盤點留檔，見各檔 ⚠ 注記）。
+> 下面兩列是 2026-09-19 因 token 消耗被中途砍掉的半成品（S2 事後盤點留檔，見各檔 ⚠ 注記）。
+> 第三列 `bin/md2html*`（純 Janet 的 md→html 鏡像）已結案：使用者改決定「md 不動、做瀏覽器閱讀器」，改用 Python 打包＋前端渲染做完（`bin/md-bundle.py` ＋ `html/reader/`），五支 Janet 半成品已刪。
 > 另外兩列（`docs/47*` agent 教學、`reference/spork/infix`）當時只差掛索引，整合線已補完並結案。
 
 | 事項 | 何時 / 順序 | 前提 |
 |------|------------|---------|
-| `bin/md2html*`：純 Janet 把 docs／reference／modules 的 md 轉成 html 鏡像 | 待續，不影響其他線 | 目標：純 Janet 不上 pandoc——slug／錨點要對齊 `wf/tools/check_anchors.py` 的 `github_heading_slug`，且全部工具鏈都留在 jpm/janet 生態裡。做到：`parse`／`inline`／`hl`／`links` 四支已完整可 import。卡在：`render.janet` 的 `slug` 裡 `letter-cp?` 分支的 UTF-8 回寫沒寫完（最後訊息說要改成「保留每個 codepoint 的原始位元組片段直接推回去」），`peg/replace-all` 那行也有 unquote 語法錯，整支**編不過**（已加 ⚠，沒人 import 它，不擋測試）。`html/docs/`／`html/all.html`／`test/md2html.janet`／`html/style-doc.css` 都還沒動筆。接手先看 `bin/md2html-render.janet` 的 ⚠ 注記。 |
 | `reference` 補洞：peg／file-net／marshal-image-env／debug 全表 | 待續 | 做到：`peg-全表.md`＋`peg-全表b-捕獲.md`（PEG 函式 6＋比對 21＋捕獲 21，全核過）、`file-與-net.md`（`file/*`＋`stdin/stdout/stderr`＋印讀家族共 31 個，完整，已加 ⚠）。三篇**已由整合線掛進 `reference/README-內建全表.md`**（索引表因超標拆成入口＋全表兩檔）。剩下：`net/*` 19 個的 `file-與-netb-socket.md`（規劃過沒寫）、`marshal-image-與-env.md`、`debug-全表.md` 完全沒開始。當初做的 root-env 覆蓋率盤點沒有落地，要重算（腳本見 `reference/README.md`）。接手先看 `reference/README-內建全表.md`「並行、IO、系統」那一區。 |
 | 全 repo 體檢：巡一輪抓事實性錯誤 | 待續，範圍未知 | 已做：巡到 `README.md`／`examples/README.md`／`try/README.md`／`html/gotchas.html`／`reference/README.md`／`reference/math-數學與隨機.md`／`reference/字串與-buffer.md`／`docs/23b`／`docs/27`／`docs/主題與-spork-索引.md`／`docs/怎麼做-X.md`／`docs/語言細節索引.md`／`docs/路線圖.md`，修掉幾處過時數字（spork 706→707 個綁定、`math/nan?` 應為 `nan?`）跟寫死的計數改成通用說法。途中把 `reference/README.md` 的 root-env 綁定數改成 702，S2 又修回 703；整合線第三次實測（`janet`、`janet -e`、REPL 三種跑法都試）**是 702**（另有 5 個 keyword 鍵不是綁定），已照 702 定案並在該檔寫明怎麼算。剩下：不知道巡到哪就被中止，`docs/`／`reference/`／`modules/`／`examples/` 還有沒巡完的部分不明。接手先看上面列的檔案清單回推巡到哪，再往下巡。 |
 
