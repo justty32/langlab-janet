@@ -87,3 +87,28 @@
            "modules/aos/call.janet"      # 同步呼叫、呼叫記錄、三態、(aos/fn)
            "modules/aos/inst.janet"      # 檔案當指令
            "modules/aos/async.janet"])   # 脫節呼叫、handle、await
+
+# agent —— 站在 llm-http 上面的 agent 層：工具箱（sandbox 檔案工具＋shell＋http＋算數）、
+#   記憶截斷、agent loop、trace、CLI。
+(declare-source
+  :prefix "agent"
+  :source ["modules/agent/init.janet"         # 門面
+           "modules/agent/registry.janet"     # 工具長什麼樣：make-tool／deftool／call-tool
+           "modules/agent/sandbox.janet"      # 路徑可不可以碰：make-sandbox／resolve-*
+           "modules/agent/tools-fs.janet"     # read-file／list-dir／write-file
+           "modules/agent/tools-search.janet" # search-files（grep 式）
+           "modules/agent/tools-shell.janet"  # run-command（預設沒有；白名單／逾時／截斷）
+           "modules/agent/tools-http.janet"   # http-get（只有 http://）
+           "modules/agent/tools-misc.janet"   # now／calc（PEG 解算式，不 eval）
+           "modules/agent/presets.janet"      # default-tools：一次組出預設安全的整組
+           "modules/agent/memory.janet"       # 記憶：make-memory／append!／trim!
+           "modules/agent/memory-io.janet"    # save!／load（JSON）
+           "modules/agent/trace.janet"        # 事件 → 一行字：stderr／file／collect／tee
+           "modules/agent/agent.janet"        # make-agent／run（agent loop）
+           "modules/agent/cli-flags.janet"    # CLI 旗標定義與 usage 文字
+           "modules/agent/cli.janet"])        # CLI 主流程（main.janet 只是進入點）
+
+(declare-executable
+  :name "agent"
+  :entry "modules/agent/main.janet"
+  :install false)
