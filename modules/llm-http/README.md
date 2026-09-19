@@ -1,20 +1,22 @@
 # llm-http
 
 純 Janet 的 **OpenAI 相容客戶端**：對 `/v1/chat/completions` 打，支援
-**多輪 tool loop**、**圖像輸入**，以及**你自己的 endpoint 與請求參數**。
+**多輪 tool loop**、**圖像輸入**、**串流**、**結構化輸出**，以及**你自己的 endpoint 與請求參數**。
+`https://` 自動改走 curl 子行程；`claude-direct` 直打 Anthropic 原生 API，都不需要 proxy。
 
 ```
 純 Janet（spork/http + spork/json）
     ├── http://127.0.0.1:4000        ← litellm proxy（本機、純 http、不需 TLS）
     │     └── local / deepseek / claude / openrouter
-    └── http://127.0.0.1:1234/…      ← 也可以直接打 LM Studio／vLLM／llama.cpp，繞過 proxy
+    ├── http://127.0.0.1:1234/…      ← 也可以直接打 LM Studio／vLLM／llama.cpp，繞過 proxy
+    └── https://…                    ← curl 子行程代打 TLS；claude-direct 在本機做 Anthropic 轉換
 ```
 
 走 proxy 時 Janet 這端**只講 OpenAI 相容一種格式**，四家的差異由 litellm 吸收；
 不想架 proxy 時，給 endpoint 一個完整的 `:url` 就直接打任何 OpenAI 相容伺服器。
 架構為什麼這樣選、環境有哪些雷 → 見 [`../../FINDINGS.md`](../../FINDINGS.md)。
 
-**想看能跑的範例** → [`../../examples/llm-http/`](../../examples/llm-http/)（八支，中文註解，
+**想看能跑的範例** → [`../../examples/llm-http/`](../../examples/llm-http/)（十一支，中文註解，
 後端沒起來時會給你看得懂的提示而不是 stacktrace）。
 
 ## 先把 litellm proxy 起來
@@ -66,13 +68,14 @@ model_list:
 `lite.yaml` 裡的 `model_name` 就是本模組內建 endpoint 的 `:model`——**兩邊要對得起來**。
 要換 provider 就改 yaml，Janet 這邊一行都不用動。
 
-## 四個內建 endpoint 的現況
+## 五個內建 endpoint 的現況
 
 | 名字 | 後端 | 憑證 | 吃圖 | 驗證狀態 |
 |------|------|------|------|----------|
 | `local` | 本機 LM Studio | 免 | ✅ gemma-4 系列 | **已實測**（問答／tool loop／圖像） |
 | `deepseek` | DeepSeek API | `DEEPSEEK_API_KEY` | ❌ 純文字 | **已實測**（問答） |
-| `claude` | Anthropic | `ANTHROPIC_API_KEY` | ✅ | ⚠ **未實測**（本機沒設 key） |
+| `claude` | Anthropic（經 proxy） | `ANTHROPIC_API_KEY` | ✅ | ⚠ **未實測**（本機沒設 key） |
+| `claude-direct` | Anthropic **原生 API，不經 proxy**（curl 走 https，本機轉換） | `ANTHROPIC_API_KEY` | ✅ | ⚠ 轉換與 tool loop 離線驗過；**真打未實測**（本機沒設 key） |
 | `openrouter` | OpenRouter | `OPENROUTER_API_KEY` | 看你選的 slug | ⚠ **未實測**（本機沒設 key） |
 
 ⚠ **圖像要挑支援的模型**：送圖給純文字模型（例如 DeepSeek），行為從報錯到**靜默無視**都有可能。
@@ -103,6 +106,9 @@ README 只放「怎麼跑起來」；細節按主題分在 [`doc/`](doc/)：
 | [直接指定 `:url` 與請求參數](doc/參數與繞過-proxy.md) | 繞過 proxy 直接打任何 OpenAI 相容伺服器、參數合併優先序 |
 | [CLI](doc/cli.md) | 所有旗標與實例 |
 | [當函式庫用](doc/當函式庫用.md) | `ask`／`chat`／tool loop／system 訊息／公開 API 一覽 |
+| [https 與 curl](doc/https-與-curl.md) | `https://` 自動走 curl 子行程、金鑰怎麼不上命令列、`:retry` |
+| [Anthropic 原生](doc/anthropic-原生.md) | `claude-direct`：OpenAI ↔ Messages API 雙向轉換，不經 proxy |
+| [串流](doc/streaming.md) | `chat-stream`／`ask-stream`／`--stream`：SSE 怎麼收、片段怎麼合 |
 | [拆檔與限制](doc/拆檔與限制.md) | 哪個檔管什麼、沒做的事、實測踩過的點 |
 
 **怎麼 import（路徑規則、`:as`、裝起來用裸名字）→ 見 [`../README.md`](../README.md#怎麼-import-這些模組)。**

@@ -8,7 +8,7 @@
 (def usage
   (string "llm-http —— 純 Janet 打 OpenAI 相容端點（litellm proxy／LM Studio／…）\n"
           "  用法：llm-http [旗標] <endpoint 名字> [prompt 文字...]\n"
-          "  endpoint 名字可以是內建的 local/deepseek/claude/openrouter，也可以是你自己\n"
+          "  endpoint 名字可以是內建的 local/deepseek/claude/claude-direct/openrouter，也可以是你自己\n"
           "  用 --endpoints 設定檔註冊的；名字不在清單裡時，只要同時給 --url（或 --base）\n"
           "  ＋ --model，就會當場組一個臨時 endpoint。\n"
           "  沒給 prompt 文字就讀 stdin 到 EOF 當 prompt；\n"
@@ -35,6 +35,8 @@
    "image"       {:kind :accumulate :short "i"
                   :help "圖檔路徑或 http(s)/data URL，可重複給。⚠ 要挑吃圖的 endpoint。"}
    "tools"       {:kind :flag :short "t" :help "啟用內建示範工具（now／get_weather），跑多輪 tool loop。"}
+   "stream"      {:kind :flag :help "串流（SSE）：邊收邊印。⚠ 不能跟 --tools 一起用。"}
+   "retry"       {:kind :option :help "失敗時最多多試幾次（只對連不上／5xx／429，指數退避），預設 0。"}
    "rounds"      {:kind :option :help "tool loop 最多打幾輪，預設 8。"}
    "list"        {:kind :flag :short "l" :help "列出所有 endpoint（內建與自訂）就結束。"}
    :default      {:kind :accumulate

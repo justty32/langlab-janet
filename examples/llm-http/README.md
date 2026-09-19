@@ -1,25 +1,27 @@
-# examples/llm-http · 打 LLM 的八支範例
+# examples/llm-http · 打 LLM 的十一支範例
 
 [← examples 目錄](../README.md)｜模組本體 [`modules/llm-http/`](../../modules/llm-http/README.md)
 
 **跑起來就是一份教材**——從兩行問答一路到多輪 tool loop 與圖像輸入。
 建議照編號順序看，每支只多教一件事。
 
-
 | 檔 | 主題 | 要後端嗎 |
 |----|------|----------|
-| `01-minimal.janet` | 最小問答：`endpoint` ＋ `ask` 兩行 | 要 |
-| `02-system-prompt.janet` | system prompt 的三種給法（`ask` 第二參數／`with-tools` 的 `:system`／自組 messages） | 要 |
-| `03-multi-turn.janet` | 多輪對話：自己維護 `messages` 陣列、歷史怎麼截斷 | 要 |
-| `04-tools.janet` | tool loop：自訂工具、多個工具、handler 丟例外時的行為 | 要（且模型要支援 tool calling） |
-| `05-vision.janet` | 圖像輸入：content parts 長怎樣、data URI、多張圖 | 要（且模型要吃圖） |
-| `06-custom-endpoint.janet` | **自訂 endpoint 的四種寫法**：inline／`define-endpoint`／設定檔／直接指定 `:url` 繞過 proxy | 前半段不用 |
-| `07-params.janet` | 請求參數的覆寫與**合併優先序**（`build-payload` 是純函式，印得出最終 payload） | 前半段不用 |
-| `08-errors.janet` | 錯誤處理：連不上／名字打錯／設定檔壞掉／模型不吃圖…每種長什麼樣 | **完全不用** |
+| [`01-minimal.janet`](01-minimal.janet) | 最小問答：`endpoint` ＋ `ask` 兩行 | 要 |
+| [`02-system-prompt.janet`](02-system-prompt.janet) | system prompt 的三種給法（`ask` 第二參數／`with-tools` 的 `:system`／自組 messages） | 要 |
+| [`03-multi-turn.janet`](03-multi-turn.janet) | 多輪對話：自己維護 `messages` 陣列、歷史怎麼截斷 | 要 |
+| [`04-tools.janet`](04-tools.janet) | tool loop：自訂工具、多個工具、handler 丟例外時的行為 | 要（且模型要支援 tool calling） |
+| [`05-vision.janet`](05-vision.janet) | 圖像輸入：content parts 長怎樣、data URI、多張圖 | 要（且模型要吃圖） |
+| [`06-custom-endpoint.janet`](06-custom-endpoint.janet) | **自訂 endpoint 的四種寫法**：inline／`define-endpoint`／設定檔／直接指定 `:url` 繞過 proxy | 前半段不用 |
+| [`07-params.janet`](07-params.janet) | 請求參數的覆寫與**合併優先序**（`build-payload` 是純函式，印得出最終 payload） | 前半段不用 |
+| [`08-errors.janet`](08-errors.janet) | 錯誤處理：連不上／名字打錯／設定檔壞掉／模型不吃圖…每種長什麼樣 | **完全不用** |
+| [`09-stream.janet`](09-stream.janet) | 串流：`ask-stream` 邊印邊收、`chat-stream` 自訂 `:on-delta` 後看 finish_reason／usage | 要 |
+| [`10-anthropic-direct.janet`](10-anthropic-direct.janet) | 直打 Anthropic 原生 API：看 OpenAI ↔ Messages 轉換長怎樣；真打要 `ANTHROPIC_API_KEY` | 前三段不用 |
+| [`11-json-output.janet`](11-json-output.janet) | 結構化輸出：`response_format` 兩種寫法、`ask-json` 拿回解好的 table | 前兩段不用 |
 
 ## 前置條件
 
-`01`–`05` 與 `06`／`07` 的最後一段需要一台 **OpenAI 相容伺服器**，二選一：
+`01`–`05`、`09` 與 `06`／`07`／`11` 的最後一段需要一台 **OpenAI 相容伺服器**，二選一：
 
 ```sh
 # (a) litellm proxy（四個 endpoint 都配好了；⚠ fastapi<0.119 這個 pin 不能省）

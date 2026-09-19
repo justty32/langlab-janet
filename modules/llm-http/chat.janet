@@ -1,7 +1,7 @@
 # 對話層 —— 把「messages ＋ 參數」組成 payload，交給傳輸層送出，再把答案挖出來。
 #
-# 傳輸（HTTP／JSON、連不上怎麼報錯）在 transport.janet；這一層只管**語意**：
-# 哪些參數要怎麼合併、答案在回應的哪個位置、ask 這種一行式的便利包裝。
+# 傳輸（HTTP／JSON、連不上怎麼報錯）在 transport.janet，要送去哪家 provider 在 dispatch.janet；
+# 這一層只管**語意**：哪些參數要怎麼合併、答案在回應的哪個位置、ask 這種一行式的便利包裝。
 #
 # ── 請求參數的合併優先序（低 → 高，後面的蓋前面的）─────────────────
 #   ① endpoint 自己的 :params        （(endpoint {:model … :params {:temperature 0.2}})）
@@ -12,7 +12,7 @@
 #   :model 與 :messages 永遠由 cfg／呼叫端決定，不受 :params 影響
 #   ——想換 model 請走 (endpoint "local" {:model "qwen"})，別塞進 :params。
 
-(import ./transport :as tp)
+(import ./dispatch)
 (import ./media)
 
 # payload 用的是 OpenAI 的 snake_case 欄位名；Janet 這邊的具名參數習慣用 kebab-case，
@@ -33,7 +33,8 @@
   ``組出要 POST 的 payload table。抽出來是為了**離線就能驗合併優先序**（見 test/）。
 
   參數與合併順序見本檔開頭那段說明。``
-  [cfg messages &named tools tool-choice temperature max-tokens top-p extra params]
+  [cfg messages &named tools tool-choice temperature max-tokens top-p extra params
+                        response-format]
   (unless (cfg :model)
     (error "這份 endpoint 設定缺 :model —— chat 不知道要跟哪個模型講話"))
   (def payload @{:model (cfg :model) :messages messages})
@@ -45,6 +46,7 @@
   (unless (nil? top-p)       (put payload :top_p       top-p))
   (when tools       (put payload :tools tools))
   (when tool-choice (put payload :tool_choice tool-choice))
+  (when response-format (put payload :response_format response-format))
   (merge-into! payload extra)               # ④ 原樣併入，優先序最高
   payload)
 
@@ -63,11 +65,15 @@
   ⚠ OpenRouter 那條線特別注意：不同模型的 supported_parameters 不一樣，
     送了它不支援的參數（response_format／top_p／seed…）**不會報錯，就是被無視**，
     你會拿到 exit 0 加一份看起來像答案的東西。要確認只能看回應內容對不對。``
-  [cfg messages &named tools tool-choice temperature max-tokens top-p extra params]
-  (tp/post-chat cfg (build-payload cfg messages
-                                   :tools tools :tool-choice tool-choice
-                                   :temperature temperature :max-tokens max-tokens
-                                   :top-p top-p :extra extra :params params)))
+  [cfg messages &named tools tool-choice temperature max-tokens top-p extra params
+                        response-format retry]
+  (dispatch/send-chat cfg
+                      (build-payload cfg messages
+                                     :tools tools :tool-choice tool-choice
+                                     :temperature temperature :max-tokens max-tokens
+                                     :top-p top-p :extra extra :params params
+                                     :response-format response-format)
+                      retry))
 
 (defn reply-message
   "從回應取出 assistant 那則訊息（含 :content 與可能的 :tool_calls）；取不到回 nil。"
@@ -92,6 +98,11 @@
   [res]
   (= "length" (reply-finish-reason res)))
 
+(defn reply-usage
+  "這次的 token 用量：{:prompt_tokens :completion_tokens :total_tokens …}；伺服器沒給就 nil。"
+  [res]
+  (get res :usage))
+
 (defn ask
   ``最常用的一行式問答：給 prompt，拿字串答案回來。
 
@@ -99,16 +110,17 @@
   images —— 可省略的圖檔路徑／URL 陣列；有給就自動把 user 訊息換成 parts 形狀。
             ⚠ 記得挑吃圖的 endpoint（見 endpoint 設定的 :vision?）。
 
-  再後面的具名參數原樣轉給 chat（:temperature／:max-tokens／:top-p／:params／:extra），
-  所以 (ask cfg "…" nil nil :temperature 0) 這種寫法是可以的。``
-  [cfg prompt &opt system images &named temperature max-tokens top-p extra params]
+  再後面的具名參數原樣轉給 chat（:temperature／:max-tokens／:top-p／:params／:extra／
+  :response-format／:retry），所以 (ask cfg "…" nil nil :temperature 0) 這種寫法是可以的。``
+  [cfg prompt &opt system images &named temperature max-tokens top-p extra params
+                                        response-format retry]
   (def messages @[])
   (when (and system (not (empty? system)))
     (array/push messages @{:role "system" :content system}))
   (array/push messages (media/user-message prompt images))
   (def res (chat cfg messages
                  :temperature temperature :max-tokens max-tokens :top-p top-p
-                 :extra extra :params params))
+                 :extra extra :params params :response-format response-format :retry retry))
   (def text (reply-text res))
   (unless (string? text)
     (error (string "回應裡取不出答案文字：" (string/format "%q" res))))

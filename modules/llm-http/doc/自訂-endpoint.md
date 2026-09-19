@@ -31,11 +31,15 @@
 | `:env` | 這條線在 **proxy 那端**需要的環境變數（只影響 `--list` 的提示） |
 | `:vision?` | 這條線指到的模型吃不吃圖；**不確定就別給**（`nil` ＝ 不表態，CLI 不會警告） |
 | `:note` | 一句話說明，會出現在 `--list` |
+| `:api` | `:openai`（預設）或 `:anthropic`（本機轉成 Messages API，見 [Anthropic 原生](anthropic-原生.md)） |
+| `:transport` | `:http`（預設，spork/http）或 `:curl`；**`:url` 是 `https://` 時自動走 curl，不用寫** |
+| `:anthropic-version` | 送給 Anthropic 的版本 header，預設 `"2023-06-01"` |
+| `:timeout` | 單次請求秒數上限（目前只有 curl 那條會用，對應 `--max-time`） |
 
 ⚠ `:params` 的 key 用 **payload 的原名（snake_case）**：`:max_tokens` 不是 `:max-tokens`。
 ⚠ `:headers` 的值請用 **ASCII**——HTTP header 本來就只吃 ASCII／ISO-8859-1，
 放中文會被伺服器擋成 400。要帶中文請放進 body。
-⚠ `:url` 只能是 `http://`。spork/http **沒有 TLS**，`https://` 一定打不通（不是設定寫錯）。
+⚠ `:url` 是 `https://` 時會自動改走 curl 子行程（spork/http 沒有 TLS）；沒 curl 的機器才會打不通，見 [https 與 curl](https-與-curl.md)。
 
 ## ① inline table：完全不註冊
 

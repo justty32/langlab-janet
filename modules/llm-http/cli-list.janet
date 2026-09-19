@@ -33,10 +33,13 @@
   (when-let [e (get spec :api-key-env)]
     (array/push lines (string/format "               金鑰讀自：%s%s" e
                                      (if (os/getenv e) "" "  ⚠ 本機未設"))))
-  (array/push lines
-              (string/format "               proxy 端需要的環境變數：%s%s"
-                             (or (get spec :env) "（不需要）")
-                             (if (ep/env-ready? name) "" "  ⚠ 本機未設")))
+  # ⚠ 這一行只看 :env（proxy 那端）；:api-key-env 的警告在上一行自己有，不要混在一起
+  (when-let [e (get spec :env)]
+    (array/push lines
+                (string/format "               proxy 端需要的環境變數：%s%s" e
+                               (if (os/getenv e) "" "  ⚠ 本機未設"))))
+  (when-let [api (get spec :api)]
+    (array/push lines (string/format "               provider：%s（不經 proxy，本機轉換）" api)))
   lines)
 
 (defn- config-section

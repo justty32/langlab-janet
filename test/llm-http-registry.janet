@@ -1,18 +1,21 @@
-# llm-http：endpoint registry —— 內建四筆、inline endpoint、註冊／移除、設定驗證。
+# llm-http：endpoint registry —— 內建五筆、inline endpoint、註冊／移除、設定驗證。
 #
 # 全部是純函式，不碰網路。
 # ⚠ 一開頭就 reset-endpoints!：使用者本機可能有 ~/.config/llm-http/endpoints.janet
-#   會被 import 時自動載入，測試要先把 registry 打回「只剩內建四筆」才有確定性。
+#   會被 import 時自動載入，測試要先把 registry 打回「只剩內建五筆」才有確定性。
 
 (import ../modules/llm-http/init :as llm)
 (import ./util :as u)
 
 (llm/reset-endpoints!)
 
-# ── 內建四筆 ────────────────────────────────────────────────────────
-(assert (deep= @["claude" "deepseek" "local" "openrouter"] (llm/endpoint-names))
-        "reset 之後只剩內建四個 endpoint")
-(assert (deep= @["claude" "deepseek" "local" "openrouter"] (llm/builtin-names)))
+# ── 內建五筆（四筆走 proxy ＋ claude-direct 直打 Anthropic）────────────
+(assert (deep= @["claude" "claude-direct" "deepseek" "local" "openrouter"] (llm/endpoint-names))
+        "reset 之後只剩內建五個 endpoint")
+(assert (deep= @["claude" "claude-direct" "deepseek" "local" "openrouter"] (llm/builtin-names)))
+(assert (= :anthropic ((llm/endpoint "claude-direct") :api)) "claude-direct 走 Anthropic 原生 API")
+(assert (= :curl ((llm/endpoint "claude-direct") :transport)) "claude-direct 走 curl（https）")
+(assert (string/has-prefix? "https://api.anthropic.com/" ((llm/endpoint "claude-direct") :url)))
 (assert (llm/builtin-endpoint? "local"))
 (assert (= :builtin (llm/endpoint-source "local")))
 
@@ -48,7 +51,7 @@
 (assert (= "qwen3" (inline :model)))
 (assert (= "http://127.0.0.1:4111/v1/chat/completions" (inline :url)))
 (assert (inline :vision?))
-(assert (deep= @["claude" "deepseek" "local" "openrouter"] (llm/endpoint-names))
+(assert (deep= @["claude" "claude-direct" "deepseek" "local" "openrouter"] (llm/endpoint-names))
         "inline endpoint 不會被偷偷註冊進 registry")
 
 # :url 給了就完全繞過 base（拿來直接打 LM Studio）

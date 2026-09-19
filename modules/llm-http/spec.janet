@@ -10,7 +10,16 @@
 (def spec-keys
   "一份 endpoint 設定認得的欄位（欄位意義見 builtin.janet 的 builtin-specs docstring）。
   拼錯欄位名會在驗證時被擋下來，不會靜靜被忽略。"
-  [:model :base :url :api-key :api-key-env :headers :params :env :vision? :note :name])
+  [:model :base :url :api-key :api-key-env :headers :params :env :vision? :note :name
+   :api :transport :anthropic-version :timeout])
+
+(def api-values
+  ":api 認得的值。"
+  [:openai :anthropic])
+
+(def transport-values
+  ":transport 認得的值。"
+  [:http :curl])
 
 (defn- fail
   "統一的中文錯誤出口：只丟訊息，不留 Janet 的 stacktrace 味道。"
@@ -60,6 +69,16 @@
       (unless (bytes? v)
         (fail "endpoint「%s」的 %q 必須是字串，收到 %s" label k (type v)))))
 
+  (when-let [v (get spec :api)]
+    (unless (index-of (keyword v) api-values)
+      (fail "endpoint「%s」的 :api 只能是 :openai 或 :anthropic，收到 %q" label v)))
+  (when-let [v (get spec :transport)]
+    (unless (index-of (keyword v) transport-values)
+      (fail "endpoint「%s」的 :transport 只能是 :http 或 :curl，收到 %q" label v)))
+  (when-let [v (get spec :timeout)]
+    (unless (number? v)
+      (fail "endpoint「%s」的 :timeout 要是秒數（數字），收到 %s" label (type v))))
+
   (when-let [p (get spec :params)]
     (unless (dictionary? p)
       (fail "endpoint「%s」的 :params 必須是一張表，像 {:temperature 0.2 :max_tokens 512}，收到 %s"
@@ -74,8 +93,11 @@
              :env     (get spec :env)
              :vision? (get spec :vision?)
              :note    (get spec :note)})
-  (each k [:base :url :api-key :api-key-env]
+  (each k [:base :url :api-key :api-key-env :anthropic-version]
     (when-let [v (get spec k)] (put out k (string v))))
+  (each k [:api :transport]
+    (when-let [v (get spec k)] (put out k (keyword v))))
+  (when-let [v (get spec :timeout)] (put out :timeout v))
   (when-let [p (get spec :params)]  (put out :params  (table ;(kvs p))))
   (when-let [h (get spec :headers)] (put out :headers (table ;(kvs h))))
   out)

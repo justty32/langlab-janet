@@ -28,6 +28,10 @@
 (assert (string/find "要是數字"
                      (u/err-of |(cli/request-params (cli/parse-args @["x" "--temperature" "熱"])))))
 
+(def res-s (cli/parse-args @["x" "--stream" "--retry" "2" "local" "嗨"]))
+(assert (res-s "stream") "--stream 是個 flag")
+(assert (= "2" (res-s "retry")) "--retry 吃一個值")
+
 # ── resolve-endpoint ────────────────────────────────────────────────
 # 名字在 registry 裡
 (def r-local (cli/resolve-endpoint (cli/parse-args @["x" "-m" "qwen" "local" "嗨"]) "local"))

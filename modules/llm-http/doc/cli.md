@@ -11,6 +11,9 @@ jpm build                                                   # 產出 build/llm-h
 ./build/llm-http -s "只回十個字內" local "1+1？"              # system 訊息
 echo "把貓翻成英文" | ./build/llm-http deepseek              # 沒給 prompt 就讀 stdin
 ./build/llm-http --tools local "現在幾點？用工具查"           # 多輪 tool loop（內建示範工具）
+./build/llm-http --stream local "用三句話介紹 Janet"          # 串流：邊收邊印（⚠ 不能跟 --tools 一起）
+./build/llm-http --retry 3 deepseek "嗨"                     # 連不上／5xx／429 最多多試 3 次
+ANTHROPIC_API_KEY=… ./build/llm-http claude-direct "嗨"      # 直打 Anthropic，不經 proxy（curl 走 https）
 ./build/llm-http --image a.png local "這張圖是什麼顏色？"      # 圖像輸入，-i 可重複給多張
 ./build/llm-http -m qwen local "嗨"                          # 覆寫送給伺服器的 model 名
 ./build/llm-http --base http://127.0.0.1:4111 local "嗨"     # 換一台 proxy
@@ -38,6 +41,8 @@ echo "把貓翻成英文" | ./build/llm-http deepseek              # 沒給 prom
 | `--param` | | 任意請求參數，`名字=值`（值自動轉數字／`true`／`false`／`null`），可重複 |
 | `--image` | `-i` | 圖檔路徑或 http(s)/data URL，可重複 |
 | `--tools` | `-t` | 啟用內建示範工具，跑多輪 tool loop |
+| `--stream` | | 串流（SSE）邊收邊印；⚠ 與 `--tools` 互斥 |
+| `--retry` | | 失敗時最多多試幾次（只對連不上／5xx／429，指數退避），預設 0 |
 | `--rounds` | | tool loop 最多打幾輪，預設 8 |
 | `--list` | `-l` | 列出所有 endpoint 就結束 |
 
@@ -47,5 +52,7 @@ echo "把貓翻成英文" | ./build/llm-http deepseek              # 沒給 prom
   最後印 proxy base 與設定檔的探測結果。
 - 預設 base 是 `http://127.0.0.1:4000`，環境變數 `LITELLM_BASE` 也可覆寫。
 - **stdout 只有回答本文**（方便往下 pipe），trace／警告／錯誤一律走 stderr。
+- `--stream` 與 `--tools` 一起給會直接退出：
+  `--stream 與 --tools 不能一起用（tool loop 要拿到完整的 tool_calls 才能執行）。`
 - ⚠ 沒給 prompt 又不是 tty 時會讀 stdin 讀到 EOF——沒人餵就會一直等（unix filter 的正常語意）。
   在腳本／CI 裡測請帶 `< /dev/null`。

@@ -19,7 +19,8 @@
 # ⚠ declare-source 的 :source 要**逐檔列**，不要只寫目錄：jpm 是 cp -rf 過去的，
 #   給目錄會變成 <modpath>/llm-http/llm-http/…（多包一層），import 路徑就跑掉了。
 
-# llm-http —— 純 Janet 打本機 litellm proxy（OpenAI 相容），含多輪 tool loop 與圖像輸入。
+# llm-http —— 純 Janet 打 OpenAI 相容端點（litellm proxy／LM Studio），含多輪 tool loop、圖像輸入、
+#   串流、curl 傳輸（https）與 Anthropic 原生 Messages API 轉換。
 (declare-source
   :prefix "llm-http"
   :source ["modules/llm-http/init.janet"        # 門面
@@ -31,8 +32,21 @@
            "modules/llm-http/resolve.janet"     # 組成可以打的 cfg：endpoint／env-ready?
            "modules/llm-http/config.janet"      # endpoint 設定檔載入（只 parse 不 eval）
            "modules/llm-http/client.janet"      # HTTP 門面
-           "modules/llm-http/transport.janet"   # HTTP／JSON 收送
+           "modules/llm-http/transport.janet"   # HTTP／JSON 收送（自動選 spork／curl）
+           "modules/llm-http/transport-curl.janet"   # curl 子行程傳輸（https）
+           "modules/llm-http/anthropic-req.janet"    # OpenAI payload → Anthropic request
+           "modules/llm-http/anthropic-res.janet"    # Anthropic 回應 → OpenAI 形狀
+           "modules/llm-http/provider-anthropic.janet"  # Anthropic 線的門面：header／網址／送
+           "modules/llm-http/retry.janet"       # 只對連不上／5xx／429 的指數退避重試
+           "modules/llm-http/dispatch.janet"    # 派送：送去哪家 provider、要不要重試
            "modules/llm-http/chat.janet"        # 對話語意：chat／ask／參數合併
+           "modules/llm-http/structured.janet"  # ask-json：結構化輸出
+           "modules/llm-http/models.janet"      # list-models
+           "modules/llm-http/sse.janet"         # SSE 解析＋OpenAI 串流片段合併
+           "modules/llm-http/stream-http.janet" # 串流傳輸：net/connect 手寫 HTTP/1.1
+           "modules/llm-http/stream-curl.janet" # 串流傳輸：curl -N
+           "modules/llm-http/stream-anthropic.janet"  # Anthropic 串流事件合併
+           "modules/llm-http/stream.janet"      # chat-stream／ask-stream
            "modules/llm-http/media.janet"       # 圖像輸入
            "modules/llm-http/tools.janet"       # 多輪 tool loop
            "modules/llm-http/cli.janet"         # CLI 門面＋主流程

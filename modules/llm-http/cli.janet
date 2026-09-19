@@ -18,6 +18,7 @@
 (import ./cli-list  :prefix "" :export true)
 (import ./endpoints :as ep)
 (import ./chat :as conv)
+(import ./stream)
 (import ./media)
 (import ./tools)
 
@@ -47,8 +48,8 @@
 
 (defn- ask-once
   "一般問答那條：打一次，把答案文字挖出來。"
-  [cfg messages params]
-  (def r (conv/chat cfg messages :params params))
+  [cfg messages params retry]
+  (def r (conv/chat cfg messages :params params :retry retry))
   (def text (conv/reply-text r))
   (unless text
     (error (string "回應裡取不出答案文字：" (string/format "%q" r))))
@@ -59,6 +60,15 @@
              (if (empty? text) "，而且 content 是空的——推理模型會先花掉 reasoning tokens，把 max_tokens 調大" "")
              (get r :usage)))
   text)
+
+(defn- ask-streaming
+  "串流那條：delta 直接印到 stdout，回傳空字串（東西已經印過了）；截斷警告照樣走 stderr。"
+  [cfg messages params]
+  (def r (stream/chat-stream cfg messages :params params
+                             :on-delta (fn [t] (prin t) (flush))))
+  (when (conv/truncated? r)
+    (eprintf "\n⚠ 答案被 max_tokens 截斷（finish_reason=length）；用量：%q" (conv/reply-usage r)))
+  "")
 
 (defn- ask-with-tools
   "tool loop 那條：trace 走 stderr，才不會弄髒 stdout 的答案。"
@@ -118,11 +128,15 @@
   (array/push messages (media/user-message prompt images))
 
   (def max-rounds (if-let [r (res "rounds")] (scan-number r) 8))
+  (def retry (if-let [r (res "retry")] (scan-number r) 0))
+  (when (and (res "stream") (res "tools"))
+    (die "--stream 與 --tools 不能一起用（tool loop 要拿到完整的 tool_calls 才能執行）。"))
   (def [ok answer]
     (protect
-      (if (res "tools")
-        (ask-with-tools cfg messages params max-rounds)
-        (ask-once cfg messages params))))
+      (cond
+        (res "tools")  (ask-with-tools cfg messages params max-rounds)
+        (res "stream") (ask-streaming cfg messages params)
+        (ask-once cfg messages params retry))))
 
   (unless ok (die "呼叫 %s 失敗：%s" name answer))
 

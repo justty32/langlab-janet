@@ -20,6 +20,15 @@
   "OpenAI 相容伺服器的 chat completions 路徑。"
   "/v1/chat/completions")
 
+(def anthropic-url
+  "Anthropic 原生 Messages API 的完整網址（:api :anthropic 且沒給 :url 時用這個）。
+  ⚠ 是 https，spork/http 打不通，所以走這條的 endpoint 要配 :transport :curl。"
+  "https://api.anthropic.com/v1/messages")
+
+(def anthropic-version
+  "送給 Anthropic 的 anthropic-version header 值；endpoint 可用 :anthropic-version 覆寫。"
+  "2023-06-01")
+
 (defn base-url
   "proxy 的 base URL。環境變數 LITELLM_BASE 可覆寫（換 port 起第二台時很好用）。"
   []

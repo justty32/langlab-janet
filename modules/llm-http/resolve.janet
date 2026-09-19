@@ -26,13 +26,17 @@
   (def ov (or overrides {}))
 
   # ── :url 的決定順序（先到先贏）──────────────────────────────────
-  #   overrides :url  >  overrides :base  >  spec :url  >  spec :base  >  預設 base
+  #   overrides :url  >  overrides :base  >  spec :url  >  spec :base
+  #   >  （:api :anthropic 時）Anthropic 原生網址  >  預設 base
+  (def api (keyword (or (get ov :api) (get spec :api) :openai)))
   (def url
     (cond
       (get ov :url)   (string (get ov :url))
       (get ov :base)  (d/chat-url (get ov :base))
       (get spec :url) (string (get spec :url))
-      (d/chat-url (get spec :base))))
+      (get spec :base) (d/chat-url (get spec :base))
+      (= api :anthropic) d/anthropic-url
+      (d/chat-url nil)))
 
   # ── :api-key 的決定順序 ─────────────────────────────────────────
   #   overrides :api-key > overrides :api-key-env > spec :api-key > spec :api-key-env > proxy-key
@@ -50,6 +54,9 @@
              :env     (get spec :env)
              :vision? (get spec :vision?)
              :note    (get spec :note)})
+  # 傳輸與 provider 相關的欄位：有給才放，沒給就維持 nil（＝預設 :openai／:http）
+  (each k [:api :transport :anthropic-version :timeout]
+    (when-let [v (get spec k)] (put cfg k v)))
 
   # :params／:headers 是**疊加**不是取代（同名以 overrides 為準）
   (when-let [p (merge-dicts (get spec :params) (get ov :params))]

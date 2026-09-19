@@ -7,6 +7,8 @@
 # proxy 擋在前面，所以 Janet 這端**只需要講 OpenAI 相容這一種格式**，各家 provider 的
 # wire format 差異全由 litellm 吸收。**也可以完全不走 proxy**：給 endpoint 一個完整的
 # :url，就直接打 LM Studio 之類的 OpenAI 相容伺服器。起 proxy 的指令與坑見 README.md。
+# https:// 會自動改走 curl 子行程（transport-curl.janet）；:api :anthropic 則在本機把
+# OpenAI 形狀轉成 Anthropic Messages API 再轉回來（provider-anthropic.janet），都不需要 proxy。
 #
 # ── 這支檔案只做 re-export ──────────────────────────────────────────
 #   endpoints.janet  ← 門面，底下再分四支：
@@ -14,9 +16,13 @@
 #       builtin.janet    內建四筆 endpoint 的純資料
 #       registry.janet   registry 行為：define-endpoint／endpoint／驗證
 #       config.janet     設定檔載入：load-endpoints!／autoload-endpoints!
-#   client.janet     ← 門面，底下再分兩支：
-#       transport.janet  HTTP／JSON 收送
-#       chat.janet       對話語意：chat／ask／取答案／參數合併
+#   client.janet     ← 門面，底下再分幾支：
+#       transport.janet        HTTP／JSON 收送（http 走 spork、https 自動走 transport-curl）
+#       dispatch.janet         送去哪家 provider、要不要 retry.janet 重試
+#       provider-anthropic.janet  :api :anthropic 的雙向轉換（anthropic-req／anthropic-res）
+#       chat.janet             對話語意：chat／ask／取答案／參數合併
+#       structured.janet       ask-json（response_format）；models.janet：list-models
+#       stream.janet           chat-stream／ask-stream（sse／stream-http／stream-curl／stream-anthropic）
 #   media.janet      圖像輸入：圖檔 → base64 data URI → content parts
 #   tools.janet      多輪 tool loop
 #   cli.janet        CLI 的參數解析／輸出格式（main.janet 只是薄薄的進入點）
