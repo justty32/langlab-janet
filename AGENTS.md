@@ -24,4 +24,4 @@ janet-lab = **Janet 語言的遊樂場**：一個真的跑得起來的 jpm 專�
 
 > **具體流程**在各工作流入口檔，不在本檔。條列與表格的存放規矩（>1 KB 的機器讀表走資料檔、給人點的導航表留 md）見 [workflows/common/data-files.md](wf/workflows/common/data-files.md)——本 repo 目前的表全是給人讀的教學內容，一律留 md。
 
-<!-- wf-kernel v0.5 (2026-08-30) -->
+<!-- wf-kernel v0.6 (2026-09-19) -->

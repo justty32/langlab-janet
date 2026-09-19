@@ -14,98 +14,24 @@ submodule 自報的路徑）；old 是資料夾就當前綴搬移。ROOT 預設 
           展開、以新位置的同一代號寫回（見 fix_moved_links_fmt.py 與 common/data-files-fmt.md）
   *.csv   每個 cell 同上；資料檔寫回用 tabledb 格式（indent=1）
 
+掃描與搬移表在 fix_moved_links_scan，`$fmt` 那半段在 fix_moved_links_fmt。
+
 **本檔自己被搬**時，其內連結以舊位置解析、目標若也搬了就 remap、再以新位置重算相對路徑。
 指向 archive/ 的連結只列出、不重寫（要人拿掉）。
 """
 import os
 import re
-import subprocess
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import fix_moved_links_fmt as fmtx  # noqa: E402
+import fix_moved_links_scan as scan  # noqa: E402
 import tabledb  # noqa: E402
 import tabledb_links  # noqa: E402
 
 LINK = fmtx.LINK
 ROOT, RW = "", None
-FILES, DIRS, ARCHIVED = {}, {}, []
-
-
-def git_root(d):
-    try:
-        return subprocess.run(["git", "rev-parse", "--show-toplevel"], cwd=d,
-                              capture_output=True, check=True).stdout.decode().strip()
-    except (OSError, subprocess.CalledProcessError):
-        return os.path.abspath(d)
-
-
-def _is_table(p):
-    try:
-        return '"contract": "wf-table/' in open(p, encoding="utf-8").read(8192)
-    except (UnicodeDecodeError, OSError):
-        return False
-
-
-def scanned():
-    try:
-        out = subprocess.run(["git", "ls-files", "--recurse-submodules", "-z"],
-                             cwd=ROOT, capture_output=True, check=True).stdout.decode()
-        rels = [p for p in out.split("\0") if p]
-    except (OSError, subprocess.CalledProcessError, UnicodeDecodeError):
-        rels = []
-        for r, ds, fs in os.walk(ROOT):
-            ds[:] = [d for d in ds if d not in (".git", "node_modules")]
-            rels += [os.path.relpath(os.path.join(r, f), ROOT) for f in fs]
-    keep = []
-    for rel in rels:
-        ext = os.path.splitext(rel)[1]
-        if ext not in (".md", ".json", ".csv"):
-            continue
-        a = os.path.join(ROOT, rel)
-        if not os.path.exists(a) or (ext == ".json" and not _is_table(a)):
-            continue
-        keep.append(a)
-    return keep
-
-
-def load_moves(specs):
-    for p, prefix in specs:
-        base = os.path.join(ROOT, prefix) if prefix else ROOT
-        for line in open(p, encoding="utf-8"):
-            line = line.rstrip("\n")
-            if not line or line.startswith("#") or "\t" not in line:
-                continue
-            old, new = line.split("\t")[:2]
-            old = os.path.normpath(os.path.join(base, old.strip()))
-            new = os.path.normpath(os.path.join(base, new.strip()))
-            (DIRS if os.path.isdir(new) else FILES)[old] = new
-    # a->b 接 b->c 收斂成 a->c
-    for table in (FILES, DIRS):
-        for old in list(table):
-            seen, cur = {old}, table[old]
-            while cur in table and cur not in seen:
-                seen.add(cur); cur = table[cur]
-            table[old] = cur
-
-
-def remap(abs_target):
-    if abs_target in FILES:
-        return FILES[abs_target]
-    for old_dir, new_dir in DIRS.items():
-        if abs_target == old_dir or abs_target.startswith(old_dir + os.sep):
-            return new_dir + abs_target[len(old_dir):]
-    return None
-
-
-def old_dir_of(f):  # f 的現路徑 → 它被搬之前所在的目錄
-    for old, new in FILES.items():
-        if new == f:
-            return os.path.dirname(old)
-    for old, new in DIRS.items():
-        if f == new or f.startswith(new + os.sep):
-            return os.path.dirname(old + f[len(new):])
-    return os.path.dirname(f)
+ARCHIVED = []
 
 
 def retarget(target, bo, bn, src):
@@ -116,7 +42,7 @@ def retarget(target, bo, bn, src):
     if not path:
         return None
     abs_t = os.path.normpath(os.path.join(bo, path))
-    new_abs = remap(abs_t)
+    new_abs = scan.remap(abs_t)
     if new_abs is None:
         if bo == bn:
             return None
@@ -182,13 +108,13 @@ def main():
             prefix = args.pop(0)
         else:
             specs.append((a, prefix)); prefix = None
-    ROOT = os.path.abspath(root) if root else git_root(os.getcwd())
-    RW = fmtx.Rewriter(remap, retarget, sub_md, ARCHIVED, ROOT)
-    load_moves(specs)
+    ROOT = os.path.abspath(root) if root else scan.git_root(os.getcwd())
+    RW = fmtx.Rewriter(scan.remap, retarget, sub_md, ARCHIVED, ROOT)
+    scan.load_moves(specs, ROOT)
     changed = 0
-    for f in scanned():
+    for f in scan.files(ROOT):
         bn = os.path.dirname(f)
-        bo = old_dir_of(f)
+        bo = scan.old_dir_of(f)
         edits = []
         try:
             if f.endswith(".md"):

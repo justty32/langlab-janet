@@ -32,3 +32,9 @@
 - 工人的暫存要放 scratchpad 並帶批次前綴；曾有暫存檔落到 repo 根、兩個工人撞同名暫存檔。
 - 規則中途改三次（`.py`→`json`、1 KB 門檻、導航表先抽後收回）的代價是十幾個回補批；能先把契約定稿再派最省。
 - 母 repo 的 lint 用 `.` 會遞迴掃進所有子 repo，數字會隨別條線在動；母 repo 自己只掃自己那一份。
+
+## 執行環境
+
+<!-- wf-nav -->
+- **`command -v` 只判存在、不判能不能跑。** `python3` 若是系統塞的假 shim，`wf-lint.sh` 會判成「有」而不印 WARN，實際呼叫失敗又被 `2>/dev/null` 吃掉——BIGLIST／錨點／資料檔三項是「沒跑」不是「乾淨」，只有 broken／residue／oversize（純 bash）算數。要驗那三項就直接手跑一次對應的 `.py`，別拿這種綠燈當證據。
+- **CRLF checkout 會同時弄壞執行與計數。** `.sh` 帶 `\r` 在 Linux／WSL 直接跑不動；`wc -c` 每行多算 1 byte，8192 上限在 Windows 工作區會誤報超標（CI 看的是 LF）。量大小用 `git show HEAD:<檔> | wc -c`，要在 WSL 跑就先複製一份 `sed -i 's/\r$//'` 過的。

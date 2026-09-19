@@ -13,7 +13,8 @@
   --min           區塊 bytes 門檻（預設 1024，即契約的 1 KB）
   --links-only    改列「連結 > 10 條」的區塊，不看 bytes 門檻（--min 忽略），由人判斷用途
   --exempt-file   檔名等於 NAME 的整檔跳過（可重複；wf-lint 用它豁免頂層路由器）
-  --exclude-dir   跳過的資料夾名（預設 archive / .git / node_modules，可重複）
+  --exclude-dir   跳過的資料夾名（預設 archive / done / superseded / .git / node_modules，可重複；
+                  放信的 inbox/ 一律跳過，workflows/inbox/ 是工作流文件照掃）
 
 豁免：區塊**前一行**（中間可有空行）含 `<!-- wf-nav -->` 就跳過該區塊——導航表要留在
 md 裡就靠這個標記；三個頂層路由器（AGENTS.md / WORKFLOWS.md / INDEX.md）整檔豁免。
@@ -80,7 +81,7 @@ def scan(path, min_bytes, links_only=False):
 
 def main(argv):
     min_bytes, links_only = 1024, False
-    exclude, exempt, paths = {"archive", ".git", "node_modules"}, set(), []
+    exclude, exempt, paths = {"archive", "done", "superseded", ".git", "node_modules"}, set(), []
     it = iter(argv)
     for a in it:
         if a == "--min":
@@ -107,7 +108,8 @@ def main(argv):
         if os.path.isfile(p):
             take(p); continue
         for root, dirs, files in os.walk(p):
-            dirs[:] = [d for d in dirs if d not in exclude]
+            dirs[:] = [d for d in dirs if d not in exclude
+                       and not (d == "inbox" and os.path.basename(root) != "workflows")]
             for f in files:
                 if f.endswith(".md"):
                     take(os.path.join(root, f))

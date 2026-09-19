@@ -11,7 +11,9 @@
 
 ## 最新進度
 
-（目前無）
+- [planning] `bin/md2html*`（T4 md→html 產生器）中途砍線，四支模組完整、`render.janet` 編不過 → [planning roadmap](workflows/planning.md#roadmap會做何時)
+- [planning] `reference` 補洞（R1）：peg 兩篇＋`file-與-net.md` 已掛索引，`file-與-net.md` 的 `net/*` 半篇、`marshal-image-與-env.md`、`debug-全表.md` 未開始 → [planning roadmap](workflows/planning.md#roadmap會做何時)
+- [planning] 全 repo 體檢（T5）中途砍線，巡到一半範圍不明（root-env 綁定數已定案 702）→ [planning roadmap](workflows/planning.md#roadmap會做何時)
 
 ## 各工作流 session-log
 
