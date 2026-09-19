@@ -47,6 +47,13 @@
 | 「整理一堆資訊 / 檔案 / 筆記的結構」 | **organize** | [workflows/organize.md](workflows/organize.md) | 動的是**位置與分類**，不是內容 |
 
 例：「幫我讀懂統計檢定」——只要這次看懂 → digest；要持續學下去 → learn。想法要不要做、何時做（idea / roadmap）走 kernel 的 [planning](workflows/planning.md)。產出文字的工作流共用 [common/writing](workflows/common/writing.md)（文風）、材料導航共用 [common/info-map](workflows/common/info-map.md)。
+### 本專案特有
+
+| 觸發（你說…）| 工作流 | 入口檔（先讀這個）| 分辨 |
+|--------------|--------|-------------------|------|
+| 「加了一篇 md 要出現在網站」「改閱讀器」「加速查表」 | **site** | [workflows/site.md](workflows/site.md) | 動的是**閱讀器與打包**（`bin/md-bundle.py`／`html/`），不是 md 內容本身 |
+| 「開很多 agent 平行做」「派線」「整合各線」 | **dispatch** | [workflows/dispatch.md](workflows/dispatch.md) | 管**怎麼派、怎麼收**；「派哪一級模型」在 [team-model](workflows/team-model.md) |
+
 <!-- wf-insert:WORKFLOWS -->
 
 ### kernel 內建
@@ -60,7 +67,8 @@
 | 「我的偏好是…」「以後直接做 / 先問」 | **user** | [workflows/common/user.md](workflows/common/user.md) |
 | 「誰來做」「這件事派哪個模型」「要開幾條線」 | **team-model** | [workflows/team-model.md](workflows/team-model.md) |
 
-**都不符 → 看 [INDEX.md](INDEX.md)**。新開工作流 → 複製 [workflows/TEMPLATE.workflow.md](workflows/TEMPLATE.workflow.md) 並在上表加一列。要定期喚醒合 heartbeat 包、多 agent 協作合 multi-agent 包（都在模板 repo 的 `flavors/`）；上表的 **team-model** 就是從 multi-agent 包單抽的一支（沒導 inbox／dispatch，所以它只管選人、不管跨資料夾通訊）。
+**都不符 → 看 [INDEX.md](INDEX.md)**。新開工作流 → 複製 [workflows/TEMPLATE.workflow.md](workflows/TEMPLATE.workflow.md) 並在上表加一列。要定期喚醒合 heartbeat 包、多 agent 協作合 multi-agent 包（都在模板 repo 的 `flavors/`）；上表的 **team-model** 就是從 multi-agent 包單抽的一支（沒導信件軸，所以它只管選人、不管跨資料夾通訊）；
+本專案自己長出來的 [dispatch](workflows/dispatch.md) 管的是**同一個 repo 內**怎麼派線收線，跟那個包的 inbox 不是同一件事。
 
 ## 活狀態記哪裡（只列 open，完成即刪）
 

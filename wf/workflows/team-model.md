@@ -2,9 +2,9 @@
 
 [WORKFLOWS](../WORKFLOWS.md)｜[INDEX](../INDEX.md)
 
-本檔記**誰來做**——分幾層角色、每層派哪一級的模型、按什麼順序選人。本專案沒有導入 multi-agent 包的 inbox／dispatch（那是跨資料夾 agent 往來用的），所以這裡只留**選人**這一段；同 repo 另一條線的活狀態照舊記在 [SESSION-LOG](../SESSION-LOG.md)。
+本檔記**誰來做**——分幾層角色、每層派哪一級的模型、按什麼順序選人。**怎麼派、怎麼收**（任務單格式、檔案所有權分區、整合線）在 [dispatch](dispatch.md)，兩份不重述。本專案沒有導入 multi-agent 包的信件軸（那是跨資料夾 agent 往來用的）；同 repo 另一條線的活狀態照舊記在 [SESSION-LOG](../SESSION-LOG.md)。
 
-**何時用**：要開一組 agent 平行做事、要決定某一層派哪級模型。
+**何時用**：要開一組 agent 平行做事、要決定某一層派哪級模型（決定完接 [dispatch](dispatch.md) 寫任務單）。
 **何時不用**：一兩個檔的小改、純查詢——自己做完就好，開團隊的成本比省下的時間高。
 
 ## Done when
