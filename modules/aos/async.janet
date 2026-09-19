@@ -24,12 +24,17 @@
   (def f (registry-file))
   (fsx/ensure-dir (path/dirname f))
   (fsx/with-lock (path/join (path/dirname f) "registry.lock")
-    (def reg (fsx/read-json f @{:format_version 1 :daemon_pid nil :entries @[]}))
+    # ⚠ 這裡不能用 nil：Janet 的 table 字面值遇到 nil 值等於沒那個鍵，
+    #   而 registry.schema.json 把 daemon_pid／daemon_pid_start 列為必填，要寫成 :null。
+    (def reg (fsx/read-json f @{:format_version 1 :daemon_pid :null
+                                :daemon_pid_start :null :entries @[]}))
     (def now (fsx/now-iso))
     (def e @{:path child :pid :null :pid_start :null :land_id :null :state "pending"
              :clock {:kind "until" :until "idle"} :budget :null :runner "run"
-             # 原型還讀頂層 result／args；正式形狀同時放進 ext。
-             :result result :args args :parent caller :ext {:result result :args args}
+             # ⚠ result／args 只放頂層：2026-09-05 的裁決 S-08-66 把它們升成正式欄位，
+             #   registry.schema.json 的 ext 明文 propertyNames not [result args]，
+             #   原型 aosp/registry.py 的 _canonicalize 也會當場把 ext 裡那兩個 pop 掉。
+             :result result :args args :parent caller
              :registered_at now :updated_at now})
     (def kept (filter |(not= (get $ :path) child) (or (reg :entries) [])))
     (put reg :entries [;kept e])

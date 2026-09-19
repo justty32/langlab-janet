@@ -95,7 +95,7 @@ janet examples/aos-call.janet
 - 這是綁定，不是 aos 執行引擎。`inst`、同步呼叫與 daemon 操作分別要 shell 出去叫原型的 `exec`、`run`、`daemon`。
 - Janet 1.41.2 沒有檔案與資料夾 `fsync`；目前只做 `file/flush → rename`，斷電保證還沒有達到 S-07-33、S-07-66、S-08-22。
 - Janet 行程不是一塊 aos 地，所以綁定會在暫存目錄合成 workspace，並用 `tick:0`、`series:"janet"`、`step:"call"` 補滿呼叫記錄。
-- 原型要從登記表頂層的 `result`、`args` 重建 async 子行程環境；正式 registry schema 只認 `ext.result`。目前兩份都寫，所以能跑原型，但整份 registry 還不會過 schema。
+- 登記表的 `result`、`args` 只寫在那筆頂層：裁決 S-08-66 把兩者升成正式欄位，`ext.result`／`ext.args` 作廢（schema 用 `propertyNames` 擋掉，原型也會 pop）。綁定產的登記表已過 `registry.schema.json`。
 - 結果落點的父資料夾必須先存在，綁定才能用 `realpath` 防止 symlink 把落點帶出父地。
 - 鎖與 pid 判活用了 POSIX hard link 與 Linux `/proc`；這份綁定目前只驗過 Linux。
 

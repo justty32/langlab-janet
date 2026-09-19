@@ -32,6 +32,24 @@
   (def e2 (find |(= (child :root) ($ :path)) (reg :entries)))
   (assert e2 "子地登記在登記表上")
   (assert (= (h :result) (e2 :result)) "登記表那筆記著父指定的落點")
-  (assert (= (h :result) ((e2 :ext) :result)) "schema 定的 ext.result 也要有落點"))
+  # ⚠ read-json 是 keyword 鍵，handle 的 args 是字串鍵，只能逐值比
+  (assert (= "async" ((e2 :args) :who)) "登記表那筆記著父傳的引數（daemon 靠它重建 AOS_ARG_*）"))
+
+# ── ③ 登記表那筆的形狀要合 registry.schema.json ────────────────────────
+# ⚠ 裁決 S-08-66（2026-09-05）把 result／args 升成頂層正式欄，`ext.result`／`ext.args` 作廢。
+#   這裡不能接著②讀——原型 aosp/registry.py 的 _canonicalize 會先幫忙 pop 掉 ext 裡那兩個，
+#   斷言就變成恆真。所以另開沙盒、假裝 daemon 是自己，讓登記表只有綁定寫過。
+(def sb3 (U/sandbox "async-shape"))
+(def child3 (aos/init-land! (string sb3 "/child") {:source U/echo-arg-source}))
+(def reg3-path (string sb3 "/home/.aos/registry.json"))
+(aos/ensure-dir (string sb3 "/home/.aos"))
+(aos/write-json reg3-path {:format_version 1 :daemon_pid (os/getpid)
+                           :daemon_pid_start :null :entries []})
+(def h3 (aos/call-async child3 {:who "shape"}))
+(def e3 (find |(= (child3 :root) ($ :path)) ((aos/read-json reg3-path {}) :entries)))
+(assert (= (h3 :result) (e3 :result)) "落點寫在頂層 result")
+(assert (= "shape" ((e3 :args) :who)) "引數寫在頂層 args")
+(assert (nil? (get (e3 :ext) :result)) "ext.result 作廢，綁定禁止再寫")
+(assert (nil? (get (e3 :ext) :args)) "ext.args 作廢，綁定禁止再寫")
 
 (print "aos 脫節呼叫測試通過 ✓")
