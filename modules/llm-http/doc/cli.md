@@ -4,7 +4,7 @@
 
 
 ```sh
-jpm build                                                   # 產出 build/llm-http
+jpm clean && jpm build                                      # 產出 build/llm-http（改了非入口檔時 clean 不能省）
 
 ./build/llm-http --list                                     # 列出所有 endpoint（分內建／自訂）
 ./build/llm-http local "台灣最高的山是哪座？"                  # 基本問答
@@ -44,7 +44,7 @@ ANTHROPIC_API_KEY=… ./build/llm-http claude-direct "嗨"      # 直打 Anthrop
 | `--api-key` | | 覆寫 `Authorization: Bearer` 的 token（⚠ `ps` 看得到，優先用下面那個） |
 | `--api-key-env` | | 從這個**環境變數**讀 Bearer token——金鑰不上命令列 |
 | `--header` | | 額外 header，`名字:值`，可重複 |
-| `--endpoints` | | 載入 endpoint 設定檔（`.janet` 或 `.json`），可重複 |
+| `--endpoints` | | 載入 endpoint 設定檔（`.janet` 或 `.json`），可重複。⚠ 編譯好的執行檔**只認這個旗標**，`~/.config` 那份與 `LLM_HTTP_ENDPOINTS` 是在 build 當下探測完就凍住的，見 [自訂 endpoint](自訂-endpoint.md) |
 | `--temperature` `--max-tokens` `--top-p` | | 請求參數，蓋得掉 endpoint 的 `:params` |
 | `--param` | | 任意請求參數，`名字=值`（值自動轉數字／`true`／`false`／`null`），可重複 |
 | `--image` | `-i` | 圖檔路徑或 http(s)/data URL，可重複 |

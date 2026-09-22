@@ -104,3 +104,4 @@ system prompt（7,320 cache creation ＋ 11,609 cache read tokens）。當一般
 - 十一、`jpm build` 不會因為你改了「非入口」的檔案就重編
 - 十二、Windows：`jpm install` 裝不了原生模組會靜默成功，manifest 會說謊
 - 十三、`./` 相對 import 在「跑檔案」與「REPL 求值」下不一樣
+- 二十五、`jpm build` 出來的執行檔把「設定檔自動探測」凍在 build 那一刻

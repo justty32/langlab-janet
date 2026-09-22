@@ -3,7 +3,9 @@
 [← 環境與架構筆記](FINDINGS.md)｜[← 踩坑（一）：LLM 與模組](FINDINGS-踩坑.md)
 
 [FINDINGS-踩坑.md](FINDINGS-踩坑.md) 記的是 LLM API 與模組設計上的坑（七～十）；
-這一份收**工具鏈**的——`jpm` 與 `import` 咬人的地方，編號繼續延續。
+這一份收**工具鏈**的——`jpm` 與 `import` 咬人的地方。
+⚠ **編號是跨檔的全域流水號**，所以本檔是十一～十三＋二十五
+（十四～二十四被 [踩坑 c](FINDINGS-踩坑c-傳輸與串流.md) 用掉了）。
 
 ## 十一、⚠ `jpm build` 不會因為你改了「非入口」的檔案就重編
 
@@ -110,3 +112,26 @@ REPL 裡的解法是求值前先設一次，之後整個 session 都有效：
 `tp/` 之後沒有候選字。跑是跑得動，只是編輯器沒有智慧提示。推測是同一個
 `:current-file` 問題（LSP 在它自己的 context 裡分析檔案），**但沒有實際驗證過**。
 繞法：暫時改成絕對 import，或直接無視。
+
+## 二十五、⚠ `jpm build` 出來的執行檔把「設定檔自動探測」凍在 build 那一刻
+
+`modules/llm-http/endpoints.janet` 在 **import 時**會自動探測一次使用者的 endpoint 設定檔
+（`LLM_HTTP_ENDPOINTS` → `$XDG_CONFIG_HOME` → `~/.config/llm-http/endpoints.janet`）。
+走 `import` 或 `janet modules/llm-http/main.janet` 時每次啟動都重探；但 `jpm build` 產出的
+`build/llm-http` **不會**——jpm 的 executable 是把模組載完的環境 marshal 成 image 編進 C，
+所以任何**頂層副作用**（探測、讀檔）都在 build 當下跑完就定型了。
+
+實測（2026-09-22，`--list` 看得不見得到臨時塞進設定檔的那一筆）：
+
+| 跑法 | 執行時才改的設定檔 | `LLM_HTTP_ENDPOINTS` | `--endpoints <檔>` |
+|------|------------------|---------------------|-------------------|
+| `./build/llm-http` | ❌ 看不到 | ❌ 無效 | ✅ 有效 |
+| `janet modules/llm-http/main.janet` | ✅ | ✅ | ✅ |
+
+症狀很像「設定檔格式寫壞了」：`--list` 的尾巴照樣印「會依序找這些位置」，而且**不會有任何警告**
+（找不到檔是正常狀態，本來就靜靜跳過）。改了設定檔之後——當次生效用 `--endpoints` 明確指定，
+永久生效就 `jpm clean && jpm build`（單跑 `jpm build` 不會重建，見第十一節）。
+
+⚠ 凍住的只有**頂層**副作用。包在函式裡的 `os/getenv` 照樣是執行時讀：同一支 binary
+`LITELLM_BASE=http://127.0.0.1:9999 ./build/llm-http --list` 印出來的 proxy base 就是 9999
+（`defaults.janet` 是在函式內取值）。所以「執行時才要看的東西一律放進函式裡」不只是風格問題。

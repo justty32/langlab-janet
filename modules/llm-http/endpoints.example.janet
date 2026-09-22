@@ -17,6 +17,10 @@
 #
 #   → 這樣就**不必改 repo 裡的原始碼**，也不會把自己的設定 commit 進來。
 #
+#   ⚠ 自動探測（①②③）是 **import 時**做的，所以 jpm build 編出來的 build/llm-http 會把
+#     探測結果凍在 build 當下：改了這個檔之後，當次生效請用 --endpoints，永久生效要
+#     `jpm clean && jpm build`。走 import／直接跑原始碼都沒這問題（見 FINDINGS-踩坑b 二十五）。
+#
 # ── 格式 ────────────────────────────────────────────────────────────
 #   最外層一張表：`"endpoint 名字" {設定}`。檔案裡可以有多張表，會依序疊加。
 #   （副檔名改成 .json 的話就寫成 JSON，欄位名一樣。）
@@ -53,7 +57,6 @@
  # ── ② 完全繞過 proxy，直接打 LM Studio ──────────────────────────────
  # LM Studio 自己就是 OpenAI 相容伺服器，給了 :url 就不需要 litellm 了。
  # ⚠ 一律寫 127.0.0.1 不要寫 localhost（::1 陷阱，見 FINDINGS.md 第五節）。
- # ⚠ spork/http 沒有 TLS，:url 只能是 http:// 不能是 https://。
  "lmstudio"
  {:model   "google/gemma-4-e4b"
   :url     "http://127.0.0.1:1234/v1/chat/completions"
@@ -68,13 +71,29 @@
   :note  "第二台 litellm proxy。"}
 
  # ── ④ 金鑰從環境變數讀，設定檔裡不落密 ──────────────────────────────
- # ⚠ 這筆是**示意**：spork/http 沒有 TLS，https:// 其實打不通，
- #   真的要打外部服務請讓 litellm proxy 代打（:base 指回本機 proxy）。
+ # https:// 的 :url 會自動改走 curl 子行程（spork/http 本身沒有 TLS），所以直打外部服務
+ # 是通的；沒裝 curl 的機器才要讓 litellm proxy 代打（:base 指回本機 proxy）。
  "openai-direct"
  {:model       "gpt-4o-mini"
-  :url         "http://127.0.0.1:4000/v1/chat/completions"
+  :url         "https://api.openai.com/v1/chat/completions"
   :api-key-env "OPENAI_API_KEY"
   :headers     {"x-my-tag" "janet-lab"}
   :params      {:temperature 0.7 :top_p 0.9}
   :env         "OPENAI_API_KEY"
-  :note        "金鑰讀自環境變數，設定檔裡不留密。"}}
+  :note        "金鑰讀自環境變數，設定檔裡不留密。"}
+
+ # ── ⑤ 對上「不是 lite.yaml」的外部 litellm ──────────────────────────
+ # 內建那幾筆的 :model（local／deepseek／claude／openrouter）是照本 repo 的 lite.yaml 取的；
+ # 換成別人家的 proxy 時那些名字通常一個都不在，內建 endpoint 會全部打不通。
+ # :model 要抄**那台 proxy 自己的 model_name**（`curl <base>/v1/models` 看得到）。
+ # 有些 proxy 會把「同一顆模型 × 不同思考深度」拆成好幾個 model_name，這時思考深度是靠
+ # 選名字決定的，不要自己送 reasoning_effort（很可能被 proxy 的 drop_params 吞掉）。
+ "op5"
+ {:model   "claude-opus-5"
+  :vision? true
+  :note    "外部 proxy 上的一筆 model_name；名字要跟那台對得起來。"}
+
+ "op5-nothink"
+ {:model   "claude-opus-5-nothink"
+  :vision? true
+  :note    "同一顆模型的另一個 model_name＝關掉思考的分身。"}}

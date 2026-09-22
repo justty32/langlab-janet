@@ -24,9 +24,10 @@
 | 做什麼 | 指令 | 備註 |
 |--------|------|------|
 | 安裝依賴 | `jpm deps` | 只在 fresh clone、或改了 `project.janet` 的 `:dependencies` 後要重跑 |
-| build | `jpm build` | 產出 `build/janet-lab`、`build/llm-http`、`build/pi-shell` 三個執行檔（都 `:install false`，不裝到系統）|
+| build | `jpm clean && jpm build` | 產出 `build/janet-lab`、`build/llm-http`、`build/pi-shell`、`build/agent` 四個執行檔（都 `:install false`，不裝到系統）。⚠ **單跑 `jpm build` 改了非入口檔不會重編**，而且 `build/llm-http` 會把 endpoint 設定檔的探測結果凍在 build 當下（[踩坑 b](../../FINDINGS-踩坑b-工具鏈.md) 十一、二十五）——所以這裡預設寫成 `clean &&` |
 | 跑起來 | `janet bin/main.janet --help` | 沒有伺服器也沒有 port；進入點就是 `bin/main.janet`（argparse 實例）|
 | 開 REPL | `janet` | `(quit)` 或 Ctrl-D 離開 |
+| 裝進模組樹 | `jpm install` | 把五個 `declare-source` prefix（`janet-lab`／`llm-http`／`pi-shell`／`aos`／`agent`）cp 到 `~/.local/lib/janet/`，之後任何目錄都能用裸名字 `(import llm-http/init)`。⚠ **裝起來的是快照**，改了 `modules/` 要重跑；開發期建議還是走相對路徑 |
 | lint / format | —— | **Janet 沒有官方 formatter 或 linter**。診斷靠編輯器裡的 `janet-lsp`（0.0.12），格式靠 parinfer 顧括號。所以「lint 綠燈」不是本專案的驗收條件，`jpm test` 才是 |
 
 驗證與測試指令不列這裡——連同「誰跑」一起在 [testing](testing.md)。

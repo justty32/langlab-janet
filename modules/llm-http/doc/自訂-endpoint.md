@@ -102,3 +102,10 @@ llm/loaded-files                                   # 這個行程載過哪些檔
   不該讓「只想打內建 `local`」的人整個跑不起來。
 - 明確呼叫的 `load-endpoints!` 則相反：檔案不存在／括號少收／某一筆缺 `:model`，
   一律丟**看得懂的中文錯誤**（會告訴你是哪個檔的哪一筆）。
+
+⚠ **`jpm build` 出來的 `build/llm-http` 不會在執行時重讀設定檔**：自動探測是 import 時的
+副作用，而 jpm 把模組載完的狀態 marshal 進執行檔，所以探測結果凍在 **build 那一刻**。
+改了設定檔（或新建了一份）之後——當次生效用 `--endpoints <檔>`，永久生效就
+`jpm clean && jpm build`（單跑 `jpm build` 不會重建）。**`LLM_HTTP_ENDPOINTS` 對編譯好的
+執行檔也無效**，同一個原因。走 `import`／直接 `janet modules/llm-http/main.janet` 都沒這問題。
+實測對照表見 [`../../../FINDINGS-踩坑b-工具鏈.md`](../../../FINDINGS-踩坑b-工具鏈.md) 第二十五節。

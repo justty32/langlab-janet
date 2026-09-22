@@ -64,7 +64,7 @@ llm-http 與 pi-shell 共用同一套設計思想：**內建的只是預設值�
 
 ## 不想數 `../`：裝起來用裸名字
 
-`project.janet` 裡三個模組都有 `declare-source`（prefix 是 `llm-http`、`pi-shell`、`aos`），
+`project.janet` 裡五個 prefix 都有 `declare-source`（`janet-lab`、`llm-http`、`pi-shell`、`aos`、`agent`），
 所以**裝進模組樹之後**就能用不帶路徑的裸名字 import，跟 `spork/json` 一樣：
 
 ```sh
@@ -76,15 +76,20 @@ cd ~/code/我的專案 && jpm -l install git::file:///home/lorkhan/repo/langs/ja
 
 ```janet
 (import llm-http/init :as llm)      # 裝好之後，放在哪一層都這樣寫
-(import pi-shell/init :as agent)
+(import pi-shell/init :as pish)
 (import aos/init :as aos)
+(import agent :as ag)               # 目錄下有 init.janet，所以連 /init 都可以省
 ```
 
 > ⚠ `jpm install` 從本地 repo 裝有兩個前提：**要先 `git init` ＋至少一個 commit**，而且
 > bundle 字串**必須含冒號**才會被當成位址（`git::file:///絕對路徑`）——直接給目錄或
 > `./相對路徑` 會被當成官方套件清單的短名字，回你 `bundle ... not found`。
 
-**開發期建議還是用相對路徑**：改了模組馬上生效，不用每次重裝。
+**開發期建議還是用相對路徑**：改了模組馬上生效，不用每次重裝——`jpm install` 裝過去的是
+**一份快照**（`cp` 過去的檔案），改了 `modules/` 底下的原始碼它不會跟著變，要重跑一次。
+只想裝其中一個模組時沒有現成旗標：`jpm install` 是五個 prefix 一起裝，之後手動
+`rm -rf ~/.local/lib/janet/<prefix>` 拿掉不要的（`.manifests/janet-lab.jdn` 的 `:paths`
+也要跟著剪，不然 `jpm uninstall` 會去找已經不存在的路徑）。
 
 ## 兩個模組的最小可跑範例
 

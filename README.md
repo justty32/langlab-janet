@@ -54,7 +54,7 @@ modules/             能用的小模組（llm-http 打 LLM、agent 組 agent、p
 try/                 從零蓋一個 LLM 客戶端的**過程**——看「怎麼分層」，不是看 API
 FINDINGS.md          環境與架構的實測筆記（LLM 供應商、為什麼走 litellm proxy）
 FINDINGS-踩坑.md     實作時被 LLM API／模組設計咬到的地方（七～十）
-FINDINGS-踩坑b-工具鏈.md  jpm 與 import 的坑（十一～十三）
+FINDINGS-踩坑b-工具鏈.md  jpm 與 import 的坑（十一～十三、二十五）
 FINDINGS-踩坑c-傳輸與串流.md  https／Anthropic 原生／串流的坑（十四起）
 AGENTS.md            AI agent 的入口（人可以不用看）；工作流本體收在 wf/
 ```

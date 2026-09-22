@@ -4,7 +4,7 @@
 
 架構怎麼決定的在 [FINDINGS.md](FINDINGS.md)；這一份是**動手寫的時候**
 被環境或 API 咬到的地方，編號延續前一份。太長拆成兩份：這裡是 **LLM API
-與模組設計**（七～十），`jpm`／`import` 那一類工具鏈的坑（十一～十三）在
+與模組設計**（七～十），`jpm`／`import` 那一類工具鏈的坑（十一～十三、二十五）在
 [FINDINGS-踩坑b-工具鏈.md](FINDINGS-踩坑b-工具鏈.md)。
 
 ## 七、⚠ HTTP header 的值只能是 ASCII
@@ -69,4 +69,4 @@ usage         = {completion_tokens: 8, completion_tokens_details: {reasoning_tok
 ---
 
 工具鏈的坑（十一 `jpm build` 不重編、十二 Windows 原生模組靜默失敗、
-十三 `./` 相對 import）→ [FINDINGS-踩坑b-工具鏈.md](FINDINGS-踩坑b-工具鏈.md)。
+十三 `./` 相對 import、二十五 執行檔凍住設定檔探測）→ [FINDINGS-踩坑b-工具鏈.md](FINDINGS-踩坑b-工具鏈.md)。
