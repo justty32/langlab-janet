@@ -61,8 +61,8 @@ Janet 本身沒有傳統 regex，只有 PEG（見 [docs/14-peg.md](../../docs/14
 
 ```janet
 (import spork/regex :as re)
-(re/replace "\\d+" "#" "abc123def456")       # => "abc#def456"     只換第一段
-(re/replace-all "\\d+" "#" "abc123def456")   # => "abc#def#"       全部換掉，這裡沒有重疊問題
+(re/replace "\\d+" "#" "abc123def456")       # => @"abc#def456"    只換第一段
+(re/replace-all "\\d+" "#" "abc123def456")   # => @"abc#def#"      全部換掉，這裡沒有重疊問題
 ```
 `replace`／`replace-all` 沒有上面的重疊問題，因為替換语意本身就是「匹配到就跳過整段、換成新內容」，
 只有直接查「索引」的 `find`／`find-all` 会曝露 PEG `find-all` 的逐位元組推進行為。

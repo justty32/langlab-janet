@@ -39,11 +39,11 @@ CDF（**累積分布函式**——把一組權重換算成「累計到目前為�
 (randgen/sample-n |(randgen/rand-int 0 6) 10)
 # => @[1 5 1 3 5 1 3 3 0 2]   抽 10 次 [0,6) 範圍的整數
 
-(randgen/rand-gaussian)          # => 0.318756480188982     標準常態（平均 0 標準差 1）
-(randgen/rand-gaussian 100 15)   # => 115.104538039321       平均 100 標準差 15
+(randgen/rand-gaussian)          # => -0.396664329376897    標準常態（平均 0 標準差 1）
+(randgen/rand-gaussian 100 15)   # => 104.048271087376       平均 100 標準差 15
 
-(randgen/rand-value ["a" "b" "c"])  # => "a"
-(randgen/rand-index ["a" "b" "c"])  # => 2
+(randgen/rand-value ["a" "b" "c"])  # => "c"
+(randgen/rand-index ["a" "b" "c"])  # => 0
 (randgen/rand-path 1 2 3)           # => 隨機挑一段（例如印出 1）
 ```
 

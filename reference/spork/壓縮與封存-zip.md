@@ -98,6 +98,6 @@
 (import spork/zip)
 (def c (zip/compress "hello hello hello hello hello"))
 (length c)                 # => 17   （30 bytes 壓成 17）
-(zip/decompress c)         # => "hello hello hello hello hello"
+(zip/decompress c)         # => @"hello hello hello hello hello"
 (zip/version)              # => "11.0.1"
 ```
