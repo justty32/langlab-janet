@@ -7,7 +7,7 @@
   'use strict';
   // ---- 首頁固定路線卡片（唯一手寫的導航；路徑由 md-bundle.py --check 驗證）----
   const HOME_CARDS = [
-    { md: 'course/README.md', title: '從零開始的課程', blurb: '沒碰過 Lisp 也讀得懂：11 單元 38 課（實際落地 59 支 md，因為多課拆成 b／c 續篇），每課配可跑範例與練習' },
+    { md: 'course/README.md', title: '從零開始的課程', blurb: '沒碰過 Lisp 也讀得懂：11 個單元照順序上，每課配可跑範例與練習' },
     { md: 'docs/README.md', title: '教學目錄', blurb: 'docs/ 00 → 47 逐篇遞進；不知道從哪讀起就開這頁' },
     { md: 'docs/路線圖.md', title: '路線圖', blurb: '從零到能寫工具的建議順序' },
     { md: 'docs/怎麼做-X.md', title: '怎麼做 X', blurb: '按任務排的索引，每列給教學／可跑／可抄三欄' },
