@@ -21,7 +21,7 @@ fiber 可以直接被 `each` / `loop :in` 走訪，把每個 `yield` 的值當�
 
 ```janet
 (def squares (fiber/new (fn [] (for i 0 5 (yield (* i i))))))
-(each x squares (prin x " "))     # => 0 1 4 9 16
+(each x squares (prin x " "))     # => 印 0 1 4 9 16
 (loop [x :in squares] ...)        # 同義
 ```
 

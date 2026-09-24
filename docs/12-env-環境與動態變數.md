@@ -104,7 +104,7 @@
     (b :macro)    :macro
     (b :ref)      :var
     (type (b :value))))
-(kind (curenv) 'map)   # => :cfunction
+(kind (curenv) 'map)   # => :function
 ```
 
 `(doc-of value)` 反過來：拿一個**值**去所有已載入模組裡找它叫什麼、印它的文件。

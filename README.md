@@ -22,7 +22,8 @@ jpm build && ./build/janet-lab --json -n world  # 編成單一執行檔再跑
 
 | 你的狀況 | 去哪 |
 |----------|------|
-| **想學** —— 從頭把 Janet 搞懂 | [`docs/`](docs/README.md)：00 環境 → 06 編輯器逐篇遞進，18～26b 是日常會用到的；32～40 是「寫熟之後才會踩到」的語言細節，07～17 與 27～31 需要時再翻 |
+| **想從零學** —— 沒碰過 Lisp、想被人牽著走 | [`course/`](course/README.md)：11 單元大白話課程，照順序上，每課配可跑範例與練習 |
+| **想學** —— 從頭把 Janet 搞懂 | [`docs/`](docs/README.md)：00 環境 → 06 編輯器逐篇遞進，18～26b 是日常會用到的；32～40 是「寫熟之後才會踩到」的語言細節，07～17 與 27～31 需要時再翻；已經有底子想快速掃過 → docs/ |
 | **要做某件事** —— 「我現在要做 X」 | [`docs/怎麼做-X.md`](docs/怎麼做-X.md)：按**任務**排的索引，每列給你教學／可跑／可抄三欄 |
 | **從 C++ 過來** —— 想快速對上概念 | [`docs/01b`](docs/01b-給-C++-開發者.md)：一張概念對照表 + 五個一定會誤會的地方 |
 | **從 C／Lua／Go／Python 過來** —— 想逐條對照語法 | [`docs/01d`](docs/01d-提早離開-return-break-continue.md) 先解決 return／break／continue，再看 [`43`](docs/43-從-C-C++-過來.md)／[`44`](docs/44-從-Lua-過來.md)／[`45`](docs/45-從-Go-過來.md)／[`46`](docs/46-從-Python-過來.md) |
@@ -43,6 +44,7 @@ project.janet        專案宣告（依賴、要編的執行檔）
 janet-lab/init.janet 核心模組（純函式）
 bin/main.janet       CLI 進入點（argparse 實例）
 test/                測試（清單見 test/）——其中 doc-examples.janet 守的是**教學裡的輸出**不是程式碼
+course/              從零大白話課程（11 單元，照順序上；範例在 examples/course/）
 docs/                分篇教學（編號 00 起，目錄見 docs/README.md）——掌握概念用；幾乎每篇都配一支可跑範例
 reference/           查「有哪些可用」——內建的求全，spork 只收常用
 cheatsheets/         七頁速查表（核心 / 資料IO / peg / 並行 / C互通 / env / ★ 地雷），md

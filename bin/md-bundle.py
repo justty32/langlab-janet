@@ -28,7 +28,7 @@ OUT = ROOT / "html" / "content.js"
 SKIP_DIRS = {"wf", "html", "build", ".git", ".claude", "node_modules", "__pycache__"}
 SKIP_FILES = {"AGENTS.md", "CLAUDE.md"}
 # 區的順序與顯示名；不在表裡的第一層目錄用目錄名當區名
-SECTIONS = [("cheatsheets", "cheatsheets 速查表"), ("docs", "docs 教學"), ("reference", "reference 內建全表"), ("reference/spork", "reference/spork"),
+SECTIONS = [("course", "course 從零課程"), ("cheatsheets", "cheatsheets 速查表"), ("docs", "docs 教學"), ("reference", "reference 內建全表"), ("reference/spork", "reference/spork"),
             ("modules", "modules 模組"), ("examples", "examples 範例"), ("snippets", "snippets 片段"),
             ("exercises", "exercises 練習"), ("try", "try 試作"), ("", "頂層")]
 FENCE_RE = re.compile(r"^\s*(`{3,}|~{3,})")

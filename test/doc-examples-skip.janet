@@ -19,15 +19,22 @@
                     "29-spork-資料與文字.md:123" "29-spork-資料與文字.md:124"
                     "19b-檔案系統與路徑.md:12" "19b-檔案系統與路徑.md:13"]] k :會變)
     # ④ 預期值本身含兩個空白，被說明文字的切法切爛（見「期望值」的註解）
-    (tabseq [k :in ["02-資料結構.md:36" "reference/spork/資料格式與驗證.md:18"]] k :切不乾淨)
+    (tabseq [k :in ["02-資料結構.md:36" "reference/spork/資料格式與驗證.md:18"
+                    "reference/peg-全表.md:58"]] k :切不乾淨)
     # ⑤ 前一行 setdyn 的值下一行讀不到：求值包在 (with-dyns …) 裡，而 with-dyns
     #    是「開一個新 fiber 跑 body」，dyn 又是 fiber-local，所以效果隨那個 form 結束。
     #    文件寫的 true 是在 REPL 裡實測的，對；驗不了的是這個 harness。
-    (tabseq [k :in ["12c-dyn.md:22" "12c-dyn.md:78"]] k :dyn跨不過fiber)))
+    (tabseq [k :in ["12c-dyn.md:22" "12c-dyn.md:78"]] k :dyn跨不過fiber)
+    # ⑥ (protect (eval …))：eval 在 protect 開的新 fiber 裡跑，看不到 harness 給區塊的 env，
+    #    於是區塊前面 import 的 infix/$$ 變成 unknown symbol。用 janet 直接跑檔實測文件是對的。
+    (tabseq [k :in ["reference/spork/infix-中綴算式.md:110"
+                    "reference/spork/infix-中綴算式.md:111"]] k :eval看不到區塊env)))
 
 # 這些字樣一出現就整個區塊不跑：會動檔案系統、開子行程、或需要外部服務。
 (def 危險 ["xprint" "os/execute" "os/spawn" "os/shell" "os/rm" "os/rmdir" "os/mkdir" "os/cd"
            "spit" "file/open" "file/temp" "net/" "http/" "sh/$" "os/exit" "os/sleep"
+           # spork/test 的 end-suite 失敗時會 os/exit 1，名單只擋得到字面的 os/exit
+           "end-suite"
            # ⚠ ev/ 一定要排除：開了 ev/thread 或 ev/go 的區塊會讓**整個行程結束不了**
            #   （Janet 會等那些任務），症狀是測試跑完卻不退出，很難聯想。
            "ev/"

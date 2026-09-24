@@ -15,10 +15,14 @@
 (def 不比對 skip/不比對)
 (defn 危險區塊? [src] (skip/危險區塊? src))
 
+# 運算式要括號平衡地抓：只抓到第一個 `)` 的話，`(+ (* 2 3) 1)  # => 7` 這種巢狀行
+# 會默默不比對。字串字面裡的括號不算。
 (def 行案例
   (peg/compile
-    ~(* (any (set " \t")) (<- (* "(" (thru ")"))) (some (set " \t"))
-        "#" (any (set " ")) "=>" (any (set " ")) (<- (any 1)))))
+    ~{:str (* "\"" (any (+ (* "\\" 1) (if-not "\"" 1))) "\"")
+      :paren (* "(" (any (+ :str :paren (if-not (set "()") 1))) ")")
+      :main (* (any (set " \t")) (<- :paren) (some (set " \t"))
+               "#" (any (set " ")) "=>" (any (set " ")) (<- (any 1)))}))
 
 (defn 期望值
   "把 `# =>` 後面那串整理成待比對的字串；回 nil 表示這條不適合自動比對。"
@@ -30,7 +34,8 @@
   #      所以 `:a   說明文字` 會被判定成「整串都是值」，反而更糟（實測從 182 掉到 81）。
   #   預期值本身含兩個空白的（json 縮排那條）就列進「不比對」名單。
   (def s (string/trim (first (string/split "  " raw))))
-  (if (or (empty? s) (string/find "…" s)
+  # 「# => 印 hi」寫的是印出來的東西，不是回傳值。
+  (if (or (empty? s) (string/find "…" s) (string/has-prefix? "印" s)
           (some |(string/find $ s) ["，" "。" "（" "「" "←" "⚠" "／"]))
     nil s))
 
@@ -103,7 +108,7 @@
             (= 印 期) (++ 相符)
             (do (++ 不符) (array/push 壞掉 [鍵 式 期 印]))))))))
 
-# docs/ 與 reference/ 都掃——reference 的 `# =>` 案例比 docs 還多，一樣會腐化。
+# docs/、reference/、course/ 都掃——reference 的 `# =>` 案例比 docs 還多，一樣會腐化。
 (defn 掃目錄 [dir 前綴]
   (each 檔 (filter |(string/has-suffix? ".md" $) (sort (os/dir dir)))
     (each [起 src] (區塊們 (slurp (string dir "/" 檔)))
@@ -112,6 +117,7 @@
 (掃目錄 "docs" "")
 (掃目錄 "reference" "reference/")
 (掃目錄 "reference/spork" "reference/spork/")
+(掃目錄 "course" "course/")
 
 (each [鍵 式 期 實] 壞掉
   (eprintf "✘ %s\n    %s\n    文件寫 %s\n    實際   %s" 鍵 式 期 實))

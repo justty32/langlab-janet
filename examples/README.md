@@ -8,6 +8,8 @@
 `os-tour.janet` 建議再用 `| cat` 跑一次看 `isatty` 的差別。
 `native-module/` 與 `embed/` 要編 C，見下。
 
+**[`course/`](course/)**：[從零課程](../course/README.md) 的範例，檔名＝課號（`janet examples/course/1-1.janet`）。
+
 | 檔 | 主題（★＝最值得看，⚠＝實測踩到的坑）|
 |----|------|
 | [`quickstart.janet`](quickstart.janet) | **第一支**：括號家族、綁定、函式、條件、迴圈，附兩個地雷的現場實況（`print` 印位址、`%j` 逃逸中文） |
@@ -58,7 +60,7 @@
 [`agent-tutorial/`](agent-tutorial/README.md) 七支配 [docs/47](../docs/47-llm-api-是什麼.md)。
 
 > ⚠ 三組都**不在 `jpm test` 裡**——測試一律離線走假後端（`test/llm-http-*`、`test/agent-*`）。
-> 需要真後端的那幾支拿不到後端時印一行提示就結束，exit 0，不噴 stacktrace。
+> 需要真後端的那幾支拿不到後端就印一行提示、exit 0。
 
 ## native-module
 
@@ -79,13 +81,13 @@ cc embed.c -I$HOME/.local/include/janet $HOME/.local/lib/libjanet.a \
 
 ## 哪一支配哪一篇
 
-**每支範例的檔頭都寫了它對應哪一篇 docs**，所以要反查就跑這行（空白那欄就是漏寫的）：
+**每支範例的檔頭都寫了它對應哪一篇 docs**，反查跑這行（空白＝漏寫）：
 
 ```sh
 for f in examples/*.janet; do printf '%-24s %s\n' "$(basename $f)" "$(head -8 "$f" | grep -o 'docs/[0-9a-zA-Z-]*' | head -1)"; done
 ```
 
-反過來，每篇教學結尾的「可跑範例」段也連著它的範例——兩邊都走得通，不另外維護對照表。
+反過來，每篇教學結尾的「可跑範例」段也連著它的範例，不另維護對照表。
 
 `llm-http/` 那組對應的是 [modules/llm-http/README.md](../modules/llm-http/README.md)
 與 [FINDINGS.md](../FINDINGS.md)（架構為什麼這樣選、環境有哪些雷）；

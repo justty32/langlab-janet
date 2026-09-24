@@ -7,3 +7,6 @@
 
 # Python 工具的 bytecode 快取
 __pycache__/
+
+# 子目錄的 jpm build 產物（examples/course/9-demo、11-todo）
+build/
