@@ -21,14 +21,13 @@
     # ④ 預期值本身含兩個空白，被說明文字的切法切爛（見「期望值」的註解）
     (tabseq [k :in ["02-資料結構.md:36" "reference/spork/資料格式與驗證.md:18"
                     "reference/peg-全表.md:58"]] k :切不乾淨)
-    # ⑤ 前一行 setdyn 的值下一行讀不到：求值包在 (with-dyns …) 裡，而 with-dyns
-    #    是「開一個新 fiber 跑 body」，dyn 又是 fiber-local，所以效果隨那個 form 結束。
-    #    文件寫的 true 是在 REPL 裡實測的，對；驗不了的是這個 harness。
-    (tabseq [k :in ["12c-dyn.md:22" "12c-dyn.md:78"]] k :dyn跨不過fiber)
-    # ⑥ (protect (eval …))：eval 在 protect 開的新 fiber 裡跑，看不到 harness 給區塊的 env，
-    #    於是區塊前面 import 的 infix/$$ 變成 unknown symbol。用 janet 直接跑檔實測文件是對的。
-    (tabseq [k :in ["reference/spork/infix-中綴算式.md:110"
-                    "reference/spork/infix-中綴算式.md:111"]] k :eval看不到區塊env)))
+    # ⑤ 用到**前一個**區塊 import 的東西（gen/、:prefix "" 的 misc），這個區塊自己沒 import；
+    #    harness 每個區塊一個新 env，所以 dfs／column-combine／gen/map 全是 unknown symbol。
+    (tabseq [k :in ["30-spork-並行與服務.md:81" "reference/spork/misc-順手工具.md:75"
+                    "reference/spork/misc-順手工具b-陣列與資料表.md:85"]] k :靠前一區塊import)
+    # ⑥ 要磁碟上真的有 /path/to/src.txt（示範用的假路徑），add-file 讀不到就整條走樣
+    (tabseq [k :in ["reference/spork/壓縮與封存-zip.md:76" "reference/spork/壓縮與封存-zip.md:77"
+                    "reference/spork/壓縮與封存-zip.md:78"]] k :要特定檔案)))
 
 # 這些字樣一出現就整個區塊不跑：會動檔案系統、開子行程、或需要外部服務。
 (def 危險 ["xprint" "os/execute" "os/spawn" "os/shell" "os/rm" "os/rmdir" "os/mkdir" "os/cd"
@@ -41,6 +40,12 @@
            # ⚠ 文件裡**故意**示範跑不完的反例（docs/35b 那個 prewalk 無限遞迴）。
            #   自從整個區塊共用一個 env（見「在env求值」），它真的會跑起來並吃光記憶體，
            #   所以認這句註解當標記：要示範無窮迴圈就在那行寫「永遠跑不完」。
-           "永遠跑不完"])
+           "永遠跑不完"
+           # ⚠ 下面這些以前靠「區塊裡的 import 沒生效」默默擋掉，import 修好後要明列：
+           #   spork/sh 會開子行程、sh/rm 刪目錄；tasker 寫 ./tasks；zip/write-file 寫檔；rpc 開 TCP 埠。
+           "spork/sh" "(sh/" "tasker/" "zip/write-file" "rpc/"
+           # ⚠ 會讀 stdin 的互動示範（docs/41 的 make-getline）。區塊裡的 import 生效之後
+           #   它真的會跑，jpm test 在終端機裡就卡著等鍵盤輸入。
+           "make-getline" "(getline" "rawterm/getch" "file/read stdin"])
 
 (defn 危險區塊? [src] (some |(string/find $ src) 危險))

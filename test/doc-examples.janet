@@ -1,4 +1,4 @@
-# 防止教學腐化：把 docs/ 與 reference/ 裡「(運算式)  # => 預期」的案例全部重跑一次。
+# 防止教學腐化：把 docs/、reference/、course/ 裡「一個 form  # => 預期」的案例全部重跑一次。
 #
 # 鐵律 5 說「文件裡的輸出都是實測貼回來的」，但那只保證**寫的當下**是對的——
 # Janet 升版、spork 換版、或有人手改一個值，都會讓文件默默說謊。這支把它變成會變紅的測試。
@@ -6,69 +6,32 @@
 # 做法：**逐 ```janet 區塊**求值，同一個區塊共用一個 env（前幾行 def 的東西後面用得到，
 # 這是單行掃描做不到的）。碰到 `# => 預期` 就比對 (string/format "%j" 結果) 與文件寫的字串。
 # ⚠ 比的是 %j 的字面輸出，所以中文會被逃逸；這類案例列進「不比對」名單。
+# 案例行不限 `(` 開頭：`[1 2]`、`@{…}`、`"字串"`、裸符號／數字開頭的行也抓
+# （改成交給 parser 認「剛好一個 form」，見 doc-examples-extract 的「行案例」）。
 
 (import spork/json)
 (import spork/misc)
 (import spork/path)
 
 (import ./doc-examples-skip :as skip)
+(use ./doc-examples-extract)
 (def 不比對 skip/不比對)
 (defn 危險區塊? [src] (skip/危險區塊? src))
-
-# 運算式要括號平衡地抓：只抓到第一個 `)` 的話，`(+ (* 2 3) 1)  # => 7` 這種巢狀行
-# 會默默不比對。字串字面裡的括號不算。
-(def 行案例
-  (peg/compile
-    ~{:str (* "\"" (any (+ (* "\\" 1) (if-not "\"" 1))) "\"")
-      :paren (* "(" (any (+ :str :paren (if-not (set "()") 1))) ")")
-      :main (* (any (set " \t")) (<- :paren) (some (set " \t"))
-               "#" (any (set " ")) "=>" (any (set " ")) (<- (any 1)))}))
-
-(defn 期望值
-  "把 `# =>` 後面那串整理成待比對的字串；回 nil 表示這條不適合自動比對。"
-  [raw]
-  # 切「兩個以上空白之後的說明文字」。
-  # ⚠ 兩條試過但**不能用**的做法，寫下來免得下次又想試：
-  #   1. 「切到第一個中文字」——很多預期值本身就含中文（:兩格、"都不是"），會切爛。
-  #   2. 「先 parse 整串，成功就整串用」——parse 只取第一個值、不管後面還有沒有東西，
-  #      所以 `:a   說明文字` 會被判定成「整串都是值」，反而更糟（實測從 182 掉到 81）。
-  #   預期值本身含兩個空白的（json 縮排那條）就列進「不比對」名單。
-  (def s (string/trim (first (string/split "  " raw))))
-  # 「# => 印 hi」寫的是印出來的東西，不是回傳值。
-  (if (or (empty? s) (string/find "…" s) (string/has-prefix? "印" s)
-          (some |(string/find $ s) ["，" "。" "（" "「" "←" "⚠" "／"]))
-    nil s))
-
-(defn 區塊們
-  "抽出 @[[起始行號 區塊原文] …]。"
-  [文字]
-  (def out @[]) (var 在內 false) (var 起 0) (def buf @[])
-  (var n 0)
-  (each line (string/split "\n" 文字)
-    (++ n)
-    (cond
-      (and (not 在內) (string/has-prefix? "```janet" line)) (do (set 在內 true) (set 起 (inc n)) (array/clear buf))
-      (and 在內 (string/has-prefix? "```" line)) (do (set 在內 false) (array/push out [起 (string/join buf "\n")]))
-      在內 (array/push buf line)))
-  out)
 
 (var 相符 0) (var 不符 0) (var 跳過 0) (var 免驗 0)
 (def 壞掉 @[])
 
-# 回傳 nil（文件寫的是它們**印出來**的東西），不比對回傳值
-# ⚠ x 開頭那組（xprint/xprintf…）第一個參數是輸出目標，(with-dyns [*err* …]) 攔不到
-#   直接寫 stderr 的那些，所以一併排除。
-(def 印函式 ["printf" "pp" "print" "prin" "eprintf" "eprint" "eprin" "doc"
-             "xprint" "xprintf" "xprin"])
-(defn 印的? [式] (some |(string/has-prefix? (string "(" $) 式) 印函式))
-
 (defn 在env求值
   ``在指定的 env 裡求值一段原始碼，回 [成功? 值]。
   ⚠ 用 fiber/setenv 讓整個區塊共用一個 env（docs/12b），這樣前幾行 def 的東西
-    後面才用得到。不能改成「每次重跑整段前綴」——那是 O(n²)，跑起來要好幾分鐘。``
+    後面才用得到。不能改成「每次重跑整段前綴」——那是 O(n²)，跑起來要好幾分鐘。
+  ⚠ 輸出攔截要直接 put 進 env，不能包 (with-dyns …)：with-dyns 會開一個 env 是
+    「以 env 為原型的新表」的 fiber，而 import 是寫進 (curenv)——於是區塊裡的
+    (import …) 全寫進那張用完即丟的表，後面每行都 unknown symbol、默默算成跳過。``
   [src env]
   (var 結果 nil)
-  (def f (fiber/new (fn [] (set 結果 (with-dyns [*out* @"" *err* @""] (eval-string src env)))) :e))
+  (put env :out @"") (put env :err @"")
+  (def f (fiber/new (fn [] (set 結果 (eval-string src env))) :e))
   (fiber/setenv f env)
   (def r (resume f))
   (if (= :error (fiber/status f)) [false r] [true 結果]))
@@ -91,11 +54,15 @@
     (when (parser/error p) (break))
     (parser/consume p (string line "\n"))
     (when (parser/error p) (break))
+    (var 本行form 0)
     (while (parser/has-more p)
+      (++ 本行form)
       (def form (parser/produce p))
       (def [ok v] (在env求值 (string/format "%j" form) env))
       (set 最後ok ok) (set 最後值 v))
-    (when-let [caps (peg/match 行案例 line)]
+    # ⚠ 案例行必須**剛好收尾一個頂層 form**：多行 form 內部的行（match 的分支、
+    #   let 裡的一行）看起來也像案例，但那時最後值是上一個 form 的，比了只會亂報。
+    (when-let [caps (and (pos? 本行form) (= :root (parser/status p)) (行案例 line))]
       (def 式 (get caps 0))
       (def 鍵 (string 檔 ":" n))
       (def 期 (期望值 (get caps 1)))
@@ -105,7 +72,9 @@
         (let [[ok2 印] (protect (string/format "%j" 最後值))]
           (cond
             (not ok2) (++ 跳過)
-            (= 印 期) (++ 相符)
+            # 數字另外接受 %q：文件貼的是 REPL／pp 的 15 位印法（0.1、9.00719925474099e+15），
+            # %j 卻印全精度（0.10000000000000001），兩者都算對。
+            (or (= 印 期) (and (number? 最後值) (= 期 (string/format "%q" 最後值)))) (++ 相符)
             (do (++ 不符) (array/push 壞掉 [鍵 式 期 印]))))))))
 
 # docs/、reference/、course/ 都掃——reference 的 `# =>` 案例比 docs 還多，一樣會腐化。
