@@ -53,7 +53,7 @@ Janet 內建的解析器：比 regex 強，能解巢狀（Janet 1.41.2 實測）
 
 | 症狀 | 正解 |
 |---|---|
-| `,scan-number` unknown symbol | 用了 `'(…)`；挖洞要 `~(…)` |
+| `,scan-number` 沒轉型，捕獲變 `(unquote scan-number)` | 用了 `'(…)`，不報錯；挖洞要 `~(…)` |
 | 只比對前半段就算成功 | PEG 不強制吃完，結尾加 `-1` |
 | `(+ "cat" "cattle")` 只比到 cat | 有序選擇、不回溯。長的具體的放前面 |
 

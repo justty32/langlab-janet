@@ -8,9 +8,9 @@
 #   3. 名字預設「有前綴」：(import ./lib/greet) → greet/hello，不會汙染你的命名空間。
 #   4. 相對路徑是相對「寫這行 import 的那支檔」，不是相對 cwd。
 #
-# ⚠ 兩個「一看就知道，但第一次一定會寫錯」的地方（見本檔最後一節）：
+# ⚠ 兩個「第一次容易搞混」的地方（見本檔最後一節）：
 #   * \~ 不是家目錄，是 quasiquote —— (import ~/repo/x) 會變成一個 tuple
-#   * import 路徑不要帶 .janet 副檔名 —— 那是模組名不是檔名
+#   * import 路徑慣例不寫 .janet 副檔名（多寫也載得到）—— 那是模組名不是檔名
 
 # ── 1) 基本：相對路徑，前綴自動取檔名 ────────────────────────────────
 (import ./lib/math-utils)                 # → math-utils/square
@@ -74,11 +74,11 @@
   (print "  ★ (import /abs/path) 不能用——開頭的 / 會被吃掉，")
   (print "     絕對路徑請用 (dofile \"/abs/path.janet\")")
   (print)
-  (print "  ★ 兩個第一次一定會寫錯的地方：")
+  (print "  ★ 兩個第一次容易搞混的地方：")
   (print "     ~ 不是家目錄！~ 在 Janet 是 quasiquote，(import ~/repo/x) 會被讀成")
   (printf "     %q —— 一個 tuple，所以錯誤訊息是 could not find module <tuple 0x...>"
           (quote ~/repo/x))
-  (print "     import 路徑不要帶 .janet 副檔名——那是模組名不是檔名，")
+  (print "     import 路徑慣例不寫 .janet 副檔名（多寫也載得到）——那是模組名不是檔名，")
   (print "     Janet 自己會接 .janet / .jimage / .so 去找")
   (printf "  這支檔自己是：%s" (dyn :current-file))
   (print))

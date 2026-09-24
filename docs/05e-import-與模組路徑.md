@@ -21,7 +21,7 @@
 **④ `~` 不是家目錄，是 quasiquote。** `~/repo/x` 被讀成 `(quasiquote /repo/x)` 一個
 **tuple**，錯誤訊息長成 `could not find module <tuple 0x...>`——看到 `<tuple>` 就是它。
 
-**⑤ 不要帶 `.janet` 副檔名。** 那是模組名不是檔名，Janet 自己會接 `.janet`／`.so` 去找。
+**⑤ 慣例不寫 `.janet` 副檔名**（多寫也載得到）。那是模組名不是檔名，Janet 自己會接 `.janet`／`.so` 去找。
 
 > 更完整的 import 語意（快取、`:prefix`、`merge-module` 挑名字、`dofile` 的差別）
 > 見 [`../snippets/import-files/main.janet`](../snippets/import-files/main.janet)，那支跑起來就是一份教材。
