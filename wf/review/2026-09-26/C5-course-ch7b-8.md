@@ -3,7 +3,7 @@
 審閱者：fable｜日期 2026-09-26｜範圍：`course/7-3-讀錯誤訊息.md`、`course/7-3b-尾呼叫與-trace-的坑.md`、`course/8-1-讀寫檔案.md`、`course/8-1b-讀寫檔案.md`、`course/8-2-目錄與路徑.md`、`course/8-2b-目錄與路徑.md`、`course/8-3-命令列參數.md`、`examples/course/7-3.janet`、`examples/course/8-*.janet`
 
 ## 總評
-（待補）
+七支課文的每個 `# =>`、印出結果與四支範例檔全部實測跟 Janet 1.41.2／spork 對得上，錯誤訊息逐字一致。真正的錯有三處：7-3b 對 `(tail call)` 標記的解釋自相矛盾（說成「這格做了尾呼叫」，其實是「這格是被尾呼叫進來的」）、8-2 說 `os/stat :mode` 會回 `:link`（`os/stat` 會穿過 symlink，只有 `os/lstat` 才會）、8-3 說 `--help` 會印 `usage: demo [option] ...`（那行只在 usage error 時才印）。最值得先修的是 7-3b:27，因為那是整篇的核心概念。範例檔 `8-3.janet:6` 叫讀者帶 `--x` 跑，會讓檔尾真解析段 exit 1，也該順手改。
 
 ## 發現
 
@@ -20,3 +20,5 @@
 - [低][範例] `course/8-1-讀寫檔案.md:23-29` — 每段範例都重複四行「算 tmp、mkdir、rm、rm」樣板，四段共十六行，真正教的只有兩行；且 `os/rm` 刪目錄這件事（`os/rm` 對空目錄也行）沒說 — 第一段講清楚後，之後的段落只留關鍵行，樣板收進 `examples/course/8-1.janet` 的 `at` 輔助函式（它已經這樣做了） — [疑]
 - [低][範例] `course/8-1b-讀寫檔案.md:38-44` — 模式表沒給「模式錯了會怎樣」：`(file/open p :x)` 會拋 `invalid flag x, expected w, a, or r`（這是 `file/open` 唯一會立刻拋錯的情況，跟「打不開回 nil」形成對照） — 表下加一行 — [實測]
 - [低][結構] `course/8-1-讀寫檔案.md:62` 與 `course/8-1b-讀寫檔案.md:103` — 8-1 說「為什麼要多那個 b，續篇講」，8-1b 講了但只有一句「`spit` 給 `:a` 就變文字模式」，沒說 `spit` 預設模式其實是 `:wb`，讀者不知道「預設是二進位」是從哪來的 — 在 8-1b:103 明寫「`spit` 第三個參數預設 `:wb`」 — [疑]
+
+續 → `wf/review/2026-09-26/C5b-course-ch8-2-3.md`
